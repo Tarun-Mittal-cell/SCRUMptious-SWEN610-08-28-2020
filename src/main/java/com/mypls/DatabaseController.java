@@ -16,12 +16,12 @@ public class DatabaseController {
         Statement statement = null;
         try
         {
-            //Open a connection
+            //Open a connection to MYPLS database
             System.out.println("Connecting to a selected database...");
             connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
             System.out.println("Connected database successfully...");
 
-            //Execute a statement
+            //Execute a query to MYPLS database
             System.out.println("Inserting records into the table...");
             statement = connection.createStatement();
             String sql =query ;

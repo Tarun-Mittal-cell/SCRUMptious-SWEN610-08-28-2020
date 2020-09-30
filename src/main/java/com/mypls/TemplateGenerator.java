@@ -1,26 +1,45 @@
 package com.mypls;
 
-import freemarker.template.Configuration;
-import freemarker.template.TemplateExceptionHandler;
-
-import java.io.File;
-import java.io.IOException;
+import freemarker.template.*;
+import java.io.*;
+import java.util.Map;
 
 public class TemplateGenerator {
 
 
-    public static void setUpConfig()
+    public static Object setUpConfig(Map model, String page)
     {
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_30);
+        Configuration config = new Configuration(Configuration.VERSION_2_3_30);
         try {
-            cfg.setDirectoryForTemplateLoading(new File("C:/Users/kj031313/TestSpark/src/main/java/System"));
+            config.setClassForTemplateLoading(TemplateGenerator.class, "/templates");
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        config.setDefaultEncoding("UTF-8");
+        config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        config.setLogTemplateExceptions(false);
+        config.setWrapUncheckedExceptions(true);
+        config.setFallbackOnNullLoopVariable(false);
+
+        Template temp = null;
+        try {
+            temp = config.getTemplate(page);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        cfg.setDefaultEncoding("UTF-8");
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        cfg.setLogTemplateExceptions(false);
-        cfg.setWrapUncheckedExceptions(true);
-        cfg.setFallbackOnNullLoopVariable(false);
+        Writer out = new StringWriter();
+        try {
+            temp.process(model, out);
+        } catch (TemplateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return out;
     }
+
+
 }
