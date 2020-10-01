@@ -11,6 +11,8 @@ public class Application {
     {
         staticFileLocation("/public");
 
+        DatabaseController.updateDatabase("INSERT INTO USERS (`FirstName`, `LastName`, `Email`, `Role`) VALUES ('Kemar', 'James', 'kj@rit.edu', 'Student')");
+
         get("/", (req, res) -> TemplateGenerator.setUpConfig(null,INDEX));
         get("/homepage", (req, res) -> TemplateGenerator.setUpConfig(null,HOME));
         get("/registration", (req, res) -> TemplateGenerator.setUpConfig(null,REGISTRATION));
