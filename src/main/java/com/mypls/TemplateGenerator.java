@@ -1,17 +1,30 @@
 package com.mypls;
 
+import freemarker.cache.TemplateCache;
 import freemarker.template.*;
 import java.io.*;
+import java.util.HashMap;
 import java.util.Map;
 
 public class TemplateGenerator {
 
 
-    public static Object setUpConfig(Map model, String page)
+    private Map model;
+    private Configuration config;
+
+    public TemplateGenerator()
     {
-        Configuration config = new Configuration(Configuration.VERSION_2_3_30);
+        this.model = new HashMap<>();
+        this.config = new Configuration(Configuration.VERSION_2_3_30);
+
+    }
+
+    public void setUpConfig()
+    {
+
+
         try {
-            config.setClassForTemplateLoading(TemplateGenerator.class, "/templates");
+            this.config.setClassForTemplateLoading(this.getClass(), "/templates");
 
         } catch (Exception e)
         {
@@ -23,22 +36,43 @@ public class TemplateGenerator {
         config.setWrapUncheckedExceptions(true);
         config.setFallbackOnNullLoopVariable(false);
 
-        Template temp = null;
-        try {
-            temp = config.getTemplate(page);
-        } catch (IOException e) {
+    }
+
+    public Object render(String page)
+    {
+        Template  temp= null;
+        try
+        {
+            temp = this.config.getTemplate(page);
+        } catch (IOException e)
+        {
             e.printStackTrace();
         }
         Writer out = new StringWriter();
-        try {
-            temp.process(model, out);
-        } catch (TemplateException e) {
+        try
+        {
+            temp.process(this.model, out);
+        }
+        catch (TemplateException e)
+        {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return out;
+    }
+
+    public void setModel(String tag,Object model) {
+        this.model.put(tag,model);
+    }
+
+    public void setModelNull() {
+        this.model=null;
+    }
+
+    public void removeModel(String tag,Object model) {
+        this.model.remove(tag);
     }
 
 
