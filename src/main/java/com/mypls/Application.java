@@ -24,6 +24,7 @@ public class Application {
         post("/registration", (req, res) -> { System.out.println(req.queryParams("fname")+" "+req.queryParams("lname")+" "+req.queryParams("role")+" "+req.queryParams("email")+" "+req.queryParams("password_1")+" "+ req.queryParams("password_2"));
         req.session(true);
             req.session().attribute("currentUser",req.queryParams("email"));
+            LoginController.register(req.queryParams("fname"),req.queryParams("lname"),req.queryParams("role"),req.queryParams("email"),req.queryParams("password_1"));
             res.redirect("/homepage");
         return "REGISTERED"; });
         get("/homepage", (req, res) -> {
