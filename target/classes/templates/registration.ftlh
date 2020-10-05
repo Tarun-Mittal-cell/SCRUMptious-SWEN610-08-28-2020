@@ -1,37 +1,86 @@
 <!DOCTYPE html>
 <html>
-    <title>MYPLS</title>
+<head>
+	<title>MyPLS Registration</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
 
-    <head>
-         <link rel="stylesheet" href="CSS/index_styles.css">
 
-    </head>
-    <body>
+	<div class= "container">
+		
+	<div class= "header">
 
-    <div>
-        <form method="POST" action="/registration">
-            <label for="fname">First name:</label><br>
-            <input type="text" id="fname" name="fname"><br>
-            <label for="lname">Last name:</label><br>
-            <input type="text" id="lname" name="lname"><br>
-            <label for="email">Email :</label><br>
-            <input type="text" id="email" name="email"><br>
-            <label for="username">Username :</label><br>
-            <input type="text" id="username" name="username"><br>
-            <label for="password">Password :</label><br>
-            <input type="text" id="password" name="password"><br>
-            <label for="roles">Role:</label>
-              <select name="roles" id="roles">
-                <option value="Staff">Staff</option>
-                <option value="Alumni">Alumni</option>
-                <option value="Student">Student</option>
-                <option value="Faculty">Faculty</option>
-            	<option value="Professor">Professor</option>
-            	<option value="Administrator">Administrator</option>
-              </select>
-               <br><button type="submit" class="btn btn-default">Submit</button>
-            </form>
-    </div>
+		<h2>Register</h2>
 
-    </body>
+	</div>
+
+	<div class="container">
+
+	<form action= "registration" method ="post">
+
+
+    <div class="form-group">
+
+			<label for="username">First Name : </label>
+			<input type ="text" name="fname" class="form-control" required>
+
+		</div>
+
+		<div class="form-group">
+
+			<label for="username">Last Name : </label>
+			<input type ="text" name="lname" class="form-control" required>
+
+		</div>
+
+    <div class="form-group">
+
+			<label for="email">Email : </label>
+			<input type ="email" name="email" class="form-control" required>
+			
+		</div>
+
+
+    <div class="form-group">
+
+			<label for="password">Password : </label>
+			<input type ="password" name="password_1" class="form-control" required>
+			
+		</div>
+
+    <div class="form-group">
+
+			<label for="password">Confirm Password: </label>
+			<input type ="password" name="password_2" class="form-control" required>
+			
+		</div>
+
+		<div class="form-group">
+			<label>Role</label>
+			<select class="form-control" name="role" id="role">
+				<option>Select Role</option>
+				<option>Student</option>
+
+				<option>Staff</option>
+				<option>Alumni</option>
+				<option>Faculty</option>
+				<option>Professor</option>
+			</select>
+		</div>
+
+		<button class="btn btn-success" type = "submit" name ="reg_user"> Submit </button>
+
+
+
+
+</form>
+</div>
+
+</div>
+	
+
+</body>
 </html>

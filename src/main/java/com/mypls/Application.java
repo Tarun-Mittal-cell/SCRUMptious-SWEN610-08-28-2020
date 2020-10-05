@@ -16,27 +16,27 @@ public class Application {
         //DatabaseController.updateDatabase("INSERT INTO USERS (`FirstName`, `LastName`, `Email`, `Role`) VALUES ('Kemar', 'James', 'kj@rit.edu', 'Student')");
 
         generator.setModelNull();
-        get("/", (req, res) -> generator.render(INDEX));
+     //   get("/", (req, res) -> generator.render(INDEX));
 
-        get("/homepage", (req, res) -> {
-           if(req.session().attribute("currentUser")!=null)
-           {
-               return generator.render(HOME);
-           }
-           else
-           {
-               return "You are not logged in!";
-           }
 
-        });
-
+        get("/", (req, res) -> generator.render(LOGIN));
         get("/registration", (req, res) -> generator.render(REGISTRATION));
-        get("/login", (req, res) -> generator.render(LOGIN));
-        post("/registration", (req, res) -> { System.out.println(req.queryParams("fname")+" "+req.queryParams("lname")+" "+req.queryParams("roles")+" "+req.queryParams("email")+" "+req.queryParams("username")+" "+ req.queryParams("password"));
+        post("/registration", (req, res) -> { System.out.println(req.queryParams("fname")+" "+req.queryParams("lname")+" "+req.queryParams("role")+" "+req.queryParams("email")+" "+req.queryParams("password_1")+" "+ req.queryParams("password_2"));
         req.session(true);
-            req.session().attribute("currentUser",req.queryParams("username"));
+            req.session().attribute("currentUser",req.queryParams("email"));
             res.redirect("/homepage");
         return "REGISTERED"; });
+        get("/homepage", (req, res) -> {
+            if(req.session().attribute("currentUser")!=null)
+            {
+                return generator.render(HOME);
+            }
+            else
+            {
+                return "You are not logged in!";
+            }
+
+        });
 
     }
 
