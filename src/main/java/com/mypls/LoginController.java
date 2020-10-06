@@ -2,6 +2,10 @@ package com.mypls;
 
 import com.mypls.users.*;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -59,7 +63,7 @@ public class LoginController {
             case "Faculty":
                 Faculty faculty = new Faculty(fName, lName, email,password);
                 System.out.println(faculty);
-                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+faculty.getEmail()+"', '"+faculty.getPassword()+"', , 'Learner')");
+                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+faculty.getEmail()+"', '"+faculty.getPassword()+"', 'Learner')");
                 if(isUnique)
                 {
                     DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+faculty.getFirstName()+"', '"+faculty.getLastName()+"', '"+faculty.getEmail()+"', 'Faculty')");
@@ -92,11 +96,13 @@ public class LoginController {
         HashMap<String, String> userData = new HashMap<String, String>();
         String firstName = "";
 
+        //System.out.println("JFhHJlfhdjsgs: "+req.queryParams("email"));
 
         userData=DatabaseController.queryCredentials("SELECT * FROM users WHERE Email='"+email+"'");
 
         if (userData.size() != 0) {
-            if (userData.get("email").equals(email) && userData.get("password").equals(password)) {
+            if (userData.get("email").equals(email) && userData.get("password").equals(LoginController.encryption(password)))
+            {
 
                 if(userData.get("role").equals("Learner"))
                 {
@@ -111,6 +117,7 @@ public class LoginController {
                     userData.put("loginStatus","AUTHENTICATED");
 
                 }
+                userData.remove("password");
                return userData;
             }
             userData.put("loginStatus","PASSWORD_INVALID");
@@ -121,6 +128,25 @@ public class LoginController {
 
     }
 
+    public static String encryption(String input)
+    {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        byte[] hash = md.digest(input.getBytes(StandardCharsets.UTF_8));
+        md.digest(input.getBytes(StandardCharsets.UTF_8));
+        BigInteger number = new BigInteger(1, hash);
+        StringBuilder hexString = new StringBuilder(number.toString(16));
+        while (hexString.length() < 32)
+        {
+            hexString.insert(0, '0');
+        }
+        System.out.println(hexString.toString());
+        return hexString.toString();
+    }
 
   /*  public static Learner create (String fName, String lName, String role, String email, String password)
     {

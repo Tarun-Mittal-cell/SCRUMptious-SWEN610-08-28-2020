@@ -2,6 +2,7 @@ package com.mypls;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import static spark.Spark.*;
 
 public class Application {
@@ -47,9 +48,9 @@ public class Application {
 
         post("/registration", (req, res) -> {
             System.out.println(req.queryParams("fname") + " " + req.queryParams("lname") + " " + req.queryParams("role") + " " + req.queryParams("email") + " " + req.queryParams("password_1") + " " + req.queryParams("password_2"));
-            HashMap<String, String> userData = new HashMap<String, String>();
+            HashMap<String, String> userData = new HashMap();
 
-            boolean isEmailUnique = LoginController.register(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("role"), req.queryParams("email"), req.queryParams("password_1"));
+            boolean isEmailUnique = LoginController.register(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("role"), req.queryParams("email"), LoginController.encryption(req.queryParams("password_1")));
             if (isEmailUnique)
             {
                 userData.put("role",req.queryParams("role"));
@@ -125,17 +126,18 @@ public class Application {
                 generator.setModel("isEmailUnique", true);
                 if(userData.get("role").equals("Professor"))
                 {
-                    return generator.render(HOMEPROF);
-                    // res.redirect("/homepageprof");
+                   // return generator.render(HOMEPROF);
+                    res.redirect("/homepageprof");
                 }
                 else if (userData.get("role").equals("Administrator"))
                 {
-                    return generator.render(HOMEPROF);
+                   // return generator.render(HOMEPROF);
+                    res.redirect("/homepageadmin");
                 }
                 else
                 {
-                    return generator.render(HOME);
-                    // res.redirect("/homepage");
+                    //return generator.render(HOME);
+                    res.redirect("/homepage");
                 }
             }
             else
@@ -143,7 +145,7 @@ public class Application {
                 generator.setModel("loginStatus",userData.get("loginStatus"));
                 return generator.render(LOGIN);
             }
-
+            return null;
         });
 
     }

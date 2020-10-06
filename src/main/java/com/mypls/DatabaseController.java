@@ -140,9 +140,9 @@ public class DatabaseController {
 
     public static HashMap<String, String>  queryCredentials(String query)
     {
-        HashMap<String, String> userData = new HashMap<String, String>();
+        HashMap<String, String> userData = new HashMap();
 
-         Connection connection = null;
+        Connection connection = null;
         Statement statement = null;
         try
         {
@@ -161,6 +161,7 @@ public class DatabaseController {
             {
                 //Retrieve by column name
                 userData.put("email",resultSet.getString("Email"));
+                System.out.println("JFhHJlfhdjsgs: "+resultSet.getString("Email"));
                 userData.put("password", resultSet.getString("Password"));
                 userData.put("role",resultSet.getString("Role"));
 

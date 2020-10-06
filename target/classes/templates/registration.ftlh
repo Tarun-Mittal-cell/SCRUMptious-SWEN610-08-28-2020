@@ -52,15 +52,15 @@
     <div class="form-group">
 
 			<label for="password">Password : </label>
-			<input type ="password" name="password_1" class="form-control" required>
+			<input type ="password" id="password_1" name="password_1" class="form-control" required>
 			
 		</div>
 
     <div class="form-group">
 
 			<label for="password">Confirm Password: </label>
-			<input type ="password" name="password_2" class="form-control" required>
-			
+			<input type ="password" id="password_2" name="password_2" class="form-control" required>
+			<span id='message'></span>
 		</div>
 
 		<div class="form-group">
@@ -77,6 +77,26 @@
 		</div>
 
 		<button class="btn btn-success" type = "submit" name ="reg_user"> Submit </button>
+
+		<script>
+                $(document).ready(function(){
+        		  $("button").hide();
+                  $("#password_1,#password_2").on("keyup", function () {
+                    if ($("#password_1").val() == $("#password_2").val())
+                    {
+                        $('#message').html('Matching').css('color', 'green');
+                        $("button").show();
+                    }
+                    else
+                    {
+                        $('#message').html('Not Matching').css('color', 'red');
+                        $("button").hide();
+                        }
+
+                  });
+                });
+
+                </script>
 
 
 
