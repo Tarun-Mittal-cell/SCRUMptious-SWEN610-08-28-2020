@@ -9,7 +9,7 @@ import java.util.Map;
 public class TemplateGenerator {
 
 
-    private Map model;
+    private Map <String, Object> model;
     private Configuration config;
 
     public TemplateGenerator()
@@ -63,8 +63,10 @@ public class TemplateGenerator {
         return out;
     }
 
-    public void setModel(String tag,Object model) {
-        this.model.put(tag,model);
+    public void setModel(String tag,Object data) {
+        System.out.println(tag);
+        System.out.println(data);
+        this.model.put(tag, data);
     }
 
     public void setModelNull() {

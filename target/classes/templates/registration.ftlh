@@ -40,6 +40,11 @@
 
 			<label for="email">Email : </label>
 			<input type ="email" name="email" class="form-control" required>
+            <#if !isUnique>
+                <p> Email already assigned to an account!
+            </#if>
+
+
 			
 		</div>
 

@@ -1,4 +1,7 @@
 package com.mypls;
+import java.util.HashMap;
+import java.util.Map;
+
 import static spark.Spark.*;
 
 public class Application {
@@ -7,29 +10,43 @@ public class Application {
     static final String REGISTRATION = "registration.ftlh";
     static final String LOGIN = "login.ftlh";
 
+
     public static void main(String[] args)
     {
         staticFileLocation("/public");
         TemplateGenerator generator= new TemplateGenerator();
         generator.setUpConfig();
-
-        //DatabaseController.updateDatabase("INSERT INTO USERS (`FirstName`, `LastName`, `Email`, `Role`) VALUES ('Kemar', 'James', 'kj@rit.edu', 'Student')");
-
-        generator.setModelNull();
-     //   get("/", (req, res) -> generator.render(INDEX));
+        generator.setModel("isUnique",true);
 
 
-        get("/", (req, res) -> generator.render(LOGIN));
-        get("/registration", (req, res) -> generator.render(REGISTRATION));
+
+        get("/", (req, res) ->{
+            generator.setModel("isUnique",true);
+            return generator.render(LOGIN);
+        });
+        get("/registration", (req, res) ->{
+            generator.setModel("isUnique",true);
+            return generator.render(REGISTRATION);
+        });
         post("/registration", (req, res) -> { System.out.println(req.queryParams("fname")+" "+req.queryParams("lname")+" "+req.queryParams("role")+" "+req.queryParams("email")+" "+req.queryParams("password_1")+" "+ req.queryParams("password_2"));
-        req.session(true);
-            req.session().attribute("currentUser",req.queryParams("email"));
-            LoginController.register(req.queryParams("fname"),req.queryParams("lname"),req.queryParams("role"),req.queryParams("email"),req.queryParams("password_1"));
-            res.redirect("/homepage");
+           boolean isUnique= LoginController.register(req.queryParams("fname"),req.queryParams("lname"),req.queryParams("role"),req.queryParams("email"),req.queryParams("password_1"));
+            if(isUnique) {
+                req.session(true);
+                req.session().attribute("currentUser", req.queryParams("email"));
+                res.redirect("/homepage");
+            }
+            else
+            {
+
+                generator.setModel("isUnique",false);
+                return generator.render(REGISTRATION);
+
+            }
         return "REGISTERED"; });
         get("/homepage", (req, res) -> {
             if(req.session().attribute("currentUser")!=null)
             {
+                generator.setModel("isUnique",true);
                 return generator.render(HOME);
             }
             else

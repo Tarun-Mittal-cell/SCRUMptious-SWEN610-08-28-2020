@@ -10,8 +10,9 @@ public class DatabaseController {
     static final String PASSWORD = "password";
 
    
-    public static void updateDatabase(String query)
+    public static boolean updateDatabase(String query)
     {
+        boolean isUnique=true;
         Connection connection = null;
         Statement statement = null;
         try
@@ -27,9 +28,15 @@ public class DatabaseController {
             String sql =query ;
             statement.executeUpdate(sql);
         }
+        catch (SQLIntegrityConstraintViolationException e)
+        {
+            System.out.println("Email already assigned to an account");
+            isUnique=false;
+        }
         catch(Exception e)
         {
             e.printStackTrace();
+
         }
         finally 
         {
@@ -56,6 +63,8 @@ public class DatabaseController {
                 se.printStackTrace(); 
             }
         }
+
+        return isUnique;
 
     }
 

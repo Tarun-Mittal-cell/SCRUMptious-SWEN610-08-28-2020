@@ -5,16 +5,26 @@ import com.mypls.users.*;
 public class LoginController {
 
 
-    public static void register (String fName, String lName, String role, String email, String password)
+    public static boolean register (String fName, String lName, String role, String email, String password)
     {
+        boolean isUnique;
         switch (role)
         {
             case "Student":
                 Student student = new Student(fName, lName, email,password);
                 System.out.println(student);
-                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password) VALUES ('"+student.getEmail()+"', '"+student.getPassword()+"')");
-                DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+student.getFirstName()+"', '"+student.getLastName()+"', '"+student.getEmail()+"', 'Student')");
-                break;
+                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password) VALUES ('"+student.getEmail()+"', '"+student.getPassword()+"')");
+                if(isUnique)
+                {
+                    DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('" + student.getFirstName() + "', '" + student.getLastName() + "', '" + student.getEmail() + "', 'Student')");
+                    return isUnique;
+                }
+                else
+                {
+
+                    return isUnique;
+                }
+
             case "Staff":
                 Staff staff = new Staff(fName, lName, email,password);
                 System.out.println(staff);
@@ -40,6 +50,7 @@ public class LoginController {
                 DatabaseController.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+professor.getFirstName()+"', '"+professor.getLastName()+"', '"+professor.getEmail()+"')");
                 break;
         }
+        return true;
     }
 
 }
