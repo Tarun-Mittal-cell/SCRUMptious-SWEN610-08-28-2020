@@ -2,6 +2,8 @@ package com.mypls;
 
 import com.mypls.users.*;
 
+import java.util.ArrayList;
+
 public class LoginController {
 
 
@@ -28,7 +30,7 @@ public class LoginController {
             case "Staff":
                 Staff staff = new Staff(fName, lName, email,password);
                 System.out.println(staff);
-                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password) VALUES ('"+staff.getEmail()+"', '"+staff.getPassword()+"')");
+                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+staff.getEmail()+"', '"+staff.getPassword()+"', Learner)");
                 DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+staff.getFirstName()+"', '"+staff.getLastName()+"', '"+staff.getEmail()+"', 'Staff')");
                 break;
             case "Alumni":
@@ -51,6 +53,23 @@ public class LoginController {
                 break;
         }
         return true;
+    }
+
+
+    public static String login (String email, String password)
+    {
+        ArrayList<String> userData = new ArrayList<String>();
+
+        userData=DatabaseController.queryCredentials("SELECT * FROM users WHERE Email='"+email+"'");
+
+        if (userData.size() != 0) {
+            if (userData.get(0).equals(email) && userData.get(1).equals(password)) {
+                return "AUTHENTICATED";
+            }
+            return "PASSWORD_INVALID";
+        }
+        return "EMAIL_INVALID";
+
     }
 
 }

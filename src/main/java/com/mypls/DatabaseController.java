@@ -1,5 +1,6 @@
 package com.mypls;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DatabaseController {
 
@@ -82,7 +83,7 @@ public class DatabaseController {
             //Execute a statement
             System.out.println("Reading records from table...");
             statement = connection.createStatement();
-            String sql ="SELECT id, firstname, lastname, email, role FROM USERS"; ;
+            String sql =query; ;
             ResultSet resultSet = statement.executeQuery(sql);
 
             while(resultSet.next())
@@ -134,5 +135,71 @@ public class DatabaseController {
             }
         }
 
+    }
+
+    public static ArrayList<String> queryCredentials(String query)
+    {
+        ArrayList<String> userData = new ArrayList<String>();
+        Connection connection = null;
+        Statement statement = null;
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.createStatement();
+            String sql =query; ;
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while(resultSet.next())
+            {
+                //Retrieve by column name
+                userData.add(resultSet.getString("Email"));
+                userData.add( resultSet.getString("Password"));
+                userData.add(resultSet.getString("Role"));
+
+                //Display values
+                System.out.print(", Last: " + userData.get(0));
+                System.out.print(", Email: " + userData.get(1));
+                System.out.println(", Role: " + userData.get(2) );
+            }
+            resultSet.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return userData;
     }
 }

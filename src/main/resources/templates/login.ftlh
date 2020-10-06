@@ -16,13 +16,20 @@
 
 	</div>
 
-	<form action= "login.php" method ="post">
+	<form action= "login" method ="post">
 
     <div class="form-group">
 
 			<label for="username">Email : </label>
-			<input type ="text" name="Email" class="form-control" required>
+			<input type ="text" name="email" class="form-control" required>
 
+
+            <#if status??>
+			<#if status == "EMAIL_INVALID">
+                <p> Email is not registered!
+                <#assign status="NONE">
+            </#if >
+            </#if >
 		</div>
 
 
@@ -30,7 +37,13 @@
     <div class="form-group">
 
 			<label for="password">Password : </label>
-			<input type ="password" name="password_1" class="form-control" required>
+			<input type ="password" name="password" class="form-control" required>
+			<#if status??>
+			<#if status=="PASSWORD_INVALID">
+                 <p> Invalid Password!
+                 <#assign status="NONE">
+            </#if >
+            </#if >
 			
 		</div>
 
