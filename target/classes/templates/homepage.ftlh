@@ -25,13 +25,11 @@
 <div class="container">
 	
 	<div class="well">
-	        <#if userData.firstName??>
-			<h2 class="text-center"> Welcome ${userData.firstName} ! </h2>
-			</#if >
 
-			<#if userData.lastName??>
-            <h2 class="text-center"> Welcome Professor ${userData.lastName} ! </h2>
-            </#if >
+			<h2 class="text-center"> Welcome ! </h2>
+
+
+
 	</div>
 
 	<div class="row">

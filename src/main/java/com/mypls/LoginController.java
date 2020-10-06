@@ -16,7 +16,7 @@ public class LoginController {
             case "Student":
                 Student student = new Student(fName, lName, email,password);
                 System.out.println(student);
-                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+student.getEmail()+"', '"+student.getPassword()+"', Learner)");
+                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+student.getEmail()+"', '"+student.getPassword()+"', 'Learner')");
                 if(isUnique)
                 {
                     DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('" + student.getFirstName() + "', '" + student.getLastName() + "', '" + student.getEmail() + "', 'Student')");
@@ -31,26 +31,56 @@ public class LoginController {
             case "Staff":
                 Staff staff = new Staff(fName, lName, email,password);
                 System.out.println(staff);
-                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+staff.getEmail()+"', '"+staff.getPassword()+"', Learner)");
-                DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+staff.getFirstName()+"', '"+staff.getLastName()+"', '"+staff.getEmail()+"', 'Staff')");
+                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+staff.getEmail()+"', '"+staff.getPassword()+"', 'Learner')");
+                if(isUnique)
+                {
+                     DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+staff.getFirstName()+"', '"+staff.getLastName()+"', '"+staff.getEmail()+"', 'Staff')");
+                }
+                else
+                {
+
+                    return isUnique;
+                }
                 break;
             case "Alumni":
                 Alumni alumni = new Alumni(fName, lName, email,password);
                 System.out.println(alumni);
-                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+alumni.getEmail()+"', '"+alumni.getPassword()+"', Learner)");
-                DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+alumni.getFirstName()+"', '"+alumni.getLastName()+"', '"+alumni.getEmail()+"', 'Alumni')");
+                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+alumni.getEmail()+"', '"+alumni.getPassword()+"', 'Learner')");
+                if(isUnique)
+                {
+                    DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+alumni.getFirstName()+"', '"+alumni.getLastName()+"', '"+alumni.getEmail()+"', 'Alumni')");
+                }
+                else
+                {
+
+                    return isUnique;
+                }
                 break;
             case "Faculty":
                 Faculty faculty = new Faculty(fName, lName, email,password);
                 System.out.println(faculty);
-                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+faculty.getEmail()+"', '"+faculty.getPassword()+"', , Learner)");
-                DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+faculty.getFirstName()+"', '"+faculty.getLastName()+"', '"+faculty.getEmail()+"', 'Faculty')");
+                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+faculty.getEmail()+"', '"+faculty.getPassword()+"', , 'Learner')");
+                if(isUnique)
+                {
+                    DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+faculty.getFirstName()+"', '"+faculty.getLastName()+"', '"+faculty.getEmail()+"', 'Faculty')");
+                }
+                else
+                {
+                    return isUnique;
+                }
                 break;
             case "Professor":
                 Professor professor = new Professor(fName, lName, email,password);
                 System.out.println(professor);
-                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+professor.getEmail()+"', '"+professor.getPassword()+"', Professor)");
-                DatabaseController.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+professor.getFirstName()+"', '"+professor.getLastName()+"', '"+professor.getEmail()+"')");
+                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+professor.getEmail()+"', '"+professor.getPassword()+"', 'Professor')");
+                if(isUnique)
+                {
+                    DatabaseController.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+professor.getFirstName()+"', '"+professor.getLastName()+"', '"+professor.getEmail()+"')");
+                }
+                else
+                {
+                    return isUnique;
+                }
                 break;
         }
         return true;
