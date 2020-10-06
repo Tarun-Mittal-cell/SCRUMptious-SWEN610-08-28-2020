@@ -16,7 +16,7 @@
           <li class="active"><a href="#">Home</a></li>
           <li><a href="#">Page 1</a></li>
           <li><a href="#">Page 2</a></li>
-          <li><a href="#">Page 3</a></li>
+          <li><a href="signout">Sign Out</a></li>
         </ul>
       </div>
     </nav>
@@ -25,7 +25,13 @@
 <div class="container">
 	
 	<div class="well">
-		<h2 class="text-center">Welcome </h2>
+	        <#if userData.firstName??>
+			<h2 class="text-center"> Welcome ${userData.firstName} ! </h2>
+			</#if >
+
+			<#if userData.lastName??>
+            <h2 class="text-center"> Welcome Professor ${userData.lastName} ! </h2>
+            </#if >
 	</div>
 
 	<div class="row">

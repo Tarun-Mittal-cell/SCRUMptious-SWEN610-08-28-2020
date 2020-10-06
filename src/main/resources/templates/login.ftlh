@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title> MyPLS Login </title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
@@ -23,12 +23,11 @@
 			<label for="username">Email : </label>
 			<input type ="text" name="email" class="form-control" required>
 
-
-            <#if status??>
-			<#if status == "EMAIL_INVALID">
+			<#if status??>
+			    <#if status== "EMAIL_INVALID">
+			    <#assign status= "None">
                 <p> Email is not registered!
-                <#assign status="NONE">
-            </#if >
+                </#if >
             </#if >
 		</div>
 
@@ -38,11 +37,12 @@
 
 			<label for="password">Password : </label>
 			<input type ="password" name="password" class="form-control" required>
+
 			<#if status??>
-			<#if status=="PASSWORD_INVALID">
+			     <#if status== "PASSWORD_INVALID">
                  <p> Invalid Password!
-                 <#assign status="NONE">
-            </#if >
+                 <#assign status= "None">
+                </#if >
             </#if >
 			
 		</div>

@@ -3,6 +3,7 @@ package com.mypls;
 import com.mypls.users.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LoginController {
 
@@ -15,7 +16,7 @@ public class LoginController {
             case "Student":
                 Student student = new Student(fName, lName, email,password);
                 System.out.println(student);
-                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password) VALUES ('"+student.getEmail()+"', '"+student.getPassword()+"')");
+                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+student.getEmail()+"', '"+student.getPassword()+"', Learner)");
                 if(isUnique)
                 {
                     DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('" + student.getFirstName() + "', '" + student.getLastName() + "', '" + student.getEmail() + "', 'Student')");
@@ -36,19 +37,19 @@ public class LoginController {
             case "Alumni":
                 Alumni alumni = new Alumni(fName, lName, email,password);
                 System.out.println(alumni);
-                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password) VALUES ('"+alumni.getEmail()+"', '"+alumni.getPassword()+"')");
+                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+alumni.getEmail()+"', '"+alumni.getPassword()+"', Learner)");
                 DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+alumni.getFirstName()+"', '"+alumni.getLastName()+"', '"+alumni.getEmail()+"', 'Alumni')");
                 break;
             case "Faculty":
                 Faculty faculty = new Faculty(fName, lName, email,password);
                 System.out.println(faculty);
-                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password) VALUES ('"+faculty.getEmail()+"', '"+faculty.getPassword()+"')");
+                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+faculty.getEmail()+"', '"+faculty.getPassword()+"', , Learner)");
                 DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+faculty.getFirstName()+"', '"+faculty.getLastName()+"', '"+faculty.getEmail()+"', 'Faculty')");
                 break;
             case "Professor":
                 Professor professor = new Professor(fName, lName, email,password);
                 System.out.println(professor);
-                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password) VALUES ('"+professor.getEmail()+"', '"+professor.getPassword()+"')");
+                DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+professor.getEmail()+"', '"+professor.getPassword()+"', Professor)");
                 DatabaseController.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+professor.getFirstName()+"', '"+professor.getLastName()+"', '"+professor.getEmail()+"')");
                 break;
         }
@@ -56,20 +57,41 @@ public class LoginController {
     }
 
 
-    public static String login (String email, String password)
+    public static HashMap<String, String> login (String email, String password)
     {
-        ArrayList<String> userData = new ArrayList<String>();
+        HashMap<String, String> userData = new HashMap<String, String>();
+        String firstName = "";
+
 
         userData=DatabaseController.queryCredentials("SELECT * FROM users WHERE Email='"+email+"'");
 
         if (userData.size() != 0) {
-            if (userData.get(0).equals(email) && userData.get(1).equals(password)) {
-                return "AUTHENTICATED";
+            if (userData.get("email").equals(email) && userData.get("password").equals(password)) {
+
+                if(userData.get("role").equals("Learner"))
+                {
+                    firstName=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+email+"'");
+                    userData.put("firstName",firstName);
+                    userData.put("status","AUTHENTICATED");
+                }
+                if(userData.get("role").equals("Professor"))
+                {
+                    String lastName=DatabaseController.queryProfessor("SELECT * FROM Professors WHERE Email='"+email+"'");
+                    userData.put("lastName",lastName);
+                    userData.put("status","AUTHENTICATED");
+
+                }
+               return userData;
             }
-            return "PASSWORD_INVALID";
+            userData.put("status","PASSWORD_INVALID");
+            return userData;
         }
-        return "EMAIL_INVALID";
+        userData.put("status","EMAIL_INVALID");
+        return userData;
 
     }
+
+
+
 
 }

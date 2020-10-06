@@ -1,6 +1,7 @@
 package com.mypls;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DatabaseController {
 
@@ -137,10 +138,11 @@ public class DatabaseController {
 
     }
 
-    public static ArrayList<String> queryCredentials(String query)
+    public static HashMap<String, String>  queryCredentials(String query)
     {
-        ArrayList<String> userData = new ArrayList<String>();
-        Connection connection = null;
+        HashMap<String, String> userData = new HashMap<String, String>();
+
+         Connection connection = null;
         Statement statement = null;
         try
         {
@@ -158,14 +160,11 @@ public class DatabaseController {
             while(resultSet.next())
             {
                 //Retrieve by column name
-                userData.add(resultSet.getString("Email"));
-                userData.add( resultSet.getString("Password"));
-                userData.add(resultSet.getString("Role"));
+                userData.put("email",resultSet.getString("Email"));
+                userData.put("password", resultSet.getString("Password"));
+                userData.put("role",resultSet.getString("Role"));
 
-                //Display values
-                System.out.print(", Last: " + userData.get(0));
-                System.out.print(", Email: " + userData.get(1));
-                System.out.println(", Role: " + userData.get(2) );
+
             }
             resultSet.close();
         }
@@ -202,4 +201,140 @@ public class DatabaseController {
 
         return userData;
     }
+
+    public static String queryLearners(String query)
+    {
+        Connection connection = null;
+        Statement statement = null;
+        String firstName="";
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.createStatement();
+            String sql =query; ;
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while(resultSet.next())
+            {
+                //Retrieve by column name
+
+                firstName = resultSet.getString("FirstName");
+
+
+                //Display values
+
+                System.out.print(", First: " + firstName);
+
+            }
+            resultSet.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return firstName;
+
+    }
+
+
+    public static String queryProfessor(String query)
+    {
+        Connection connection = null;
+        Statement statement = null;
+        String lastName="";
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.createStatement();
+            String sql =query; ;
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while(resultSet.next())
+            {
+                //Retrieve by column name
+
+                lastName = resultSet.getString("LastName");
+
+
+                //Display values
+
+                System.out.print(", First: " + lastName);
+
+            }
+            resultSet.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return lastName;
+
+    }
+
 }
