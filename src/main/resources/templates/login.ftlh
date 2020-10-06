@@ -23,9 +23,9 @@
 			<label for="username">Email : </label>
 			<input type ="text" name="email" class="form-control" required>
 
-			<#if status??>
-			    <#if status== "EMAIL_INVALID">
-			    <#assign status= "None">
+			<#if loginStatus??>
+			    <#if loginStatus== "EMAIL_INVALID">
+			    <#assign loginStatus= "None">
                 <p> Email is not registered!
                 </#if >
             </#if >
@@ -38,10 +38,10 @@
 			<label for="password">Password : </label>
 			<input type ="password" name="password" class="form-control" required>
 
-			<#if status??>
-			     <#if status== "PASSWORD_INVALID">
+			<#if loginStatus??>
+			     <#if loginStatus== "PASSWORD_INVALID">
                  <p> Invalid Password!
-                 <#assign status= "None">
+                 <#assign loginStatus= "None">
                 </#if >
             </#if >
 			

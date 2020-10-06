@@ -23,10 +23,10 @@
 
 
 <div class="container">
-	
+
 	<div class="well">
 
-			<h2 class="text-center"> Welcome $(userData.userDataName}  ! </h2>
+			<h2 class="text-center"> Welcome Professor $(userData.lastName} ! </h2>
 
 
 

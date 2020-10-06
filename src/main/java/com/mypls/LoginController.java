@@ -102,24 +102,51 @@ public class LoginController {
                 {
                     firstName=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+email+"'");
                     userData.put("firstName",firstName);
-                    userData.put("status","AUTHENTICATED");
+                    userData.put("loginStatus","AUTHENTICATED");
                 }
                 if(userData.get("role").equals("Professor"))
                 {
                     String lastName=DatabaseController.queryProfessor("SELECT * FROM Professors WHERE Email='"+email+"'");
                     userData.put("lastName",lastName);
-                    userData.put("status","AUTHENTICATED");
+                    userData.put("loginStatus","AUTHENTICATED");
 
                 }
                return userData;
             }
-            userData.put("status","PASSWORD_INVALID");
+            userData.put("loginStatus","PASSWORD_INVALID");
             return userData;
         }
-        userData.put("status","EMAIL_INVALID");
+        userData.put("loginStatus","EMAIL_INVALID");
         return userData;
 
     }
+
+
+  /*  public static Learner create (String fName, String lName, String role, String email, String password)
+    {
+
+        switch (role)
+        {
+            case "Student":
+                Student student = new Student(fName, lName, email,password);
+                return student;
+                break;
+            case "Staff":
+                Staff staff = new Staff(fName, lName, email,password);
+                return staff;
+                break;
+            case "Alumni":
+                Alumni alumni = new Alumni(fName, lName, email,password);
+                return alumni;
+                break;
+            case "Faculty":
+                Faculty faculty = new Faculty(fName, lName, email,password);
+                return faculty;
+                break;
+
+        }
+
+    }*/
 
 
 

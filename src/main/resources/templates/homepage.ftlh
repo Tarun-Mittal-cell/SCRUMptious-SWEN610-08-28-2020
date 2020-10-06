@@ -26,7 +26,7 @@
 	
 	<div class="well">
 
-			<h2 class="text-center"> Welcome ! </h2>
+			<h2 class="text-center"> Welcome $(userData.userDataName}  ! </h2>
 
 
 
