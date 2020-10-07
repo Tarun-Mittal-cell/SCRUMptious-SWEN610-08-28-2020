@@ -117,6 +117,10 @@ public class LoginController {
                     userData.put("loginStatus","AUTHENTICATED");
 
                 }
+                if(userData.get("role").equals("Administrator"))
+                {
+                    userData.put("loginStatus","AUTHENTICATED");
+                }
                 userData.remove("password");
                return userData;
             }

@@ -42,7 +42,7 @@
 	<div class="row">
 		<div class="col-md-6">
 			<div class="row">
-				<div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;"><button class="btn btn-primary">Quizzes</
+				<div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;"><button class="btn btn-primary">Assessments</
 					></div>
 			</div>
 			<div class="row">
