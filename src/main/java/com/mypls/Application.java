@@ -20,7 +20,7 @@ public class Application {
         TemplateGenerator generator = new TemplateGenerator();
         generator.setUpConfig();
         generator.setModel("isEmailUnique", true);
-
+//yes
 
         get("/", (req, res) -> {
            if( req.session().attribute("currentUser")!= null)
@@ -85,7 +85,9 @@ public class Application {
             if (req.session().attribute("currentUser") != null) {
                 generator.setModel("isEmailUnique", true);
                 return generator.render(HOME);
-            } else {
+            }
+            else
+                {
                 res.redirect("/");
                 return "You are not logged in!";
             }

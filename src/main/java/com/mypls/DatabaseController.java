@@ -24,7 +24,7 @@ public class DatabaseController {
             connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
             System.out.println("Connected database successfully...");
 
-            //Execute a query to MYPLS database
+            //Execute a query to MyPLS database
             System.out.println("Inserting records into the table...");
             statement = connection.createStatement();
             String sql =query ;
