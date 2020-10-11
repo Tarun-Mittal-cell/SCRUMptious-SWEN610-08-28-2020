@@ -273,7 +273,7 @@ public class DatabaseController {
         HashMap<String, String> professorInfo = new HashMap();
         Connection connection = null;
         Statement statement = null;
-        String lastName="";
+
         try
         {
             //Open a connection
