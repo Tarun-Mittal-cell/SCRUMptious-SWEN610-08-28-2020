@@ -290,7 +290,7 @@ public class DatabaseController {
             while(resultSet.next())
             {
                 //Retrieve by column name
-                professorInfo.put("firstName",resultSet.getString("LastName"));
+                professorInfo.put("firstName",resultSet.getString("FirstName"));
                 professorInfo.put("lastName",resultSet.getString("LastName"));
 
                 //Display values

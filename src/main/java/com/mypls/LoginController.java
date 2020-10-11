@@ -66,7 +66,7 @@ public class LoginController {
                 {
                     HashMap<String, String> professorInfo=DatabaseController.queryProfessor("SELECT * FROM Professors WHERE Email='"+email+"'");
                     userLoginInfo.put("firstName",professorInfo.get("firstName"));
-                    userLoginInfo.put("lastName",professorInfo.get("LastName"));
+                    userLoginInfo.put("lastName",professorInfo.get("lastName"));
                     userLoginInfo.put("loginStatus","AUTHENTICATED");
                 }
                 else if(userLoginInfo.get("type").equals("Administrator"))
