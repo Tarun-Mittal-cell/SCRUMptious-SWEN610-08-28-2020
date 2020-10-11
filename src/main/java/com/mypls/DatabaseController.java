@@ -163,7 +163,7 @@ public class DatabaseController {
                 userData.put("email",resultSet.getString("Email"));
                 System.out.println("JFhHJlfhdjsgs: "+resultSet.getString("Email"));
                 userData.put("password", resultSet.getString("Password"));
-                userData.put("role",resultSet.getString("Role"));
+                userData.put("type",resultSet.getString("Role"));
 
 
             }
@@ -203,8 +203,9 @@ public class DatabaseController {
         return userData;
     }
 
-    public static String queryLearners(String query)
+    public static  HashMap<String, String> queryLearners(String query)
     {
+        HashMap<String, String> learnerInfo = new HashMap();
         Connection connection = null;
         Statement statement = null;
         String firstName="";
@@ -225,13 +226,9 @@ public class DatabaseController {
             {
                 //Retrieve by column name
 
-                firstName = resultSet.getString("FirstName");
-
-
-                //Display values
-
-                System.out.print(", First: " + firstName);
-
+                learnerInfo.put("firstName" ,resultSet.getString("FirstName"));
+                learnerInfo.put("lastName" ,resultSet.getString("lastName"));
+                learnerInfo.put("type" ,resultSet.getString("Role"));
             }
             resultSet.close();
         }
@@ -266,13 +263,14 @@ public class DatabaseController {
             }
         }
 
-        return firstName;
+        return learnerInfo;
 
     }
 
 
-    public static String queryProfessor(String query)
+    public static HashMap<String, String> queryProfessor(String query)
     {
+        HashMap<String, String> professorInfo = new HashMap();
         Connection connection = null;
         Statement statement = null;
         String lastName="";
@@ -292,14 +290,12 @@ public class DatabaseController {
             while(resultSet.next())
             {
                 //Retrieve by column name
-
-                lastName = resultSet.getString("LastName");
-
+                professorInfo.put("firstName",resultSet.getString("LastName"));
+                professorInfo.put("lastName",resultSet.getString("LastName"));
 
                 //Display values
 
-                System.out.print(", First: " + lastName);
-
+               // System.out.print(", First: " + lastName);
             }
             resultSet.close();
         }
@@ -334,7 +330,7 @@ public class DatabaseController {
             }
         }
 
-        return lastName;
+        return professorInfo;
 
     }
 

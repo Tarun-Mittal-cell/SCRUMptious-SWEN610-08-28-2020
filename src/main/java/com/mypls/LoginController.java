@@ -17,9 +17,9 @@ public class LoginController {
         if(!type.equals("Professor")) {
             Learner learner = new Learner(fName, lName, email, password,type);
             System.out.println(learner);
-            isUnique = DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('" + learner.getEmail() + "', '" + learner.getPassword() + "', 'Learner')");
+            isUnique = DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, type) VALUES ('" + learner.getEmail() + "', '" + learner.getPassword() + "', 'Learner')");
             if (isUnique) {
-                DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('" + learner.getFirstName() + "', '" + learner.getLastName() + "', '" + learner.getEmail() + "', '"+learner.getType()+"')");
+                DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, type) VALUES ('" + learner.getFirstName() + "', '" + learner.getLastName() + "', '" + learner.getEmail() + "', '"+learner.getType()+"')");
                 return isUnique;
             }
             else
@@ -31,7 +31,7 @@ public class LoginController {
         {
             Professor professor = new Professor(fName, lName, email,password);
             System.out.println(professor);
-            isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+professor.getEmail()+"', '"+professor.getPassword()+"', 'Professor')");
+            isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, type) VALUES ('"+professor.getEmail()+"', '"+professor.getPassword()+"', 'Professor')");
             if(isUnique)
             {
                 DatabaseController.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+professor.getFirstName()+"', '"+professor.getLastName()+"', '"+professor.getEmail()+"')");
@@ -48,32 +48,32 @@ public class LoginController {
     public static HashMap<String, String> login (String email, String password)
     {
         HashMap<String, String> userLoginInfo= new HashMap<String, String>();
-        String firstName = "";
+        
 
         userLoginInfo=DatabaseController.queryCredentials("SELECT * FROM users WHERE Email='"+email+"'");
 
         if (userLoginInfo.size() != 0) {
             if (userLoginInfo.get("email").equals(email) && userLoginInfo.get("password").equals(LoginController.encryption(password)))
             {
-                if(userLoginInfo.get("role").equals("Learner"))
+                if(userLoginInfo.get("type").equals("Learner"))
                 {
-                    firstName=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+email+"'");
-                    Learner learner = new Learner(""," ",userLoginInfo.get("email"),userLoginInfo.get("password"),"Learner");
-                    userLoginInfo.put("firstName",firstName);
+                    HashMap<String, String> learnerInfo=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+email+"'");
+                    userLoginInfo.put("firstName",learnerInfo.get("firstName"));
+                    userLoginInfo.put("lastName",learnerInfo.get("lastName"));
                     userLoginInfo.put("loginStatus","AUTHENTICATED");
                 }
-                if(userLoginInfo.get("role").equals("Professor"))
+                else if(userLoginInfo.get("type").equals("Professor"))
                 {
-                    String lastName=DatabaseController.queryProfessor("SELECT * FROM Professors WHERE Email='"+email+"'");
-                    userLoginInfo.put("lastName",lastName);
-                    userLoginInfo.put("loginStatus","AUTHENTICATED");
-
-                }
-                if(userLoginInfo.get("role").equals("Administrator"))
-                {
+                    HashMap<String, String> professorInfo=DatabaseController.queryProfessor("SELECT * FROM Professors WHERE Email='"+email+"'");
+                    userLoginInfo.put("firstName",professorInfo.get("firstName"));
+                    userLoginInfo.put("lastName",professorInfo.get("LastName"));
                     userLoginInfo.put("loginStatus","AUTHENTICATED");
                 }
-                userLoginInfo.remove("password");
+                else if(userLoginInfo.get("type").equals("Administrator"))
+                {
+                    userLoginInfo.put("loginStatus","AUTHENTICATED");
+                }
+                
                return userLoginInfo;
             }
             userLoginInfo.put("loginStatus","PASSWORD_INVALID");

@@ -22,7 +22,6 @@ public class Application {
         staticFileLocation("/public");
         TemplateGenerator generator = new TemplateGenerator();
         generator.setUpConfig();
-        generator.setModel("isEmailUnique", true);
 
 
         get("/", (req, res) -> {
@@ -32,19 +31,16 @@ public class Application {
            }
            generator.setModel("isEmailUnique", true);
            generator.setModel("loginStatus","None");
+
            return generator.render(LOGIN);
         });
 
 
-        get("/registration", (req, res) -> {
-            generator.setModel("isEmailUnique", true);
-            return generator.render(REGISTRATION);
-        });
-
+        get("/registration", (req, res) ->  generator.render(REGISTRATION));
 
         get("/signout", (req, res) -> {
-            generator.setModel("isEmailUnique", true);
             req.session().removeAttribute("currentUser");
+            generator.removeModel("userData");
             res.redirect("/");
             return generator.render(HOME);
         });
@@ -53,7 +49,6 @@ public class Application {
         get("/homepage", (req, res) -> {
             if (req.session().attribute("currentUser") != null)
             {
-                generator.setModel("isEmailUnique", true);
                 return generator.render(HOME);
             }
             else
@@ -65,7 +60,6 @@ public class Application {
 
         get("/homepageprof", (req, res) -> {
             if (req.session().attribute("currentUser") != null) {
-                generator.setModel("isEmailUnique", true);
                 return generator.render(HOMEPROF);
             } else {
                 res.redirect("/");
@@ -76,7 +70,6 @@ public class Application {
 
         get("/homepageadmin", (req, res) -> {
             if (req.session().attribute("currentUser") != null) {
-                generator.setModel("isEmailUnique", true);
                 return generator.render(HOMEADMIN);
             } else {
                 res.redirect("/");
@@ -86,12 +79,12 @@ public class Application {
         });
 
         post("/registration", (req, res) -> {
-            System.out.println(req.queryParams("fname") + " " + req.queryParams("lname") + " " + req.queryParams("role") + " " + req.queryParams("email") + " " + req.queryParams("password_1") + " " + req.queryParams("password_2"));
-            boolean isEmailUnique = LoginController.register(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("role"), req.queryParams("email"), LoginController.encryption(req.queryParams("password_1")));
+            System.out.println(req.queryParams("fname") + " " + req.queryParams("lname") + " " + req.queryParams("type") + " " + req.queryParams("email") + " " + req.queryParams("password_1") + " " + req.queryParams("password_2"));
+            boolean isEmailUnique = LoginController.register(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("type"), req.queryParams("email"), LoginController.encryption(req.queryParams("password_1")));
             if (isEmailUnique)
             {
-                if(!req.queryParams("role").equals("Professor")) {
-                    Learner learner = new Learner(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"), LoginController.encryption(req.queryParams("password_1")), req.queryParams("role"));
+                if(!req.queryParams("type").equals("Professor")) {
+                    Learner learner = new Learner(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"), LoginController.encryption(req.queryParams("password_1")), req.queryParams("type"));
                     generator.setModel("userData", learner);
                     req.session(true);
                     req.session().attribute("currentUser", req.queryParams("email"));
@@ -119,22 +112,22 @@ public class Application {
             {
                 req.session(true);
                 req.session().attribute("currentUser", req.queryParams("email"));
-                generator.setModel("loginStatus",userData.get("loginStatus"));
-                generator.setModel("userData",userData);
                 generator.setModel("isEmailUnique", true);
-                if(userData.get("role").equals("Professor"))
+                generator.setModel("loginStatus",userData.get("loginStatus"));
+                if(userData.get("type").equals("Professor"))
                 {
-                   // return generator.render(HOMEPROF);
+                    Professor professor = new Professor(userData.get("firstName"), userData.get("lastName"), userData.get("email"),userData.get("password"));
+                    generator.setModel("userData",professor);
                     res.redirect("/homepageprof");
                 }
-                else if (userData.get("role").equals("Administrator"))
+                else if (userData.get("type").equals("Administrator"))
                 {
-                   // return generator.render(HOMEPROF);
-                    res.redirect("/homepageadmin");
+                   res.redirect("/homepageadmin");
                 }
                 else
                 {
-                    //return generator.render(HOME);
+                    Learner learner = new Learner(userData.get("firstName"), userData.get("lastName"), userData.get("email"), userData.get("password"), userData.get("type"));
+                    generator.setModel("userData",learner);
                     res.redirect("/homepage");
                 }
             }

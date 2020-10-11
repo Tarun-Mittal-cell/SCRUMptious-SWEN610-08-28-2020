@@ -69,11 +69,8 @@ public class TemplateGenerator {
         this.model.put(tag, data);
     }
 
-    public void setModelNull() {
-        this.model=null;
-    }
 
-    public void removeModel(String tag,Object model) {
+    public void removeModel(String tag) {
         this.model.remove(tag);
     }
 

@@ -79,7 +79,7 @@
 
 		<div class="form-group">
 			<label>Role</label>
-			<select class="form-control" name="role" id="role">
+			<select class="form-control" name="type" id="type">
 				<option>Select Role</option>
 				<option>Student</option>
 
