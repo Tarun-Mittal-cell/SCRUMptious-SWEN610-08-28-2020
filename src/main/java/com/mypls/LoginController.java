@@ -11,124 +11,76 @@ import java.util.HashMap;
 
 public class LoginController {
 
-
-    public static boolean register (String fName, String lName, String role, String email, String password)
+    public static boolean register (String fName, String lName, String type, String email, String password)
     {
         boolean isUnique;
-        switch (role)
+        if(!type.equals("Professor")) {
+            Learner learner = new Learner(fName, lName, email, password,type);
+            System.out.println(learner);
+            isUnique = DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('" + learner.getEmail() + "', '" + learner.getPassword() + "', 'Learner')");
+            if (isUnique) {
+                DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('" + learner.getFirstName() + "', '" + learner.getLastName() + "', '" + learner.getEmail() + "', '"+learner.getType()+"')");
+                return isUnique;
+            }
+            else
+            {
+                return isUnique;
+            }
+        }
+        else
         {
-            case "Student":
-                Student student = new Student(fName, lName, email,password);
-                System.out.println(student);
-                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+student.getEmail()+"', '"+student.getPassword()+"', 'Learner')");
-                if(isUnique)
-                {
-                    DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('" + student.getFirstName() + "', '" + student.getLastName() + "', '" + student.getEmail() + "', 'Student')");
-                    return isUnique;
-                }
-                else
-                {
+            Professor professor = new Professor(fName, lName, email,password);
+            System.out.println(professor);
+            isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+professor.getEmail()+"', '"+professor.getPassword()+"', 'Professor')");
+            if(isUnique)
+            {
+                DatabaseController.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+professor.getFirstName()+"', '"+professor.getLastName()+"', '"+professor.getEmail()+"')");
+            }
+            else
+            {
+                return isUnique;
+            }
 
-                    return isUnique;
-                }
-
-            case "Staff":
-                Staff staff = new Staff(fName, lName, email,password);
-                System.out.println(staff);
-                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+staff.getEmail()+"', '"+staff.getPassword()+"', 'Learner')");
-                if(isUnique)
-                {
-                     DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+staff.getFirstName()+"', '"+staff.getLastName()+"', '"+staff.getEmail()+"', 'Staff')");
-                }
-                else
-                {
-
-                    return isUnique;
-                }
-                break;
-            case "Alumni":
-                Alumni alumni = new Alumni(fName, lName, email,password);
-                System.out.println(alumni);
-                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+alumni.getEmail()+"', '"+alumni.getPassword()+"', 'Learner')");
-                if(isUnique)
-                {
-                    DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+alumni.getFirstName()+"', '"+alumni.getLastName()+"', '"+alumni.getEmail()+"', 'Alumni')");
-                }
-                else
-                {
-
-                    return isUnique;
-                }
-                break;
-            case "Faculty":
-                Faculty faculty = new Faculty(fName, lName, email,password);
-                System.out.println(faculty);
-                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+faculty.getEmail()+"', '"+faculty.getPassword()+"', 'Learner')");
-                if(isUnique)
-                {
-                    DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Role) VALUES ('"+faculty.getFirstName()+"', '"+faculty.getLastName()+"', '"+faculty.getEmail()+"', 'Faculty')");
-                }
-                else
-                {
-                    return isUnique;
-                }
-                break;
-            case "Professor":
-                Professor professor = new Professor(fName, lName, email,password);
-                System.out.println(professor);
-                isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, Role) VALUES ('"+professor.getEmail()+"', '"+professor.getPassword()+"', 'Professor')");
-                if(isUnique)
-                {
-                    DatabaseController.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+professor.getFirstName()+"', '"+professor.getLastName()+"', '"+professor.getEmail()+"')");
-                }
-                else
-                {
-                    return isUnique;
-                }
-                break;
         }
         return true;
     }
 
-
     public static HashMap<String, String> login (String email, String password)
     {
-        HashMap<String, String> userData = new HashMap<String, String>();
+        HashMap<String, String> userLoginInfo= new HashMap<String, String>();
         String firstName = "";
 
-        //System.out.println("JFhHJlfhdjsgs: "+req.queryParams("email"));
+        userLoginInfo=DatabaseController.queryCredentials("SELECT * FROM users WHERE Email='"+email+"'");
 
-        userData=DatabaseController.queryCredentials("SELECT * FROM users WHERE Email='"+email+"'");
-
-        if (userData.size() != 0) {
-            if (userData.get("email").equals(email) && userData.get("password").equals(LoginController.encryption(password)))
+        if (userLoginInfo.size() != 0) {
+            if (userLoginInfo.get("email").equals(email) && userLoginInfo.get("password").equals(LoginController.encryption(password)))
             {
-
-                if(userData.get("role").equals("Learner"))
+                if(userLoginInfo.get("role").equals("Learner"))
                 {
                     firstName=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+email+"'");
-                    userData.put("firstName",firstName);
-                    userData.put("loginStatus","AUTHENTICATED");
+                    Learner learner = new Learner(""," ",userLoginInfo.get("email"),userLoginInfo.get("password"),"Learner");
+                    userLoginInfo.put("firstName",firstName);
+                    userLoginInfo.put("loginStatus","AUTHENTICATED");
                 }
-                if(userData.get("role").equals("Professor"))
+                if(userLoginInfo.get("role").equals("Professor"))
                 {
                     String lastName=DatabaseController.queryProfessor("SELECT * FROM Professors WHERE Email='"+email+"'");
-                    userData.put("lastName",lastName);
-                    userData.put("loginStatus","AUTHENTICATED");
+                    userLoginInfo.put("lastName",lastName);
+                    userLoginInfo.put("loginStatus","AUTHENTICATED");
 
                 }
-                if(userData.get("role").equals("Administrator"))
+                if(userLoginInfo.get("role").equals("Administrator"))
                 {
-                    userData.put("loginStatus","AUTHENTICATED");
+                    userLoginInfo.put("loginStatus","AUTHENTICATED");
                 }
-                userData.remove("password");
-               return userData;
+                userLoginInfo.remove("password");
+               return userLoginInfo;
             }
-            userData.put("loginStatus","PASSWORD_INVALID");
-            return userData;
+            userLoginInfo.put("loginStatus","PASSWORD_INVALID");
+            return userLoginInfo;
         }
-        userData.put("loginStatus","EMAIL_INVALID");
-        return userData;
+        userLoginInfo.put("loginStatus","EMAIL_INVALID");
+        return userLoginInfo;
 
     }
 
@@ -152,31 +104,6 @@ public class LoginController {
         return hexString.toString();
     }
 
-  /*  public static Learner create (String fName, String lName, String role, String email, String password)
-    {
-
-        switch (role)
-        {
-            case "Student":
-                Student student = new Student(fName, lName, email,password);
-                return student;
-                break;
-            case "Staff":
-                Staff staff = new Staff(fName, lName, email,password);
-                return staff;
-                break;
-            case "Alumni":
-                Alumni alumni = new Alumni(fName, lName, email,password);
-                return alumni;
-                break;
-            case "Faculty":
-                Faculty faculty = new Faculty(fName, lName, email,password);
-                return faculty;
-                break;
-
-        }
-
-    }*/
 
 
 

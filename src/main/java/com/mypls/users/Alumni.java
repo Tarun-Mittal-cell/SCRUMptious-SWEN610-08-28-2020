@@ -1,8 +1,8 @@
 package com.mypls.users;
 
-public class Alumni extends Learner {
+public class Alumni  {
     public Alumni(String firstName, String lastName, String email, String password) {
-        super(firstName, lastName, email, password);
+       // super(firstName, lastName, email, password);
     }
 
 

@@ -1,4 +1,7 @@
 package com.mypls;
+import com.mypls.users.Learner;
+import com.mypls.users.Professor;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +23,7 @@ public class Application {
         TemplateGenerator generator = new TemplateGenerator();
         generator.setUpConfig();
         generator.setModel("isEmailUnique", true);
-//yes
+
 
         get("/", (req, res) -> {
            if( req.session().attribute("currentUser")!= null)
@@ -46,52 +49,18 @@ public class Application {
             return generator.render(HOME);
         });
 
-        post("/registration", (req, res) -> {
-            System.out.println(req.queryParams("fname") + " " + req.queryParams("lname") + " " + req.queryParams("role") + " " + req.queryParams("email") + " " + req.queryParams("password_1") + " " + req.queryParams("password_2"));
-            HashMap<String, String> userData = new HashMap();
-
-            boolean isEmailUnique = LoginController.register(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("role"), req.queryParams("email"), LoginController.encryption(req.queryParams("password_1")));
-            if (isEmailUnique)
-            {
-                userData.put("role",req.queryParams("role"));
-                userData.put("firstName",req.queryParams("fname"));
-                userData.put("lastName",req.queryParams("lname"));
-                userData.put("email",req.queryParams("email"));
-                generator.setModel("userData",userData);
-                req.session(true);
-                req.session().attribute("currentUser", req.queryParams("email"));
-                if(userData.get("role").equals("Professor"))
-                {
-                    return generator.render(HOMEPROF);
-                   // res.redirect("/homepageprof");
-                }
-                else
-                {
-                    return generator.render(HOME);
-                   // res.redirect("/homepage");
-                }
-            }
-            else
-            {
-
-                generator.setModel("isEmailUnique", false);
-                return generator.render(REGISTRATION);
-
-            }
-
-        });
 
         get("/homepage", (req, res) -> {
-            if (req.session().attribute("currentUser") != null) {
+            if (req.session().attribute("currentUser") != null)
+            {
                 generator.setModel("isEmailUnique", true);
                 return generator.render(HOME);
             }
             else
-                {
+            {
                 res.redirect("/");
                 return "You are not logged in!";
             }
-
         });
 
         get("/homepageprof", (req, res) -> {
@@ -115,6 +84,33 @@ public class Application {
             }
 
         });
+
+        post("/registration", (req, res) -> {
+            System.out.println(req.queryParams("fname") + " " + req.queryParams("lname") + " " + req.queryParams("role") + " " + req.queryParams("email") + " " + req.queryParams("password_1") + " " + req.queryParams("password_2"));
+            boolean isEmailUnique = LoginController.register(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("role"), req.queryParams("email"), LoginController.encryption(req.queryParams("password_1")));
+            if (isEmailUnique)
+            {
+                if(!req.queryParams("role").equals("Professor")) {
+                    Learner learner = new Learner(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"), LoginController.encryption(req.queryParams("password_1")), req.queryParams("role"));
+                    generator.setModel("userData", learner);
+                    req.session(true);
+                    req.session().attribute("currentUser", req.queryParams("email"));
+                    return generator.render(HOME);
+                }
+                else
+                {
+                    Professor professor = new Professor(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"),LoginController.encryption(req.queryParams("password_1")));
+                    generator.setModel("userData", professor);
+                    return generator.render(HOMEPROF);
+                }
+            }
+            else
+            {
+                generator.setModel("isEmailUnique", false);
+                return generator.render(REGISTRATION);
+            }
+        });
+
 
         post("/login", (req, res) ->{
             HashMap<String, String> userData = LoginController.login(req.queryParams("email"),req.queryParams("password")) ;
