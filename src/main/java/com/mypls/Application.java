@@ -15,7 +15,9 @@ public class Application {
     static final String HOMEADMIN = "homepageadmin.ftlh";
     static final String REGISTRATION = "registration.ftlh";
     static final String LOGIN = "login.ftlh";
+    static final String CREATECOURSE = "createCourse.ftlh";
     static final String AUTHENTICATED = "AUTHENTICATED";
+
 
 
     public static void main(String[] args) {
@@ -77,6 +79,8 @@ public class Application {
             }
 
         });
+
+        get("/homepageadmin/createCourse", (req, res) ->  generator.render(CREATECOURSE));
 
         post("/registration", (req, res) -> {
             System.out.println(req.queryParams("fname") + " " + req.queryParams("lname") + " " + req.queryParams("type") + " " + req.queryParams("email") + " " + req.queryParams("password_1") + " " + req.queryParams("password_2"));

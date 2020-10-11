@@ -5,6 +5,34 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+  body {margin:0;}
+
+  .navbar {
+    overflow: hidden;
+    background-color: #333;
+    position: fixed;
+    top: 0;
+    width: 100%;
+  }
+
+  .navbar a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+  }
+
+  .navbar a:hover {
+    background: #ddd;
+    color: black;
+  }
+
+  </style>
+
 </head>
 <body>
 	<nav class="navbar navbar-inverse">
@@ -33,8 +61,11 @@
 	</div>
 
 	<div class="row">
-		<div class="col-md-12" style="border: 1px solid; padding: 20px; margin: 5px 0px;">
-			<div><input class="pull-right" type="form-control" placeholder="Search" name=""></div>
+		    <div class="col-md-12" style="border: 1px solid; padding: 20px; margin: 5px 0px;">
+            <a href="/homepageadmin/createCourse">Create Course</a>
+            <a href="#news">Update Course</a>
+            <a href="#contact">Delete Course</a>
+            <div><input class="pull-right" type="form-control" placeholder="Search" name=""></div>
 			<div class="text-center"><button class="btn btn-primary"> Courses </button>
 		</div>
 	</div>
