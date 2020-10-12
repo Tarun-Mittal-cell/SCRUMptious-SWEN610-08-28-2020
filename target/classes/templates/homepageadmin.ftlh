@@ -1,92 +1,96 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title> MyPLS Homepage </title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <style>
-  body {margin:0;}
-
-  .navbar {
-    overflow: hidden;
-    background-color: #333;
-    position: fixed;
-    top: 0;
-    width: 100%;
-  }
-
-  .navbar a {
-    float: left;
-    display: block;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 17px;
-  }
-
-  .navbar a:hover {
-    background: #ddd;
-    color: black;
-  }
-
-  </style>
-
-</head>
-<body>
-	<nav class="navbar navbar-inverse">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">MyPLS</a>
-        </div>
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="#">Home</a></li>
-          <li><a href="#">Page 1</a></li>
-          <li><a href="#">Page 2</a></li>
-          <li><a href="signout">Sign Out</a></li>
-        </ul>
+   <head>
+      <title> MyPLS Homepage </title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+      <style>
+         body {margin:0;}
+         .navbar {
+         overflow: hidden;
+         background-color: #333;
+         position: fixed;
+         top: 0;
+         width: 100%;
+         }
+         .navbar a {
+         float: left;
+         display: block;
+         color: #f2f2f2;
+         text-align: center;
+         padding: 14px 16px;
+         text-decoration: none;
+         font-size: 17px;
+         }
+         .navbar a:hover {
+         background: #ddd;
+         color: black;
+         }
+      </style>
+   </head>
+   <body>
+      <nav class="navbar navbar-inverse">
+         <div class="container-fluid">
+            <div class="navbar-header">
+               <a class="navbar-brand" href="#">MyPLS</a>
+            </div>
+            <ul class="nav navbar-nav">
+               <li class="active"><a href="#">Home</a></li>
+               <li><a href="#">Page 1</a></li>
+               <li><a href="#">Page 2</a></li>
+               <li><a href="signout">Sign Out</a></li>
+            </ul>
+         </div>
+      </nav>
+      <div class="container">
+      <div class="well">
+         <h2 class="text-center"> Welcome Admin  ! </h2>
       </div>
-    </nav>
-
-
-<div class="container">
-
-	<div class="well">
-
-			<h2 class="text-center"> Welcome Admin  ! </h2>
-
-
-
-	</div>
-
-	<div class="row">
-		    <div class="col-md-12" style="border: 1px solid; padding: 20px; margin: 5px 0px;">
+      <div class="row">
+         <div class="col-md-12" style="border: 1px solid; padding: 20px; margin: 5px 0px;">
             <a href="/homepageadmin/createCourse">Create Course</a>
-            <a href="#news">Update Course</a>
-            <a href="#contact">Delete Course</a>
             <div><input class="pull-right" type="form-control" placeholder="Search" name=""></div>
-			<div class="text-center"><button class="btn btn-primary"> Courses </button>
-		</div>
-	</div>
-
-	<div class="row">
-		<div class="col-md-6">
-			<div class="row">
-				<div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;"><button class="btn btn-primary">User Administration</
-					></div>
-			</div>
-			<div class="row">
-				<div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;"><button class="btn btn-primary">Feedbacks</
-					></div>
-			</div>
-		</div>
-		<div class="col-md-6">
-			<div style="border: 1px solid; padding: 20px; height: 160px; margin: 5px 0px;"><button class="btn btn-primary">Ratings</button></div>
-		</div>
-	</div>
-
-</div>
-
-</body>
+            <div class="text-center"><button class="btn btn-primary"> Courses </button>
+            </div>
+         </div>
+         <#if (courseCount>0)>
+         <div>
+            <table style="width:50%"  class="table table-hover" >
+               <tr>
+                  <th>Course Name</th>
+                  <th colspan="2">Options</th>
+               </tr>
+               <#list courses as course>
+               <tr>
+                  <td>${course.name}</td>
+                  <td>
+                     <a href="#news">Update Course</a>
+                     <a href="#contact">Delete Course</a>
+                  </td>
+               </tr>
+               </#list>
+            </table>
+            </#if>
+         </div>
+         <div class="row">
+            <div class="col-md-6">
+               <div class="row">
+                  <div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;">
+                     <button class="btn btn-primary">
+                        User Administration</
+                        >
+                  </div>
+               </div>
+               <div class="row">
+               <div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;"><button class="btn btn-primary">Feedbacks</
+               ></div>
+               </div>
+            </div>
+            <div class="col-md-6">
+            <div style="border: 1px solid; padding: 20px; height: 160px; margin: 5px 0px;"><button class="btn btn-primary">Ratings</button></div>
+            </div>
+         </div>
+      </div>
+   </body>
 </html>

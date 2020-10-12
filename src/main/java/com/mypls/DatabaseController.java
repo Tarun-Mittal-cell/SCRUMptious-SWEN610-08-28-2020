@@ -334,4 +334,138 @@ public class DatabaseController {
 
     }
 
+    public static ArrayList<String> getAllProfessor()
+    {
+        ArrayList<String> professorInfo = new ArrayList<>();
+        Connection connection = null;
+        Statement statement = null;
+        String info="Professor ID: ";
+
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.createStatement();
+            String sql ="SELECT * FROM professors"; ;
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while(resultSet.next())
+            {
+                //Retrieve by column name
+                  info+=resultSet.getString("ProfessorID");
+                  info+=" "+resultSet.getString("FirstName");
+                  info+=" "+resultSet.getString("lastName");
+                  professorInfo.add(info);
+                //Display values
+                  info="Professor ID: ";
+                // System.out.print(", First: " + lastName);
+            }
+            resultSet.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return professorInfo;
+
+    }
+
+    public static ArrayList<Course> getAllCourses()
+    {
+        ArrayList<Course> courses = new ArrayList<>();
+        Connection connection = null;
+        Statement statement = null;
+
+
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.createStatement();
+            String sql ="SELECT * FROM courses"; ;
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while(resultSet.next())
+            {
+                //Retrieve by column name
+                Course course=new Course(resultSet.getString("Name"),resultSet.getInt("CourseID"),resultSet.getInt("AssignedProfessorID"),resultSet.getInt("PrerequisiteCourseID"),resultSet.getString("Requirements"),resultSet.getString("Objectives"),resultSet.getString("Outcomes"));
+                courses.add(course);
+
+                // System.out.print(", First: " + lastName);
+            }
+            resultSet.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return courses;
+
+    }
+
+
 }

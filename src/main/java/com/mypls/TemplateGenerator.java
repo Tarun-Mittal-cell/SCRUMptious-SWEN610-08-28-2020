@@ -70,6 +70,10 @@ public class TemplateGenerator {
     }
 
 
+    public Map<String, Object> getModel() {
+        return model;
+    }
+
     public void removeModel(String tag) {
         this.model.remove(tag);
     }

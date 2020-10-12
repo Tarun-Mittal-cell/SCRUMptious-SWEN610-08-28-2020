@@ -1,4 +1,5 @@
 package com.mypls;
+import com.mypls.users.Administrator;
 import com.mypls.users.Learner;
 import com.mypls.users.Professor;
 
@@ -17,16 +18,21 @@ public class Application {
     static final String LOGIN = "login.ftlh";
     static final String CREATECOURSE = "createCourse.ftlh";
     static final String AUTHENTICATED = "AUTHENTICATED";
+    public static Professor professor;
+
 
 
 
     public static void main(String[] args) {
-        staticFileLocation("/public");
+       staticFileLocation("/public");
         TemplateGenerator generator = new TemplateGenerator();
-        generator.setUpConfig();
+       generator.setUpConfig();
 
 
-        get("/", (req, res) -> {
+
+
+
+           get("/", (req, res) -> {
            if( req.session().attribute("currentUser")!= null)
            {
                res.redirect("/homepage");
@@ -44,7 +50,7 @@ public class Application {
             req.session().removeAttribute("currentUser");
             generator.removeModel("userData");
             res.redirect("/");
-            return generator.render(HOME);
+            return generator.render(LOGIN);
         });
 
 
@@ -62,6 +68,8 @@ public class Application {
 
         get("/homepageprof", (req, res) -> {
             if (req.session().attribute("currentUser") != null) {
+                System.out.println("fsdfsdfsd:"+professor);
+                System.out.println("Map:"+generator.getModel());
                 return generator.render(HOMEPROF);
             } else {
                 res.redirect("/");
@@ -72,6 +80,9 @@ public class Application {
 
         get("/homepageadmin", (req, res) -> {
             if (req.session().attribute("currentUser") != null) {
+                Administrator admin= (Administrator) generator.getModel().get("userData");
+                generator.setModel("courseCount",admin.allCourses().size());
+                generator.setModel("courses",admin.allCourses());
                 return generator.render(HOMEADMIN);
             } else {
                 res.redirect("/");
@@ -80,7 +91,12 @@ public class Application {
 
         });
 
-        get("/homepageadmin/createCourse", (req, res) ->  generator.render(CREATECOURSE));
+        get("/homepageadmin/createCourse", (req, res) -> {
+
+            Administrator admin= (Administrator) generator.getModel().get("userData");
+            generator.setModel("allProfessors",admin.allProfessors());
+            return generator.render(CREATECOURSE);
+        });
 
         post("/registration", (req, res) -> {
             System.out.println(req.queryParams("fname") + " " + req.queryParams("lname") + " " + req.queryParams("type") + " " + req.queryParams("email") + " " + req.queryParams("password_1") + " " + req.queryParams("password_2"));
@@ -96,7 +112,7 @@ public class Application {
                 }
                 else
                 {
-                    Professor professor = new Professor(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"),LoginController.encryption(req.queryParams("password_1")));
+                    professor = new Professor(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"),LoginController.encryption(req.queryParams("password_1")));
                     generator.setModel("userData", professor);
                     return generator.render(HOMEPROF);
                 }
@@ -126,6 +142,8 @@ public class Application {
                 }
                 else if (userData.get("type").equals("Administrator"))
                 {
+                    Administrator admin =new Administrator();
+                    generator.setModel("userData",admin);
                    res.redirect("/homepageadmin");
                 }
                 else
@@ -141,6 +159,18 @@ public class Application {
                 return generator.render(LOGIN);
             }
             return null;
+        });
+
+        post("/homepageadmin/createCourse", (req, res) -> {
+
+            System.out.println(req.queryParams("courseName") + " " + req.queryParams("requirement") + " " + req.queryParams("objectives") + " " + req.queryParams("outcomes") + " " + req.queryParams("prerequisite") + " " + req.queryParams("professor"));
+            Administrator admin= (Administrator) generator.getModel().get("userData");
+            String[] temp=((String) req.queryParams("professor")).split(" ");
+            String profId=temp[2];
+            admin.createNewCourse(profId,req.queryParams("courseName"),req.queryParams("objectives"),req.queryParams("outcomes"),req.queryParams("prerequisite"),req.queryParams("requirement"));
+            res.redirect("/homepageadmin");
+            return null;
+
         });
 
     }
