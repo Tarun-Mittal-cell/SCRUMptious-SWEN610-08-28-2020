@@ -37,6 +37,13 @@ public class Administrator {
         return courses;
     }
 
+    public void deleteCourse(int id)
+    {
+        DatabaseController.deleteByCourseID(id);
+    }
+
+
+
 
 
 

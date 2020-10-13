@@ -79,4 +79,19 @@ public class Course {
     public void setOutcomes(String outcomes) {
         this.outcomes = outcomes;
     }
+
+    public static Course getCourseByID(int id)
+    {
+        return DatabaseController.queryByCourseID(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "name='" + name + '\'' +
+                ", courseID=" + courseID +
+                ", assignedProfessorId=" + assignedProfessorId +
+                ", prerequisiteCourseId=" + prerequisiteCourseId +
+                '}';
+    }
 }

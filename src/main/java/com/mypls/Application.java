@@ -17,6 +17,7 @@ public class Application {
     static final String REGISTRATION = "registration.ftlh";
     static final String LOGIN = "login.ftlh";
     static final String CREATECOURSE = "createCourse.ftlh";
+    static final String UPDATECOURSE = "updateCourse.ftlh";
     static final String AUTHENTICATED = "AUTHENTICATED";
     public static Professor professor;
 
@@ -83,6 +84,7 @@ public class Application {
                 Administrator admin= (Administrator) generator.getModel().get("userData");
                 generator.setModel("courseCount",admin.allCourses().size());
                 generator.setModel("courses",admin.allCourses());
+                System.out.println("checkeee");
                 return generator.render(HOMEADMIN);
             } else {
                 res.redirect("/");
@@ -96,6 +98,14 @@ public class Application {
             Administrator admin= (Administrator) generator.getModel().get("userData");
             generator.setModel("allProfessors",admin.allProfessors());
             return generator.render(CREATECOURSE);
+        });
+
+        get("homepageadmin/updateCourse/:courseid", (request, response) -> {
+            Administrator admin= (Administrator) generator.getModel().get("userData");
+            generator.setModel("professors",admin.allProfessors());
+            generator.setModel("course",Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
+            System.out.println(Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
+            return generator.render(UPDATECOURSE) ;
         });
 
         post("/registration", (req, res) -> {
@@ -168,6 +178,16 @@ public class Application {
             String[] temp=((String) req.queryParams("professor")).split(" ");
             String profId=temp[2];
             admin.createNewCourse(profId,req.queryParams("courseName"),req.queryParams("objectives"),req.queryParams("outcomes"),req.queryParams("prerequisite"),req.queryParams("requirement"));
+            res.redirect("/homepageadmin");
+            return null;
+
+        });
+
+        post("/homepageadmin/", (req, res) -> {
+
+            System.out.println(req.queryParams("courseid"));
+            Administrator admin= (Administrator) generator.getModel().get("userData");
+            admin.deleteCourse(Integer.parseInt(req.queryParams("courseid")));
             res.redirect("/homepageadmin");
             return null;
 

@@ -468,4 +468,127 @@ public class DatabaseController {
     }
 
 
+    public static Course queryByCourseID(int id)
+    {
+        Course course = null;
+        Connection connection = null;
+        Statement statement = null;
+
+
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.createStatement();
+            String sql ="SELECT * FROM courses WHERE CourseID='"+id+"'" ;
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while(resultSet.next())
+            {
+                //Retrieve by column name
+                course=new Course(resultSet.getString("Name"),resultSet.getInt("CourseID"),resultSet.getInt("AssignedProfessorID"),resultSet.getInt("PrerequisiteCourseID"),resultSet.getString("Requirements"),resultSet.getString("Objectives"),resultSet.getString("Outcomes"));
+
+                
+            }
+            resultSet.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+
+        return course;
+
+    }
+
+    public static void deleteByCourseID(int id)
+    {
+        Connection connection = null;
+        Statement statement = null;
+
+
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.createStatement();
+            String sql ="Delete FROM courses WHERE CourseID='"+id+"'" ;
+           statement.executeUpdate(sql);
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+
+
+
+    }
+
+
+
 }

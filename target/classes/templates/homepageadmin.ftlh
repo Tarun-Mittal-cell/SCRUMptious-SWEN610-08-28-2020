@@ -65,8 +65,11 @@
                <tr>
                   <td>${course.name}</td>
                   <td>
-                     <a href="#news">Update Course</a>
-                     <a href="#contact">Delete Course</a>
+                     <a href='homepageadmin/updateCourse/${course.courseID?replace(",", "")}'>Update Course</a>
+                     <form action="/homepageadmin/" method="post">
+                     	<input type="hidden" name="courseid" value="${course.courseID?replace(",", "")}">
+                     	<input type="submit" value="Delete Course">
+                     </form>
                   </td>
                </tr>
                </#list>
@@ -78,8 +81,7 @@
                <div class="row">
                   <div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;">
                      <button class="btn btn-primary">
-                        User Administration</
-                        >
+                        User Administration</>
                   </div>
                </div>
                <div class="row">
