@@ -100,7 +100,7 @@ public class Application {
             return generator.render(CREATECOURSE);
         });
 
-        get("homepageadmin/updateCourse/:courseid", (request, response) -> {
+        get("/homepageadmin/updateCourse/:courseid", (request, response) -> {
             Administrator admin= (Administrator) generator.getModel().get("userData");
             generator.setModel("professors",admin.allProfessors());
             generator.setModel("course",Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
@@ -111,10 +111,12 @@ public class Application {
         post("/registration", (req, res) -> {
             System.out.println(req.queryParams("fname") + " " + req.queryParams("lname") + " " + req.queryParams("type") + " " + req.queryParams("email") + " " + req.queryParams("password_1") + " " + req.queryParams("password_2"));
             boolean isEmailUnique = LoginController.register(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("type"), req.queryParams("email"), LoginController.encryption(req.queryParams("password_1")));
+            HashMap<String, String> info;
             if (isEmailUnique)
             {
                 if(!req.queryParams("type").equals("Professor")) {
-                    Learner learner = new Learner(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"), LoginController.encryption(req.queryParams("password_1")), req.queryParams("type"));
+                    info=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+req.queryParams("email")+"'");
+                    Learner learner = new Learner(Integer.parseInt(info.get("id")),req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"), req.queryParams("type"), Double.parseDouble(info.get("rating")),Integer.parseInt(info.get("numberOfRatings")));
                     generator.setModel("userData", learner);
                     req.session(true);
                     req.session().attribute("currentUser", req.queryParams("email"));
@@ -122,7 +124,8 @@ public class Application {
                 }
                 else
                 {
-                    professor = new Professor(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"),LoginController.encryption(req.queryParams("password_1")));
+                    info=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+req.queryParams("email")+"'");
+                    professor = new Professor(Integer.parseInt(info.get("id")),req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"),Double.parseDouble(info.get("rating")),Integer.parseInt(info.get("numberOfRatings")));
                     generator.setModel("userData", professor);
                     return generator.render(HOMEPROF);
                 }
@@ -146,7 +149,7 @@ public class Application {
                 generator.setModel("loginStatus",userData.get("loginStatus"));
                 if(userData.get("type").equals("Professor"))
                 {
-                    Professor professor = new Professor(userData.get("firstName"), userData.get("lastName"), userData.get("email"),userData.get("password"));
+                    Professor professor = new Professor(Integer.parseInt(userData.get("id")),userData.get("firstName"), userData.get("lastName"), userData.get("email"), Double.parseDouble(userData.get("rating")),Integer.parseInt(userData.get("numberOfRatings")));
                     generator.setModel("userData",professor);
                     res.redirect("/homepageprof");
                 }
@@ -158,7 +161,7 @@ public class Application {
                 }
                 else
                 {
-                    Learner learner = new Learner(userData.get("firstName"), userData.get("lastName"), userData.get("email"), userData.get("password"), userData.get("type"));
+                    Learner learner = new Learner(Integer.parseInt(userData.get("id")),userData.get("firstName"), userData.get("lastName"), userData.get("email"), userData.get("type"), Double.parseDouble(userData.get("rating")),Integer.parseInt(userData.get("numberOfRatings")));
                     generator.setModel("userData",learner);
                     res.redirect("/homepage");
                 }

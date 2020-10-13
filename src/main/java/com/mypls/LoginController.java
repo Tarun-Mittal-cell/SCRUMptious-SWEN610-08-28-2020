@@ -15,26 +15,18 @@ public class LoginController {
     {
         boolean isUnique;
         if(!type.equals("Professor")) {
-            Learner learner = new Learner(fName, lName, email, password,type);
-            System.out.println(learner);
-            isUnique = DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, type) VALUES ('" + learner.getEmail() + "', '" + learner.getPassword() + "', 'Learner')");
+            isUnique = DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, type) VALUES ('" + email + "', '" + password + "', 'Learner')");
             if (isUnique) {
-                DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, type) VALUES ('" + learner.getFirstName() + "', '" + learner.getLastName() + "', '" + learner.getEmail() + "', '"+learner.getType()+"')");
-                return isUnique;
+                DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, type) VALUES ('" + fName + "', '" + lName + "', '" + email + "', '"+type+"')");
             }
-            else
-            {
-                return isUnique;
-            }
+            return isUnique;
         }
         else
         {
-            Professor professor = new Professor(fName, lName, email,password);
-            System.out.println(professor);
-            isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, type) VALUES ('"+professor.getEmail()+"', '"+professor.getPassword()+"', 'Professor')");
+            isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, type) VALUES ('"+email+"', '"+password+"', 'Professor')");
             if(isUnique)
             {
-                DatabaseController.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+professor.getFirstName()+"', '"+professor.getLastName()+"', '"+professor.getEmail()+"')");
+                DatabaseController.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+fName+"', '"+lName+"', '"+email+"')");
             }
             else
             {
@@ -60,6 +52,9 @@ public class LoginController {
                     HashMap<String, String> learnerInfo=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+email+"'");
                     userLoginInfo.put("firstName",learnerInfo.get("firstName"));
                     userLoginInfo.put("lastName",learnerInfo.get("lastName"));
+                    userLoginInfo.put("rating",learnerInfo.get("rating"));
+                    userLoginInfo.put("id",learnerInfo.get("id"));
+                    userLoginInfo.put("numberOfRatings",learnerInfo.get("numberOfRatings"));
                     userLoginInfo.put("loginStatus","AUTHENTICATED");
                 }
                 else if(userLoginInfo.get("type").equals("Professor"))
@@ -67,6 +62,9 @@ public class LoginController {
                     HashMap<String, String> professorInfo=DatabaseController.queryProfessor("SELECT * FROM Professors WHERE Email='"+email+"'");
                     userLoginInfo.put("firstName",professorInfo.get("firstName"));
                     userLoginInfo.put("lastName",professorInfo.get("lastName"));
+                    userLoginInfo.put("rating",professorInfo.get("rating"));
+                    userLoginInfo.put("id",professorInfo.get("id"));
+                    userLoginInfo.put("numberOfRatings",professorInfo.get("numberOfRatings"));
                     userLoginInfo.put("loginStatus","AUTHENTICATED");
                 }
                 else if(userLoginInfo.get("type").equals("Administrator"))

@@ -2,16 +2,24 @@ package com.mypls.users;
 
 public class Professor {
 
+    private int professorID;
     private String firstName;
     private String LastName;
     private String email;
-    private String password;
+    private double rating;
+    private int numberOfRatings;
 
-    public Professor(String firstName, String lastName, String email, String password) {
+
+
+
+    public Professor(int professorID,String firstName, String lastName, String email,double rating,int numberOfRatings)
+    {
+       this.professorID=professorID;
         this.firstName = firstName;
         this.LastName = lastName;
         this.email = email;
-        this.password = password;
+        this.rating=rating;
+        this.numberOfRatings=numberOfRatings;
     }
 
     public String getFirstName() {
@@ -38,12 +46,16 @@ public class Professor {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public int getProfessorID() {
+        return professorID;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public double getRating() {
+        return rating;
+    }
+
+    public int getnumberOfRatings() {
+        return numberOfRatings;
     }
 
     @Override

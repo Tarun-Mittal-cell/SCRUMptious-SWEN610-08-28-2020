@@ -14,10 +14,8 @@
           <a class="navbar-brand" href="#">MyPLS</a>
         </div>
         <ul class="nav navbar-nav">
-          <li class="active"><a href="#">Home</a></li>
-          <li><a href="#">Page 1</a></li>
-          <li><a href="#">Page 2</a></li>
-          <li><a href="/">Back to login</a></li>
+           <li  class="active" ><a href="/homepageadmin">Home</a></li>
+           <li><a href="/signout">Sign Out</a></li>
         </ul>
       </div>
     </nav>
@@ -67,10 +65,14 @@
 
      <div class="form-group">
 			<label>Assign Professor :</label>
-			<select class="form-control" name="professor" id="professor">
+			<select class="form-control" name="professor" id="professor" >
 				<option>Select Professor</option>
 				<#list professors as professor>
-                    <option>${professor} </option>
+				    <#if course.assignedProfessorId==professor.professorID>
+                        <option selected >ID:${professor.professorID} ${professor.firstName} ${professor.lastName}  ${professor.email}</option>
+                    <#else>
+                        <option>ID:${professor.professorID} ${professor.firstName} ${professor.lastName}  ${professor.email} </option>
+                    </#if>
                 </#list>
 
 			</select>

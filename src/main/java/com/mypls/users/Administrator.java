@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 public class Administrator {
 
-    public ArrayList<String> allProfessors() {
-        ArrayList<String> allProfessor = DatabaseController.getAllProfessor();
+    public ArrayList<Professor> allProfessors() {
+        ArrayList<Professor> allProfessor = DatabaseController.getAllProfessor();
         return allProfessor;
     }
 

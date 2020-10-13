@@ -2,20 +2,26 @@ package com.mypls.users;
 
 public class Learner {
 
+    private int  learnerID;
     private String firstName;
     private String LastName;
     private String email;
-    private String password;
     private String type;
+    private double rating;
+    private int numOfRatings;
 
 
 
-    public Learner(String firstName, String lastName, String email, String password,String type) {
+
+
+    public Learner(int  learnerID,String firstName, String lastName, String email,String type, double rating, int numOfRatings) {
+        this.learnerID=learnerID;
         this.firstName = firstName;
         this.LastName = lastName;
         this.email = email;
-        this.password = password;
         this.type=type;
+        this.rating=0;
+        this.numOfRatings=0;
     }
 
     public String getFirstName() {
@@ -42,13 +48,7 @@ public class Learner {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getType() {
         return type;
@@ -64,7 +64,6 @@ public class Learner {
                 "firstName='" + firstName + '\'' +
                 ", LastName='" + LastName + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", type='" + type + '\'' +
                 '}';
     }

@@ -1,4 +1,6 @@
 package com.mypls;
+import com.mypls.users.Professor;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +13,7 @@ public class DatabaseController {
     static final String USERNAME = "mypls";
     static final String PASSWORD = "password";
 
-   
+
     public static boolean updateDatabase(String query)
     {
         boolean isUnique=true;
@@ -40,11 +42,11 @@ public class DatabaseController {
             e.printStackTrace();
 
         }
-        finally 
+        finally
         {
 
             try{
-                if(statement!=null) 
+                if(statement!=null)
                 {
                     statement.close();
                 }
@@ -55,14 +57,14 @@ public class DatabaseController {
             }
             try
             {
-                if(statement!=null) 
+                if(statement!=null)
                 {
                     statement.close();
                 }
             }
             catch(SQLException se)
             {
-                se.printStackTrace(); 
+                se.printStackTrace();
             }
         }
 
@@ -161,7 +163,6 @@ public class DatabaseController {
             {
                 //Retrieve by column name
                 userData.put("email",resultSet.getString("Email"));
-                System.out.println("JFhHJlfhdjsgs: "+resultSet.getString("Email"));
                 userData.put("password", resultSet.getString("Password"));
                 userData.put("type",resultSet.getString("Role"));
 
@@ -208,7 +209,6 @@ public class DatabaseController {
         HashMap<String, String> learnerInfo = new HashMap();
         Connection connection = null;
         Statement statement = null;
-        String firstName="";
         try
         {
             //Open a connection
@@ -225,10 +225,13 @@ public class DatabaseController {
             while(resultSet.next())
             {
                 //Retrieve by column name
-
+                learnerInfo.put("id" ,resultSet.getString("LearnerID"));
                 learnerInfo.put("firstName" ,resultSet.getString("FirstName"));
                 learnerInfo.put("lastName" ,resultSet.getString("lastName"));
                 learnerInfo.put("type" ,resultSet.getString("Role"));
+                learnerInfo.put("rating", resultSet.getString("Rating"));
+                learnerInfo.put("numberOfRatings",resultSet.getString("NumberOfRatings"));
+
             }
             resultSet.close();
         }
@@ -290,12 +293,12 @@ public class DatabaseController {
             while(resultSet.next())
             {
                 //Retrieve by column name
+                professorInfo.put("id",resultSet.getString("ProfessorID"));
                 professorInfo.put("firstName",resultSet.getString("FirstName"));
                 professorInfo.put("lastName",resultSet.getString("LastName"));
+                professorInfo.put("rating",resultSet.getString("Rating"));
+                professorInfo.put("numberOfRatings",resultSet.getString("NumberOfRatings"));
 
-                //Display values
-
-               // System.out.print(", First: " + lastName);
             }
             resultSet.close();
         }
@@ -334,12 +337,12 @@ public class DatabaseController {
 
     }
 
-    public static ArrayList<String> getAllProfessor()
+    public static ArrayList<Professor> getAllProfessor()
     {
-        ArrayList<String> professorInfo = new ArrayList<>();
+        ArrayList<Professor> professorList= new ArrayList<>();
         Connection connection = null;
         Statement statement = null;
-        String info="Professor ID: ";
+
 
         try
         {
@@ -357,13 +360,10 @@ public class DatabaseController {
             while(resultSet.next())
             {
                 //Retrieve by column name
-                  info+=resultSet.getString("ProfessorID");
-                  info+=" "+resultSet.getString("FirstName");
-                  info+=" "+resultSet.getString("lastName");
-                  professorInfo.add(info);
-                //Display values
-                  info="Professor ID: ";
-                // System.out.print(", First: " + lastName);
+                Professor professor = new Professor(resultSet.getInt("ProfessorID"),resultSet.getString("FirstName"), resultSet.getString("lastName"), resultSet.getString("Email"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"));
+                professorList.add(professor);
+
+
             }
             resultSet.close();
         }
@@ -398,7 +398,7 @@ public class DatabaseController {
             }
         }
 
-        return professorInfo;
+        return professorList;
 
     }
 
@@ -425,10 +425,9 @@ public class DatabaseController {
             while(resultSet.next())
             {
                 //Retrieve by column name
-                Course course=new Course(resultSet.getString("Name"),resultSet.getInt("CourseID"),resultSet.getInt("AssignedProfessorID"),resultSet.getInt("PrerequisiteCourseID"),resultSet.getString("Requirements"),resultSet.getString("Objectives"),resultSet.getString("Outcomes"));
+                Course course=new Course(resultSet.getString("Name"),resultSet.getInt("CourseID"),resultSet.getInt("AssignedProfessorID"),resultSet.getInt("PrerequisiteCourseID"),resultSet.getString("Requirements"),resultSet.getString("Objectives"),resultSet.getString("Outcomes"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"),resultSet.getInt("Enrollment"),resultSet.getDouble("MinScore"));
                 courses.add(course);
 
-                // System.out.print(", First: " + lastName);
             }
             resultSet.close();
         }
@@ -491,9 +490,9 @@ public class DatabaseController {
             while(resultSet.next())
             {
                 //Retrieve by column name
-                course=new Course(resultSet.getString("Name"),resultSet.getInt("CourseID"),resultSet.getInt("AssignedProfessorID"),resultSet.getInt("PrerequisiteCourseID"),resultSet.getString("Requirements"),resultSet.getString("Objectives"),resultSet.getString("Outcomes"));
+                course=new Course(resultSet.getString("Name"),resultSet.getInt("CourseID"),resultSet.getInt("AssignedProfessorID"),resultSet.getInt("PrerequisiteCourseID"),resultSet.getString("Requirements"),resultSet.getString("Objectives"),resultSet.getString("Outcomes"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"),resultSet.getInt("Enrollment"),resultSet.getDouble("MinScore"));
 
-                
+
             }
             resultSet.close();
         }

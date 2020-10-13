@@ -8,9 +8,12 @@ public class Course {
     private String requirements;
     private String objectives;
     private String outcomes;
+    private double rating;
+    private int numOfRatings;
+    private int enrollment;
+    private double minScore;
 
-
-    public Course(String name, int courseID, int assignedProfessorId, int prerequisiteCourseId, String requirements, String objectives, String outcomes) {
+    public Course(String name, int courseID, int assignedProfessorId, int prerequisiteCourseId, String requirements, String objectives, String outcomes, double rating, int numOfRatings, int enrollment, double minScore) {
         this.name = name;
         this.courseID = courseID;
         this.assignedProfessorId = assignedProfessorId;
@@ -18,10 +21,15 @@ public class Course {
         this.requirements = requirements;
         this.objectives = objectives;
         this.outcomes = outcomes;
+        this.rating = rating;
+        this.numOfRatings = numOfRatings;
+        this.enrollment = enrollment;
+        this.minScore=minScore;
     }
 
+
     public Course(String name, int courseID, int assignedProfessorId) {
-        this(name,courseID,assignedProfessorId,0,"","","");
+        this(name,courseID,assignedProfessorId,0,"","","",0,0,0,0);
     }
 
     public String getName() {
@@ -78,6 +86,42 @@ public class Course {
 
     public void setOutcomes(String outcomes) {
         this.outcomes = outcomes;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public int getNumOfRatings() {
+        return numOfRatings;
+    }
+
+    public void setNumOfRatings(int numOfRatings) {
+        this.numOfRatings = numOfRatings;
+    }
+
+    public int getEnrollment() {
+        return enrollment;
+    }
+
+    public void setEnrollment(int enrollment) {
+        this.enrollment = enrollment;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public double getMinScore() {
+        return minScore;
+    }
+
+    public void setMinScore(double minScore) {
+        this.minScore = minScore;
     }
 
     public static Course getCourseByID(int id)
