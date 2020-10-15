@@ -1,4 +1,5 @@
 package com.mypls;
+import com.mypls.users.Learner;
 import com.mypls.users.Professor;
 
 import java.sql.*;
@@ -164,7 +165,7 @@ public class DatabaseController {
                 //Retrieve by column name
                 userData.put("email",resultSet.getString("Email"));
                 userData.put("password", resultSet.getString("Password"));
-                userData.put("type",resultSet.getString("Role"));
+                userData.put("type",resultSet.getString("TypeUser"));
 
 
             }
@@ -228,7 +229,7 @@ public class DatabaseController {
                 learnerInfo.put("id" ,resultSet.getString("LearnerID"));
                 learnerInfo.put("firstName" ,resultSet.getString("FirstName"));
                 learnerInfo.put("lastName" ,resultSet.getString("lastName"));
-                learnerInfo.put("type" ,resultSet.getString("Role"));
+                learnerInfo.put("type" ,resultSet.getString("Type"));
                 learnerInfo.put("rating", resultSet.getString("Rating"));
                 learnerInfo.put("numberOfRatings",resultSet.getString("NumberOfRatings"));
 
@@ -271,7 +272,7 @@ public class DatabaseController {
     }
 
 
-    public static HashMap<String, String> queryProfessor(String query)
+    public static HashMap<String, String> queryProfessors(String query)
     {
         HashMap<String, String> professorInfo = new HashMap();
         Connection connection = null;
@@ -332,7 +333,7 @@ public class DatabaseController {
                 se.printStackTrace();
             }
         }
-
+        System.out.println("Checking: "+professorInfo);
         return professorInfo;
 
     }
@@ -466,6 +467,71 @@ public class DatabaseController {
 
     }
 
+    public static ArrayList<Learner> getAllLearners()
+    {
+        ArrayList<Learner> learners = new ArrayList<>();
+        Connection connection = null;
+        Statement statement = null;
+
+
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.createStatement();
+            String sql ="SELECT * FROM learners";
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while(resultSet.next())
+            {
+                //Retrieve by column name
+                Learner learner=new Learner(resultSet.getInt("LearnerID"),resultSet.getString("FirstName"),resultSet.getString("LastName"),resultSet.getString("Email"),resultSet.getString("Type"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"));
+                learners.add(learner);
+
+            }
+            resultSet.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return learners;
+
+    }
+
+
 
     public static Course queryByCourseID(int id)
     {
@@ -520,6 +586,7 @@ public class DatabaseController {
                 {
                     connection.close();
                 }
+
             }
             catch(SQLException se)
             {

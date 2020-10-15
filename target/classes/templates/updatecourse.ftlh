@@ -31,7 +31,7 @@
 
 	<div class="container">
 
-	<form action= "updateCourse" method ="post">
+	<form action= "/homepageadmin/updateCourse" method ="post">
 
 
     <div class="form-group">
@@ -57,8 +57,16 @@
     <div class="form-group">
     			<label>Assign Pre-requisite :</label>
     			<select class="form-control" name="prerequisite" id="type">
-
-    			</select>
+    			    <#list courses as preReqCourse>
+    			        <#if course.prerequisiteCourseId==preReqCourse.courseID>
+                            <option selected>${preReqCourse.name} Course ID: ${preReqCourse.courseID?replace(",","")} </option>
+                        <#elseif course.prerequisiteCourseId==0>
+                               <option selected>None</option>
+                        <#else>
+                            <option>${preReqCourse.name} Course ID: ${preReqCourse.courseID?replace(",","")} </option>
+                        </#if>
+                     </#list>
+                </select>
     	</div>
 
 
@@ -66,19 +74,18 @@
      <div class="form-group">
 			<label>Assign Professor :</label>
 			<select class="form-control" name="professor" id="professor" >
-				<option>Select Professor</option>
 				<#list professors as professor>
 				    <#if course.assignedProfessorId==professor.professorID>
-                        <option selected >ID:${professor.professorID} ${professor.firstName} ${professor.lastName}  ${professor.email}</option>
+                        <option selected>${professor.firstName} ${professor.lastName} Professor ID: ${professor.professorID}</option>
                     <#else>
-                        <option>ID:${professor.professorID} ${professor.firstName} ${professor.lastName}  ${professor.email} </option>
+                        <option>${professor.firstName} ${professor.lastName} Professor ID: ${professor.professorID}</option>
                     </#if>
                 </#list>
 
 			</select>
 	</div>
 
-		<button class="btn btn-success" type = "submit" name ="reg_user"> Submit </button>
+		<button class="btn btn-success" type = "submit" name ="reg_user"> Update </button>
 
 </form>
 </div>

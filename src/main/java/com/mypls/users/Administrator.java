@@ -14,12 +14,30 @@ public class Administrator {
 
 
     public void createNewCourse(String professorId, String name, String objectives, String outcomes, String prerequisite, String requirement) {
-        if (prerequisite == null) {
+        String[] temp;
+
+        if (prerequisite.equals("None")) {
             prerequisite = "0";
         }
-        if (objectives == null) {
-            prerequisite = "";
+        else if (! prerequisite.equals("None"))
+        {
+            temp=prerequisite.split("Course ID:");
+            prerequisite=temp[1];
         }
+
+        if (professorId.equals("None")) {
+            professorId = "0";
+        }
+        else if (! professorId.equals("None"))
+        {
+            temp=professorId.split("Professor ID:");
+            professorId=temp[1];
+        }
+
+        if (objectives == null) {
+            objectives = "";
+        }
+
         if (outcomes == null) {
             outcomes = "";
         }
@@ -32,10 +50,55 @@ public class Administrator {
 
     }
 
+    public void updateCourse(String courseId,String professorId, String name, String objectives, String outcomes, String prerequisite, String requirement) {
+        String[] temp;
+
+        if (prerequisite.equals("None")) {
+            prerequisite = "0";
+        }
+        else if (! prerequisite.equals("None"))
+        {
+            temp=prerequisite.split("Course ID:");
+            prerequisite=temp[1];
+        }
+
+        if (professorId.equals("None")) {
+            professorId = "0";
+        }
+        else if (! professorId.equals("None"))
+        {
+            temp=professorId.split("Professor ID:");
+            professorId=temp[1];
+        }
+
+        if (objectives == null) {
+            objectives = "";
+        }
+
+        if (outcomes == null) {
+            outcomes = "";
+        }
+        if (requirement == null) {
+            requirement = "";
+        }
+
+        DatabaseController.updateDatabase("UPDATE courses SET Name = \""+name+"\",AssignedProfessorID=\""+professorId+"\", PrerequisiteCourseID = \""+prerequisite+"\", Requirements = \""+requirement+"\",Objectives=\""+objectives+"\",Outcomes=\""+outcomes+"\" WHERE (CourseID = \""+courseId+"\")");
+
+
+    }
+
     public ArrayList<Course> allCourses() {
         ArrayList<Course> courses = DatabaseController.getAllCourses();
         return courses;
     }
+
+    public ArrayList<Learner> allLearners() {
+        ArrayList<Learner> learners = DatabaseController.getAllLearners();
+        return learners;
+    }
+
+
+
 
     public void deleteCourse(int id)
     {

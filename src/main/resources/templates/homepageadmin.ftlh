@@ -59,14 +59,17 @@
             <table style="width:50%"  class="table table-hover" >
                <tr>
                   <th>Course Name</th>
-                  <th colspan="2">Options</th>
+                  <th>Rating</th>
+                  <th>Options</th>
+
                </tr>
                <#list courses as course>
                <tr>
                   <td>${course.name}</td>
+                  <td>${course.rating}</td>
                   <td>
                      <a href='homepageadmin/updateCourse/${course.courseID?replace(",", "")}'>Update Course</a>
-                     <form action="/homepageadmin/" method="post">
+                     <form action="/homepageadmin/deleteCourse" method="post">
                      	<input type="hidden" name="courseid" value="${course.courseID?replace(",", "")}">
                      	<input type="submit" value="Delete Course">
                      </form>
@@ -85,8 +88,39 @@
                   </div>
                </div>
                <div class="row">
-               <div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;"><button class="btn btn-primary">Feedbacks</
-               ></div>
+               <div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;"><button class="btn btn-primary">Feedbacks</>
+
+
+               </div>
+               <table style="width:50%"  class="table table-hover" >
+                                             <tr>
+                                                <th>Learner ID </th>
+                                                <th>Learner Name</th>
+                                                <th>Rating</th>
+                                             </tr>
+                                             <#list learners as learner>
+                                             <tr>
+                                                <td>${learner.learnerID} </td>
+                                                <td>${learner.firstName} ${learner.lastName}</td>
+                                                <td>${learner.rating} </td>
+                                             </tr>
+                                             </#list>
+                                          </table>
+
+                  <table style="width:50%"  class="table table-hover" >
+                                                               <tr>
+                                                                  <th>Professor ID </th>
+                                                                  <th>Professor Name</th>
+                                                                  <th>Rating</th>
+                                                               </tr>
+                                                               <#list professors as professor>
+                                                               <tr>
+                                                                  <td>${professor.professorID} </td>
+                                                                  <td>${professor.firstName} ${professor.lastName}</td>
+                                                                  <td>${professor.rating} </td>
+                                                               </tr>
+                                                               </#list>
+                                                            </table>
                </div>
             </div>
             <div class="col-md-6">

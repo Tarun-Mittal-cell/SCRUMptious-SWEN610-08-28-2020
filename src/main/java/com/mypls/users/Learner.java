@@ -4,7 +4,7 @@ public class Learner {
 
     private int  learnerID;
     private String firstName;
-    private String LastName;
+    private String lastName;
     private String email;
     private String type;
     private double rating;
@@ -17,7 +17,7 @@ public class Learner {
     public Learner(int  learnerID,String firstName, String lastName, String email,String type, double rating, int numOfRatings) {
         this.learnerID=learnerID;
         this.firstName = firstName;
-        this.LastName = lastName;
+        this.lastName = lastName;
         this.email = email;
         this.type=type;
         this.rating=0;
@@ -33,11 +33,11 @@ public class Learner {
     }
 
     public String getLastName() {
-        return LastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
-        LastName = lastName;
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -58,11 +58,35 @@ public class Learner {
         this.type = type;
     }
 
+    public int getLearnerID() {
+        return learnerID;
+    }
+
+    public void setLearnerID(int learnerID) {
+        this.learnerID = learnerID;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public int getNumOfRatings() {
+        return numOfRatings;
+    }
+
+    public void setNumOfRatings(int numOfRatings) {
+        this.numOfRatings = numOfRatings;
+    }
+
     @Override
     public String toString() {
         return "Learner{" +
                 "firstName='" + firstName + '\'' +
-                ", LastName='" + LastName + '\'' +
+                ", LastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", type='" + type + '\'' +
                 '}';

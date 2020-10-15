@@ -56,9 +56,12 @@
 
     <div class="form-group">
     			<label>Assign Pre-requisite :</label>
-    			<select class="form-control" name="prerequisite" id="type">
-
-    			</select>
+    			<select class="form-control" name="prerequisite" id="prerequisite">
+    			    <option>None</option>
+                    <#list courses as course>
+                        <option>${course.name} Course ID: ${course.courseID?replace(",","")} </option>
+                    </#list>
+                    </select>
     	</div>
 
 
@@ -66,9 +69,8 @@
      <div class="form-group">
 			<label>Assign Professor :</label>
 			<select class="form-control" name="professor" id="professor">
-				<option>Select Professor</option>
-				<#list allProfessors as professor>
-                    <option>${professor} </option>
+				<#list professors as professor>
+                    <option>${professor.firstName} ${professor.lastName} Professor ID: ${professor.professorID}</option>
                 </#list>
 
 			</select>

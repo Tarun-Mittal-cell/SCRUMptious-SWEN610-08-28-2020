@@ -26,8 +26,8 @@ public class Application {
 
     public static void main(String[] args) {
        staticFileLocation("/public");
-        TemplateGenerator generator = new TemplateGenerator();
-       generator.setUpConfig();
+       TemplateGenerator template = new TemplateGenerator();
+       template.setUpConfig();
 
 
 
@@ -38,27 +38,27 @@ public class Application {
            {
                res.redirect("/homepage");
            }
-           generator.setModel("isEmailUnique", true);
-           generator.setModel("loginStatus","None");
+           template.setModel("isEmailUnique", true);
+           template.setModel("loginStatus","None");
 
-           return generator.render(LOGIN);
+           return template.render(LOGIN);
         });
 
 
-        get("/registration", (req, res) ->  generator.render(REGISTRATION));
+        get("/registration", (req, res) ->  template.render(REGISTRATION));
 
         get("/signout", (req, res) -> {
             req.session().removeAttribute("currentUser");
-            generator.removeModel("userData");
+            template.removeModel("userData");
             res.redirect("/");
-            return generator.render(LOGIN);
+            return template.render(LOGIN);
         });
 
 
         get("/homepage", (req, res) -> {
             if (req.session().attribute("currentUser") != null)
             {
-                return generator.render(HOME);
+                return template.render(HOME);
             }
             else
             {
@@ -70,8 +70,8 @@ public class Application {
         get("/homepageprof", (req, res) -> {
             if (req.session().attribute("currentUser") != null) {
                 System.out.println("fsdfsdfsd:"+professor);
-                System.out.println("Map:"+generator.getModel());
-                return generator.render(HOMEPROF);
+                System.out.println("Map:"+template.getModel());
+                return template.render(HOMEPROF);
             } else {
                 res.redirect("/");
                 return "You are not logged in!";
@@ -81,11 +81,12 @@ public class Application {
 
         get("/homepageadmin", (req, res) -> {
             if (req.session().attribute("currentUser") != null) {
-                Administrator admin= (Administrator) generator.getModel().get("userData");
-                generator.setModel("courseCount",admin.allCourses().size());
-                generator.setModel("courses",admin.allCourses());
-                System.out.println("checkeee");
-                return generator.render(HOMEADMIN);
+                Administrator admin= (Administrator) template.getModel().get("userData");
+                template.setModel("courseCount",admin.allCourses().size());
+                template.setModel("courses",admin.allCourses());
+                template.setModel("professors",admin.allProfessors());
+                template.setModel("learners",admin.allLearners());
+                 return template.render(HOMEADMIN);
             } else {
                 res.redirect("/");
                 return "You are not logged in!";
@@ -95,17 +96,16 @@ public class Application {
 
         get("/homepageadmin/createCourse", (req, res) -> {
 
-            Administrator admin= (Administrator) generator.getModel().get("userData");
-            generator.setModel("allProfessors",admin.allProfessors());
-            return generator.render(CREATECOURSE);
+            Administrator admin= (Administrator) template.getModel().get("userData");
+            template.setModel("professors",admin.allProfessors());
+            return template.render(CREATECOURSE);
         });
 
         get("/homepageadmin/updateCourse/:courseid", (request, response) -> {
-            Administrator admin= (Administrator) generator.getModel().get("userData");
-            generator.setModel("professors",admin.allProfessors());
-            generator.setModel("course",Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
+            Administrator admin= (Administrator) template.getModel().get("userData");
+            template.setModel("course",Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
             System.out.println(Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
-            return generator.render(UPDATECOURSE) ;
+            return template.render(UPDATECOURSE) ;
         });
 
         post("/registration", (req, res) -> {
@@ -117,23 +117,24 @@ public class Application {
                 if(!req.queryParams("type").equals("Professor")) {
                     info=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+req.queryParams("email")+"'");
                     Learner learner = new Learner(Integer.parseInt(info.get("id")),req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"), req.queryParams("type"), Double.parseDouble(info.get("rating")),Integer.parseInt(info.get("numberOfRatings")));
-                    generator.setModel("userData", learner);
+                    template.setModel("userData", learner);
                     req.session(true);
                     req.session().attribute("currentUser", req.queryParams("email"));
-                    return generator.render(HOME);
+                    return template.render(HOME);
                 }
                 else
                 {
-                    info=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+req.queryParams("email")+"'");
+                    info=DatabaseController.queryProfessors("SELECT * FROM professors WHERE Email='"+req.queryParams("email")+"'");
+                    System.out.println(info);
                     professor = new Professor(Integer.parseInt(info.get("id")),req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"),Double.parseDouble(info.get("rating")),Integer.parseInt(info.get("numberOfRatings")));
-                    generator.setModel("userData", professor);
-                    return generator.render(HOMEPROF);
+                    template.setModel("userData", professor);
+                    return template.render(HOMEPROF);
                 }
             }
             else
             {
-                generator.setModel("isEmailUnique", false);
-                return generator.render(REGISTRATION);
+                template.setModel("isEmailUnique", false);
+                return template.render(REGISTRATION);
             }
         });
 
@@ -145,31 +146,31 @@ public class Application {
             {
                 req.session(true);
                 req.session().attribute("currentUser", req.queryParams("email"));
-                generator.setModel("isEmailUnique", true);
-                generator.setModel("loginStatus",userData.get("loginStatus"));
+                template.setModel("isEmailUnique", true);
+                template.setModel("loginStatus",userData.get("loginStatus"));
                 if(userData.get("type").equals("Professor"))
                 {
                     Professor professor = new Professor(Integer.parseInt(userData.get("id")),userData.get("firstName"), userData.get("lastName"), userData.get("email"), Double.parseDouble(userData.get("rating")),Integer.parseInt(userData.get("numberOfRatings")));
-                    generator.setModel("userData",professor);
+                    template.setModel("userData",professor);
                     res.redirect("/homepageprof");
                 }
                 else if (userData.get("type").equals("Administrator"))
                 {
                     Administrator admin =new Administrator();
-                    generator.setModel("userData",admin);
+                    template.setModel("userData",admin);
                    res.redirect("/homepageadmin");
                 }
                 else
                 {
                     Learner learner = new Learner(Integer.parseInt(userData.get("id")),userData.get("firstName"), userData.get("lastName"), userData.get("email"), userData.get("type"), Double.parseDouble(userData.get("rating")),Integer.parseInt(userData.get("numberOfRatings")));
-                    generator.setModel("userData",learner);
+                    template.setModel("userData",learner);
                     res.redirect("/homepage");
                 }
             }
             else
             {
-                generator.setModel("loginStatus",userData.get("loginStatus"));
-                return generator.render(LOGIN);
+                template.setModel("loginStatus",userData.get("loginStatus"));
+                return template.render(LOGIN);
             }
             return null;
         });
@@ -177,20 +178,29 @@ public class Application {
         post("/homepageadmin/createCourse", (req, res) -> {
 
             System.out.println(req.queryParams("courseName") + " " + req.queryParams("requirement") + " " + req.queryParams("objectives") + " " + req.queryParams("outcomes") + " " + req.queryParams("prerequisite") + " " + req.queryParams("professor"));
-            Administrator admin= (Administrator) generator.getModel().get("userData");
-            String[] temp=((String) req.queryParams("professor")).split(" ");
-            String profId=temp[2];
-            admin.createNewCourse(profId,req.queryParams("courseName"),req.queryParams("objectives"),req.queryParams("outcomes"),req.queryParams("prerequisite"),req.queryParams("requirement"));
+            Administrator admin= (Administrator) template.getModel().get("userData");
+            admin.createNewCourse(req.queryParams("professor"),req.queryParams("courseName"),req.queryParams("objectives"),req.queryParams("outcomes"),req.queryParams("prerequisite"),req.queryParams("requirement"));
             res.redirect("/homepageadmin");
             return null;
 
         });
 
-        post("/homepageadmin/", (req, res) -> {
+        post("/homepageadmin/deleteCourse", (req, res) -> {
 
             System.out.println(req.queryParams("courseid"));
-            Administrator admin= (Administrator) generator.getModel().get("userData");
+            Administrator admin= (Administrator) template.getModel().get("userData");
             admin.deleteCourse(Integer.parseInt(req.queryParams("courseid")));
+            res.redirect("/homepageadmin");
+            return null;
+
+        });
+
+        post("/homepageadmin/updateCourse", (req, res) -> {
+
+            System.out.println(req.queryParams("courseName") + " " + req.queryParams("requirement") + " " + req.queryParams("objectives") + " " + req.queryParams("outcomes") + " " + req.queryParams("prerequisite") + " " + req.queryParams("professor"));
+            Administrator admin= (Administrator) template.getModel().get("userData");
+            Course course=(Course) template.getModel().get("course");
+            admin.updateCourse((String.valueOf(course.getCourseID())),req.queryParams("professor"),req.queryParams("courseName"),req.queryParams("objectives"),req.queryParams("outcomes"),req.queryParams("prerequisite"),req.queryParams("requirement"));
             res.redirect("/homepageadmin");
             return null;
 
