@@ -4,10 +4,10 @@ public class Test {
 
     public static void main(String[] args) {
 
-       String test="Kim Wexler Professor ID: 13";
+       String test="Business Foundations Specialization Part 1 Course ID: 1001";
 
-        String[] temp=test.split("Professor ID:");
+        String[] temp=test.split("Course ID:");
         test=temp[1];
-        System.out.println(" "+test);
+        System.out.println("INSERT INTO DiscussionGroups (Topic,RelatedCourseID,Type) VALUES ('" + "topic" + "', '" + "courseID" + "', '" + "type" +"'");
     }
 }

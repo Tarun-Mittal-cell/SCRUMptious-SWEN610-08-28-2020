@@ -18,7 +18,11 @@ public class Application {
     static final String LOGIN = "login.ftlh";
     static final String CREATECOURSE = "createCourse.ftlh";
     static final String UPDATECOURSE = "updateCourse.ftlh";
+    static final String DISCUSSIONGROUP = "publicDiscussionBoard.ftlh";
+    static final String CREATEDISCUSSIONGROUP = "createDiscussionGroup.ftlh";
+
     static final String AUTHENTICATED = "AUTHENTICATED";
+
     public static Professor professor;
 
 
@@ -107,6 +111,19 @@ public class Application {
             System.out.println(Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
             return template.render(UPDATECOURSE) ;
         });
+
+
+        get("/publicDiscussionBoard", (request, response) -> {
+
+            return template.render(DISCUSSIONGROUP) ;
+        });
+
+        get("/homepageadmin/createDiscussionGroup", (request, response) -> {
+
+            return template.render(CREATEDISCUSSIONGROUP) ;
+        });
+
+
 
         post("/registration", (req, res) -> {
             System.out.println(req.queryParams("fname") + " " + req.queryParams("lname") + " " + req.queryParams("type") + " " + req.queryParams("email") + " " + req.queryParams("password_1") + " " + req.queryParams("password_2"));
@@ -201,6 +218,38 @@ public class Application {
             Administrator admin= (Administrator) template.getModel().get("userData");
             Course course=(Course) template.getModel().get("course");
             admin.updateCourse((String.valueOf(course.getCourseID())),req.queryParams("professor"),req.queryParams("courseName"),req.queryParams("objectives"),req.queryParams("outcomes"),req.queryParams("prerequisite"),req.queryParams("requirement"));
+            res.redirect("/homepageadmin");
+            return null;
+
+        });
+
+        post("/publicDiscussionBoard", (req, res) -> {
+
+            System.out.println(req.queryParams("textFromUser") );
+
+            String user = "<b> Kemar </b>";
+            String message = user + " : " + req.queryParams("textFromUser") ;
+
+            if(template.getModel().get("textFromUser")==null)
+            {
+                System.out.println("1" );
+                template.setModel("textFromUser", message);
+            }
+            else
+            {
+                System.out.println("2" );
+                template.setModel("textFromUser", template.getModel().get("textFromUser")+" <hr> "+message);
+            }
+
+            return template.render(DISCUSSIONGROUP) ;
+
+        });
+
+        post("/homepageadmin/createDiscussionGroup", (req, res) -> {
+
+            System.out.println(req.queryParams("topic") + " " + req.queryParams("type") + " " + req.queryParams("relatedCourse") );
+            Administrator admin= (Administrator) template.getModel().get("userData");
+            admin.createDiscussionGroup(req.queryParams("topic"),req.queryParams("relatedCourse"),req.queryParams("type"));
             res.redirect("/homepageadmin");
             return null;
 

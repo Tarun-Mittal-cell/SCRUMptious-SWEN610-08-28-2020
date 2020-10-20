@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Discussion Group </title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	</head>
+	<style>
+		hr 
+		{ 
+			margin: 0.3em auto; 
+		}
+	</style>
+	<script>
+		var chat = "";
+
+		function printInputText() 
+		{
+			var inputText = document.getElementById('textFromUser').value;
+			var user = "Tarun";
+			var message = user + " : " + inputText + "<hr>";
+			chat = chat.concat(message);
+			document.getElementById("chatBoxValue").innerHTML = chat;
+		}
+	</script>
+	<body>
+		<?php include 'nav.php'; ?>
+
+		<div class="container">	
+			<div class="well">
+				<h2 class="text-center">Private Discussion Group</h2> 
+			</div>
+
+			<div class="row overflow-auto">
+				<div class="col-md-12 text-right" style="border: 1px solid; padding: 20px; height:160px; margin: 5px 0px; overflow: scroll;   display: flex;
+				flex-direction: column-reverse;">
+					<h5 id="chatBoxValue" style="margin:0px; padding: 0px;"></h5>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12" style="border: 1px solid; padding: 20px; margin: 5px 0px;">
+					<input type="text" class="form-control" id="textFromUser">
+					<button class="btn btn-primary pull-right" style="margin:2px" onclick="printInputText(); document.getElementById('textFromUser').value = ''">Send</button>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

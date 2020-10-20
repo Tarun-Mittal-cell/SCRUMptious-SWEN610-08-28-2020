@@ -106,7 +106,13 @@ public class Administrator {
     }
 
 
+    public void createDiscussionGroup(String topic, String course,String type)
+    {
+        String[] temp=course.split(":");
+        String courseID=temp[1];
 
+        DatabaseController.updateDatabase("INSERT INTO DiscussionGroups (Topic,RelatedCourseID,Type) VALUES ('" + topic + "', '" + courseID + "', '" + type +"')" );
+    }
 
 
 

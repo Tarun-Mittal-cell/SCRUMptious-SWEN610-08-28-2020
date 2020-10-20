@@ -27,6 +27,13 @@
          background: #ddd;
          color: black;
          }
+
+         #courseDiv {
+         overflow: scroll;
+         }
+         #feedbackDiv{
+         overflow: scroll;
+         }
       </style>
    </head>
    <body>
@@ -48,36 +55,36 @@
          <h2 class="text-center"> Welcome Admin  ! </h2>
       </div>
       <div class="row">
-         <div class="col-md-12" style="border: 1px solid; padding: 20px; margin: 5px 0px;">
-            <a href="/homepageadmin/createCourse">Create Course</a>
+         <div class="col-md-12" style="border: 5px solid; padding: 20px; margin: 5px 0px;" id="courseDiv">
+            <a href="/homepageadmin/createCourse">Create Course</a> <br>
+            <a href="/homepageadmin/createDiscussionGroup">Create Discussion Group</a>
             <div><input class="pull-right" type="form-control" placeholder="Search" name=""></div>
-            <div class="text-center"><button class="btn btn-primary"> Courses </button>
-            </div>
-         </div>
-         <#if (courseCount>0)>
-         <div>
-            <table style="width:50%"  class="table table-hover" >
-               <tr>
-                  <th>Course Name</th>
-                  <th>Rating</th>
-                  <th>Options</th>
+            <#if (courseCount>0)>
+                     <div>
+                        <table style="width:50%"  class="table table-hover" >
+                           <tr>
+                              <th>Course Name</th>
+                              <th>Rating</th>
+                              <th>Options</th>
 
-               </tr>
-               <#list courses as course>
-               <tr>
-                  <td>${course.name}</td>
-                  <td>${course.rating}</td>
-                  <td>
-                     <a href='homepageadmin/updateCourse/${course.courseID?replace(",", "")}'>Update Course</a>
-                     <form action="/homepageadmin/deleteCourse" method="post">
-                     	<input type="hidden" name="courseid" value="${course.courseID?replace(",", "")}">
-                     	<input type="submit" value="Delete Course">
-                     </form>
-                  </td>
-               </tr>
-               </#list>
-            </table>
-            </#if>
+                           </tr>
+                           <#list courses as course>
+                           <tr>
+                              <td>${course.name}</td>
+                              <td>${course.rating}</td>
+                              <td>
+                                 <a href='homepageadmin/updateCourse/${course.courseID?replace(",", "")}'>Update Course</a>
+                                 <form action="/homepageadmin/deleteCourse" method="post">
+                                 	<input type="hidden" name="courseid" value="${course.courseID?replace(",", "")}">
+                                 	<input type="submit" value="Delete Course">
+                                 </form>
+                              </td>
+                           </tr>
+                           </#list>
+                        </table>
+                        </#if>
+         </div>
+
          </div>
          <div class="row">
             <div class="col-md-6">
@@ -88,39 +95,43 @@
                   </div>
                </div>
                <div class="row">
-               <div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;"><button class="btn btn-primary">Feedbacks</>
+
+               <div style="border: 1px solid; padding: 100px; height: 80px; margin: 5px 0px;" id="feedbackDiv">
+
+
+                               <table style="width:50%"  class="table table-hover" style="float: left">
+                                                                           <tr>
+                                                                              <th>Learner ID </th>
+                                                                              <th>Learner Name</th>
+                                                                              <th>Rating</th>
+                                                                           </tr>
+                                                                           <#list learners as learner>
+                                                                           <tr>
+                                                                              <td>${learner.learnerID} </td>
+                                                                              <td>${learner.firstName} ${learner.lastName}</td>
+                                                                              <td>${learner.rating} </td>
+                                                                           </tr>
+                                                                           </#list>
+                                                                        </table>
+
+                                                <table style="width:50%"  class="table table-hover" style="float: left;" >
+                                                                                             <tr>
+                                                                                                <th>Professor ID </th>
+                                                                                                <th>Professor Name</th>
+                                                                                                <th>Rating</th>
+                                                                                             </tr>
+                                                                                             <#list professors as professor>
+                                                                                             <tr>
+                                                                                                <td>${professor.professorID} </td>
+                                                                                                <td>${professor.firstName} ${professor.lastName}</td>
+                                                                                                <td>${professor.rating} </td>
+                                                                                             </tr>
+                                                                                             </#list>
+                                                                                          </table>
 
 
                </div>
-               <table style="width:50%"  class="table table-hover" >
-                                             <tr>
-                                                <th>Learner ID </th>
-                                                <th>Learner Name</th>
-                                                <th>Rating</th>
-                                             </tr>
-                                             <#list learners as learner>
-                                             <tr>
-                                                <td>${learner.learnerID} </td>
-                                                <td>${learner.firstName} ${learner.lastName}</td>
-                                                <td>${learner.rating} </td>
-                                             </tr>
-                                             </#list>
-                                          </table>
 
-                  <table style="width:50%"  class="table table-hover" >
-                                                               <tr>
-                                                                  <th>Professor ID </th>
-                                                                  <th>Professor Name</th>
-                                                                  <th>Rating</th>
-                                                               </tr>
-                                                               <#list professors as professor>
-                                                               <tr>
-                                                                  <td>${professor.professorID} </td>
-                                                                  <td>${professor.firstName} ${professor.lastName}</td>
-                                                                  <td>${professor.rating} </td>
-                                                               </tr>
-                                                               </#list>
-                                                            </table>
                </div>
             </div>
             <div class="col-md-6">
