@@ -6,13 +6,18 @@
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
       <style>
-         body {margin:0;}
+         body {margin:0;
+         padding-top:100px;
+          background-image: url("/Images/cool.jpeg");
+
+         }
          .navbar {
          overflow: hidden;
          background-color: #333;
-         position: fixed;
+         position: fixed !important;
          top: 0;
          width: 100%;
+         z-index: 500 ;
          }
          .navbar a {
          float: left;
@@ -27,25 +32,26 @@
          background: #ddd;
          color: black;
          }
+         #delete {
+           background: none!important;
+           border: none;
+           padding: 0!important;
+           /*optional*/
+           font-family: arial, sans-serif;
+           /*input has OS specific font-family*/
+           color: #069;
+           cursor: pointer;
+         }
 
-         #courseDiv {
-         overflow: scroll;
-         }
-         #feedbackDiv{
-         overflow: scroll;
-         }
       </style>
    </head>
    <body>
-      <nav class="navbar navbar-inverse">
+      <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
          <div class="container-fluid">
             <div class="navbar-header">
                <a class="navbar-brand" href="#">MyPLS</a>
             </div>
             <ul class="nav navbar-nav">
-               <li class="active"><a href="#">Home</a></li>
-               <li><a href="#">Page 1</a></li>
-               <li><a href="#">Page 2</a></li>
                <li><a href="signout">Sign Out</a></li>
             </ul>
          </div>
@@ -56,86 +62,85 @@
       </div>
       <div class="row">
          <div class="col-md-12" style="border: 5px solid; padding: 20px; margin: 5px 0px;" id="courseDiv">
-            <a href="/homepageadmin/createCourse">Create Course</a> <br>
-            <a href="/homepageadmin/createDiscussionGroup">Create Discussion Group</a>
-            <div><input class="pull-right" type="form-control" placeholder="Search" name=""></div>
+
+            <a class="btn btn-primary"  href="/homepageadmin/createCourse" role="button" >Create Course</a>
+            <a class="btn btn-primary" href="/homepageadmin/createDiscussionGroup" role="button">Create Discussion Group</a>
+            <a class="btn btn-primary" href="/DiscussionBoard" role="button">View Discussion Group</a>
             <#if (courseCount>0)>
-                     <div>
-                        <table style="width:50%"  class="table table-hover" >
-                           <tr>
-                              <th>Course Name</th>
-                              <th>Rating</th>
-                              <th>Options</th>
-
-                           </tr>
-                           <#list courses as course>
-                           <tr>
-                              <td>${course.name}</td>
-                              <td>${course.rating}</td>
-                              <td>
-                                 <a href='homepageadmin/updateCourse/${course.courseID?replace(",", "")}'>Update Course</a>
-                                 <form action="/homepageadmin/deleteCourse" method="post">
-                                 	<input type="hidden" name="courseid" value="${course.courseID?replace(",", "")}">
-                                 	<input type="submit" value="Delete Course">
-                                 </form>
-                              </td>
-                           </tr>
-                           </#list>
-                        </table>
-                        </#if>
-         </div>
-
+            <div>
+                <center><h2>Courses</h2></center>
+                <br>
+               <table style="width:100%"  class="table table-hover table-striped table-bordered" >
+                  <tr>
+                     <th>Course Name</th>
+                     <th>Enrollment</th>
+                     <th>Rating</th>
+                     <th>Options</th>
+                  </tr>
+                  <#list courses as course>
+                  <tr>
+                     <td style="width:50%">${course.name}</td>
+                     <td style="width:10%">${course.enrollment}</td>
+                     <td style="width:10%">${course.rating}</td>
+                     <td style="width:30%" >
+                        <a href='homepageadmin/updateCourse/${course.courseID?replace(",", "")}'>Update Course</a>
+                        <form action="/homepageadmin/deleteCourse" method="post">
+                           <input type="hidden" name="courseid" value="${course.courseID?replace(",", "")}">
+                           <button id="delete" type="submit">Delete Course</button>
+                        </form>
+                     </td>
+                  </tr>
+                  </#list>
+               </table>
+               </#if>
+            </div>
          </div>
          <div class="row">
             <div class="col-md-6">
                <div class="row">
-                  <div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;">
-                     <button class="btn btn-primary">
-                        User Administration</>
+                  <div style="border: 1px solid;  margin: 5px 0px; padding: 20px;" id="feedbackDiv">
+                  <center><h2>Learners</h2></center>
+                  <br>
+                  <div>
+                     <table style="width:100%"  class="table table-hover table-striped table-bordered"  margin-right:10px">
+                        <tr>
+                           <th>Learner ID </th>
+                           <th>Learner Name</th>
+                           <th>Rating</th>
+                        </tr>
+                        <#list learners as learner>
+                        <tr>
+                           <td>${learner.learnerID} </td>
+                           <td>${learner.firstName} ${learner.lastName}</td>
+                           <td>${learner.rating} </td>
+                        </tr>
+                        </#list>
+                     </table>
+                     </div>
                   </div>
-               </div>
-               <div class="row">
-
-               <div style="border: 1px solid; padding: 100px; height: 80px; margin: 5px 0px;" id="feedbackDiv">
-
-
-                               <table style="width:50%"  class="table table-hover" style="float: left">
-                                                                           <tr>
-                                                                              <th>Learner ID </th>
-                                                                              <th>Learner Name</th>
-                                                                              <th>Rating</th>
-                                                                           </tr>
-                                                                           <#list learners as learner>
-                                                                           <tr>
-                                                                              <td>${learner.learnerID} </td>
-                                                                              <td>${learner.firstName} ${learner.lastName}</td>
-                                                                              <td>${learner.rating} </td>
-                                                                           </tr>
-                                                                           </#list>
-                                                                        </table>
-
-                                                <table style="width:50%"  class="table table-hover" style="float: left;" >
-                                                                                             <tr>
-                                                                                                <th>Professor ID </th>
-                                                                                                <th>Professor Name</th>
-                                                                                                <th>Rating</th>
-                                                                                             </tr>
-                                                                                             <#list professors as professor>
-                                                                                             <tr>
-                                                                                                <td>${professor.professorID} </td>
-                                                                                                <td>${professor.firstName} ${professor.lastName}</td>
-                                                                                                <td>${professor.rating} </td>
-                                                                                             </tr>
-                                                                                             </#list>
-                                                                                          </table>
-
-
-               </div>
-
                </div>
             </div>
             <div class="col-md-6">
-            <div style="border: 1px solid; padding: 20px; height: 160px; margin: 5px 0px;"><button class="btn btn-primary">Ratings</button></div>
+               <div style="border: 1px solid;  margin: 5px 0px; padding: 20px;">
+               <center><h2>Professors</h2></center>
+               <br>
+               <div>
+                  <table style="width:100%"  class="table table-hover table-striped table-bordered"  style="float: left" >
+                     <tr>
+                        <th>Professor ID </th>
+                        <th>Professor Name</th>
+                        <th>Rating</th>
+                     </tr>
+                     <#list professors as professor>
+                     <tr>
+                        <td>${professor.professorID} </td>
+                        <td>${professor.firstName} ${professor.lastName}</td>
+                        <td>${professor.rating} </td>
+                     </tr>
+                     </#list>
+                  </table>
+                  </div>
+               </div>
             </div>
          </div>
       </div>

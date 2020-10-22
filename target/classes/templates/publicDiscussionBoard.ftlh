@@ -13,11 +13,21 @@
 		}
 	</style>
 	<body>
-		<?php include 'nav.php'; ?>
+		<nav class="navbar navbar-inverse">
+              <div class="container-fluid">
+                <div class="navbar-header">
+                  <a class="navbar-brand" href="#">MyPLS</a>
+                </div>
+                <ul class="nav navbar-nav">
+                   <li  class="active"><a href="/homepageadmin">Home</a></li>
+                   <li><a href="/signout">Sign Out</a></li>
+                </ul>
+              </div>
+            </nav>
 
 		<div class="container">	
 			<div class="well">
-				<h2 class="text-center">Public Discussion Group</h2> 
+				<h2 class="text-center">Discussion Group</h2>
 			</div>
 
 			<div class="row overflow-auto">
@@ -32,7 +42,7 @@
 			</div>
 			<div class="row">
 				<div class="col-md-12" style="border: 1px solid; padding: 20px; margin: 5px 0px;">
-				    <form action="/publicDiscussionBoard" method="Post">
+				    <form action="/DiscussionBoard" method="Post">
 					<input type="text" class="form-control" id="textFromUser" name="textFromUser">
 					<button class="btn btn-primary pull-right" style="margin:2px" value="Submit" >Send</button>
 					 </form>

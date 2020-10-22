@@ -113,7 +113,7 @@ public class Application {
         });
 
 
-        get("/publicDiscussionBoard", (request, response) -> {
+        get("/DiscussionBoard", (request, response) -> {
 
             return template.render(DISCUSSIONGROUP) ;
         });
@@ -223,11 +223,11 @@ public class Application {
 
         });
 
-        post("/publicDiscussionBoard", (req, res) -> {
+        post("/DiscussionBoard", (req, res) -> {
 
             System.out.println(req.queryParams("textFromUser") );
 
-            String user = "<b> Kemar </b>";
+            String user = "<b> Username </b>";
             String message = user + " : " + req.queryParams("textFromUser") ;
 
             if(template.getModel().get("textFromUser")==null)
@@ -240,6 +240,7 @@ public class Application {
                 System.out.println("2" );
                 template.setModel("textFromUser", template.getModel().get("textFromUser")+" <hr> "+message);
             }
+
 
             return template.render(DISCUSSIONGROUP) ;
 
