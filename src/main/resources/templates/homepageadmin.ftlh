@@ -8,8 +8,6 @@
       <style>
          body {margin:0;
          padding-top:100px;
-          background-image: url("/Images/cool.jpeg");
-
          }
          .navbar {
          overflow: hidden;
@@ -58,7 +56,7 @@
       </nav>
       <div class="container">
       <div class="well">
-         <h2 class="text-center"> Welcome Admin  ! </h2>
+         <h2 class="text-center"> Administrator </h2>
       </div>
       <div class="row">
          <div class="col-md-12" style="border: 5px solid; padding: 20px; margin: 5px 0px;" id="courseDiv">
@@ -71,12 +69,14 @@
                 <center><h2>Courses</h2></center>
                 <br>
                <table style="width:100%"  class="table table-hover table-striped table-bordered" >
+                  <thead class="thead-dark">
                   <tr>
-                     <th>Course Name</th>
-                     <th>Enrollment</th>
-                     <th>Rating</th>
-                     <th>Options</th>
+                     <th scope="col">Course Name</th>
+                     <th scope="col">Enrollment</th>
+                     <th scope="col">Rating</th>
+                     <th scope="col">Options</th>
                   </tr>
+                  </thead>
                   <#list courses as course>
                   <tr>
                      <td style="width:50%">${course.name}</td>
@@ -98,16 +98,18 @@
          <div class="row">
             <div class="col-md-6">
                <div class="row">
-                  <div style="border: 1px solid;  margin: 5px 0px; padding: 20px;" id="feedbackDiv">
+                  <div style="border: 5px solid;  margin: 5px 0px; padding: 20px;" id="feedbackDiv">
                   <center><h2>Learners</h2></center>
                   <br>
                   <div>
                      <table style="width:100%"  class="table table-hover table-striped table-bordered"  margin-right:10px">
+                        <thead class="thead-dark">
                         <tr>
                            <th>Learner ID </th>
                            <th>Learner Name</th>
                            <th>Rating</th>
                         </tr>
+                        </thead>
                         <#list learners as learner>
                         <tr>
                            <td>${learner.learnerID} </td>
@@ -121,7 +123,7 @@
                </div>
             </div>
             <div class="col-md-6">
-               <div style="border: 1px solid;  margin: 5px 0px; padding: 20px;">
+               <div style="border: 5px solid;  margin: 5px 0px; padding: 20px;">
                <center><h2>Professors</h2></center>
                <br>
                <div>

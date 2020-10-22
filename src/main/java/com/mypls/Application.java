@@ -40,7 +40,17 @@ public class Application {
            get("/", (req, res) -> {
            if( req.session().attribute("currentUser")!= null)
            {
-               res.redirect("/homepage");
+               if(req.session().attribute("Type").equals("Learner")) {
+                   res.redirect("/homepage");
+               }
+               else if(req.session().attribute("Type").equals("Professor"))
+               {
+                   res.redirect("/homepageprof");
+               }
+               else
+               {
+                   res.redirect("/homepageadmin");
+               }
            }
            template.setModel("isEmailUnique", true);
            template.setModel("loginStatus","None");
@@ -131,12 +141,13 @@ public class Application {
             HashMap<String, String> info;
             if (isEmailUnique)
             {
+                req.session(true);
+                req.session().attribute("currentUser", req.queryParams("email"));
                 if(!req.queryParams("type").equals("Professor")) {
                     info=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+req.queryParams("email")+"'");
                     Learner learner = new Learner(Integer.parseInt(info.get("id")),req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"), req.queryParams("type"), Double.parseDouble(info.get("rating")),Integer.parseInt(info.get("numberOfRatings")));
                     template.setModel("userData", learner);
-                    req.session(true);
-                    req.session().attribute("currentUser", req.queryParams("email"));
+                    req.session().attribute("Type", "Learner");
                     return template.render(HOME);
                 }
                 else
@@ -145,6 +156,7 @@ public class Application {
                     System.out.println(info);
                     professor = new Professor(Integer.parseInt(info.get("id")),req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"),Double.parseDouble(info.get("rating")),Integer.parseInt(info.get("numberOfRatings")));
                     template.setModel("userData", professor);
+                    req.session().attribute("Type", "Professor");
                     return template.render(HOMEPROF);
                 }
             }
@@ -169,18 +181,21 @@ public class Application {
                 {
                     Professor professor = new Professor(Integer.parseInt(userData.get("id")),userData.get("firstName"), userData.get("lastName"), userData.get("email"), Double.parseDouble(userData.get("rating")),Integer.parseInt(userData.get("numberOfRatings")));
                     template.setModel("userData",professor);
+                    req.session().attribute("Type", "Professor");
                     res.redirect("/homepageprof");
                 }
                 else if (userData.get("type").equals("Administrator"))
                 {
                     Administrator admin =new Administrator();
                     template.setModel("userData",admin);
+                    req.session().attribute("Type", "Admin");
                    res.redirect("/homepageadmin");
                 }
                 else
                 {
                     Learner learner = new Learner(Integer.parseInt(userData.get("id")),userData.get("firstName"), userData.get("lastName"), userData.get("email"), userData.get("type"), Double.parseDouble(userData.get("rating")),Integer.parseInt(userData.get("numberOfRatings")));
                     template.setModel("userData",learner);
+                    req.session().attribute("Type", "Learner");
                     res.redirect("/homepage");
                 }
             }

@@ -58,13 +58,15 @@
     			<label>Assign Pre-requisite :</label>
     			<select class="form-control" name="prerequisite" id="type">
     			    <#list courses as preReqCourse>
+    			    <#if course.courseID != preReqCourse.courseID>
     			        <#if course.prerequisiteCourseId==preReqCourse.courseID>
                             <option selected>${preReqCourse.name} Course ID: ${preReqCourse.courseID?replace(",","")} </option>
-                        <#elseif course.prerequisiteCourseId==0>
-                               <option selected>None</option>
-                        <#else>
-                            <option>${preReqCourse.name} Course ID: ${preReqCourse.courseID?replace(",","")} </option>
+                        <#elseif course.prerequisiteCourseId != 0>
+                               <option>${preReqCourse.name} Course ID: ${preReqCourse.courseID?replace(",","")} </option>
+                         <#elseif course.prerequisiteCourseId == 0>
+                            <option selected>None</option>
                         </#if>
+                       </#if>
                      </#list>
                 </select>
     	</div>
