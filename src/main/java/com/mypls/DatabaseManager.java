@@ -17,8 +17,9 @@ public class DatabaseManager {
 
     public static final String INSERT_USER_QUERY     = "INSERT INTO USERS(Email,Password,UserType) VALUES(?,?,?)";
     public static final String INSERT_LEARNER_QUERY     = "INSERT INTO LEARNERS(FirstName,LastName,Email) VALUES(?,?,?)";
-    public static final String VALIDATE_USER    = "SELECT * FROM USERS WHERE Email='?' AND Password='?'";
-    public static final String RETRIEVE_LEARNER = "SELECT * FROM LEARNERS WHERE Email='?'";
+    public static final String VALIDATE_USER    = "SELECT * FROM USERS WHERE Email=?";
+    public static final String RETRIEVE_LEARNER = "SELECT * FROM LEARNERS WHERE Email=?";
+    public static final String RETRIEVE_PROFESSOR = "SELECT * FROM PROFESSORS WHERE Email=?";
 
     public static boolean registerUser(String email, String password,String type )
     {
@@ -78,9 +79,9 @@ public class DatabaseManager {
         return isUnique;
     }
 
-    public static boolean insertLearner(String firstName, String lastName, String email)
+    public static void insertLearner(String firstName, String lastName, String email)
     {
-        boolean isUnique=true;
+
         Connection connection = null;
         PreparedStatement statement = null;
         try
@@ -101,7 +102,7 @@ public class DatabaseManager {
         catch (SQLIntegrityConstraintViolationException e)
         {
             System.out.println("Email already assigned to an account");
-            isUnique=false;
+
         }
         catch(Exception e)
         {
@@ -134,13 +135,13 @@ public class DatabaseManager {
             }
         }
 
-        return isUnique;
+
 
     }
 
-    public static HashMap<String, String>  queryCredentials2(String email,String password)
+    public static HashMap<String, Object>  queryCredentials(String email)
     {
-        HashMap<String, String> userData = new HashMap();
+        HashMap<String, Object> userData = new HashMap();
 
         Connection connection = null;
         PreparedStatement statement = null;
@@ -155,6 +156,8 @@ public class DatabaseManager {
             System.out.println("Reading records from table...");
             statement = connection.prepareStatement(VALIDATE_USER);
 
+            statement.setString(1,email);
+
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
@@ -162,7 +165,7 @@ public class DatabaseManager {
                 //Retrieve by column name
                 userData.put("email",resultSet.getString("Email"));
                 userData.put("password", resultSet.getString("Password"));
-                userData.put("type",resultSet.getString("TypeUser"));
+                userData.put("type",resultSet.getString("UserType"));
 
             }
             resultSet.close();
@@ -202,7 +205,7 @@ public class DatabaseManager {
     }
 
 
-    public static  Learner queryLearner2(String email)
+    public static  Learner queryLearner(String email)
     {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -223,7 +226,7 @@ public class DatabaseManager {
             while(resultSet.next())
             {
                 //Retrieve by column name
-                learner=new Learner(resultSet.getInt("LearnerID"),resultSet.getString("Email"),resultSet.getString("FirstName"),resultSet.getString("lastName"),resultSet.getString("Type"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"));
+                learner=new Learner(resultSet.getInt("LearnerID"),resultSet.getString("FirstName"),resultSet.getString("lastName"),resultSet.getString("Email"),resultSet.getString("Type"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"));
             }
             resultSet.close();
         }
@@ -262,7 +265,7 @@ public class DatabaseManager {
 
     }
 
-    public static  Professor queryProfessor2(String email)
+    public static  Professor queryProfessor(String email)
     {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -276,7 +279,7 @@ public class DatabaseManager {
 
             //Execute a statement
             System.out.println("Reading records from table...");
-            statement = connection.prepareStatement(RETRIEVE_LEARNER);
+            statement = connection.prepareStatement(RETRIEVE_PROFESSOR);
             statement.setString(1,email);
             ResultSet resultSet = statement.executeQuery();
 
@@ -382,201 +385,7 @@ public class DatabaseManager {
     }
 
 
-    public static HashMap<String, String>  queryCredentials(String query)
-    {
-        HashMap<String, String> userData = new HashMap();
 
-        Connection connection = null;
-        Statement statement = null;
-        try
-        {
-            //Open a connection
-            System.out.println("Connecting to a selected database...");
-            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-            System.out.println("Connected database successfully...");
-
-            //Execute a statement
-            System.out.println("Reading records from table...");
-            statement = connection.createStatement();
-            String sql =query; ;
-            ResultSet resultSet = statement.executeQuery(sql);
-
-            while(resultSet.next())
-            {
-                //Retrieve by column name
-                userData.put("email",resultSet.getString("Email"));
-                userData.put("password", resultSet.getString("Password"));
-                userData.put("type",resultSet.getString("TypeUser"));
-
-            }
-            resultSet.close();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-
-            try{
-                if(statement!=null)
-                {
-                    connection.close();
-                    System.out.println("closed!");
-                }
-            }
-            catch(SQLException se)
-            {
-                se.printStackTrace();
-            }
-            try
-            {
-                if(connection!=null)
-                {
-                    connection.close();
-                }
-            }
-            catch(SQLException se)
-            {
-                se.printStackTrace();
-            }
-        }
-
-        return userData;
-    }
-
-    public static  HashMap<String, String> queryLearners(String query)
-    {
-        HashMap<String, String> learnerInfo = new HashMap();
-        Connection connection = null;
-        Statement statement = null;
-        try
-        {
-            //Open a connection
-            System.out.println("Connecting to a selected database...");
-            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-            System.out.println("Connected database successfully...");
-
-            //Execute a statement
-            System.out.println("Reading records from table...");
-            statement = connection.createStatement();
-            String sql =query; ;
-            ResultSet resultSet = statement.executeQuery(sql);
-
-            while(resultSet.next())
-            {
-                //Retrieve by column name
-                learnerInfo.put("id" ,resultSet.getString("LearnerID"));
-                learnerInfo.put("firstName" ,resultSet.getString("FirstName"));
-                learnerInfo.put("lastName" ,resultSet.getString("lastName"));
-                learnerInfo.put("type" ,resultSet.getString("Type"));
-                learnerInfo.put("rating", resultSet.getString("Rating"));
-                learnerInfo.put("numberOfRatings",resultSet.getString("NumberOfRatings"));
-
-            }
-            resultSet.close();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-
-            try{
-                if(statement!=null)
-                {
-                    connection.close();
-                    System.out.println("closed!");
-                }
-            }
-            catch(SQLException se)
-            {
-                se.printStackTrace();
-            }
-            try
-            {
-                if(connection!=null)
-                {
-                    connection.close();
-                }
-            }
-            catch(SQLException se)
-            {
-                se.printStackTrace();
-            }
-        }
-
-        return learnerInfo;
-
-    }
-
-
-    public static HashMap<String, String> queryProfessors(String query)
-    {
-        HashMap<String, String> professorInfo = new HashMap();
-        Connection connection = null;
-        Statement statement = null;
-
-        try
-        {
-            //Open a connection
-            System.out.println("Connecting to a selected database...");
-            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-            System.out.println("Connected database successfully...");
-
-            //Execute a statement
-            System.out.println("Reading records from table...");
-            statement = connection.createStatement();
-            String sql =query; ;
-            ResultSet resultSet = statement.executeQuery(sql);
-
-            while(resultSet.next())
-            {
-                //Retrieve by column name
-                professorInfo.put("id",resultSet.getString("ProfessorID"));
-                professorInfo.put("firstName",resultSet.getString("FirstName"));
-                professorInfo.put("lastName",resultSet.getString("LastName"));
-                professorInfo.put("rating",resultSet.getString("Rating"));
-                professorInfo.put("numberOfRatings",resultSet.getString("NumberOfRatings"));
-
-            }
-            resultSet.close();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-
-            try{
-                if(statement!=null)
-                {
-                    connection.close();
-                    System.out.println("closed!");
-                }
-            }
-            catch(SQLException se)
-            {
-                se.printStackTrace();
-            }
-            try
-            {
-                if(connection!=null)
-                {
-                    connection.close();
-                }
-            }
-            catch(SQLException se)
-            {
-                se.printStackTrace();
-            }
-        }
-        System.out.println("Checking: "+professorInfo);
-        return professorInfo;
-
-    }
 
     public static ArrayList<Professor> getAllProfessor()
     {

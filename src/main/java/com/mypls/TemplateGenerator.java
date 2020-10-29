@@ -63,10 +63,10 @@ public class TemplateGenerator {
         return out;
     }
 
-    public void setModel(String tag,Object data) {
-        System.out.println(tag);
+    public void setModel(String key,Object data) {
+        System.out.println(key);
         System.out.println(data);
-        this.model.put(tag, data);
+        this.model.put(key, data);
     }
 
 

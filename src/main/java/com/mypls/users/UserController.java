@@ -10,22 +10,22 @@ import java.util.HashMap;
 
 public class UserController {
 
-    public static boolean register (String fName, String lName, String type, String email, String password)
+    public static boolean register (String firstName, String lastName, String type, String email, String password)
     {
         boolean isUnique;
         if(!type.equals("Professor")) {
-            isUnique = DatabaseManager.updateDatabase("INSERT INTO USERS (Email, Password, TypeUser) VALUES ('" + email + "', '" + password + "', 'Learner')");
+            isUnique = DatabaseManager.registerUser(email,encrypt(password),type);
             if (isUnique) {
-                DatabaseManager.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Type) VALUES ('" + fName + "', '" + lName + "', '" + email + "', '"+type+"')");
+                DatabaseManager.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Type) VALUES ('" + firstName + "', '" + lastName + "', '" + email + "', '"+type+"')");
             }
             return isUnique;
         }
         else
         {
-            isUnique= DatabaseManager.updateDatabase("INSERT INTO USERS (Email, Password, TypeUser) VALUES ('"+email+"', '"+password+"', 'Professor')");
+            isUnique= DatabaseManager.registerUser(email,encrypt(password),type);
             if(isUnique)
             {
-                DatabaseManager.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+fName+"', '"+lName+"', '"+email+"')");
+                DatabaseManager.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+firstName+"', '"+lastName+"', '"+email+"')");
             }
             else
             {
@@ -36,42 +36,37 @@ public class UserController {
         return true;
     }
 
-    public static HashMap<String, String> login (String email, String password)
+    public static  HashMap<String, Object> login (String email, String password)
     {
-        HashMap<String, String> userLoginInfo= new HashMap<String, String>();
+        HashMap<String, Object> userLoginInfo= new HashMap<String, Object>();
         
-
-        userLoginInfo= DatabaseManager.queryCredentials("SELECT * FROM users WHERE Email='"+email+"'");
+        userLoginInfo= DatabaseManager.queryCredentials(email);
 
         if (userLoginInfo.size() != 0) {
-            if (userLoginInfo.get("email").equals(email) && userLoginInfo.get("password").equals(UserController.encryption(password)))
+            if (userLoginInfo.get("email").equals(email) && userLoginInfo.get("password").equals(encrypt(password)))
             {
+
                 if(userLoginInfo.get("type").equals("Learner"))
                 {
-                    HashMap<String, String> learnerInfo= DatabaseManager.queryLearners("SELECT * FROM learners WHERE Email='"+email+"'");
-                    userLoginInfo.put("firstName",learnerInfo.get("firstName"));
-                    userLoginInfo.put("lastName",learnerInfo.get("lastName"));
-                    userLoginInfo.put("rating",learnerInfo.get("rating"));
-                    userLoginInfo.put("id",learnerInfo.get("id"));
-                    userLoginInfo.put("numberOfRatings",learnerInfo.get("numberOfRatings"));
+                    Learner learner= DatabaseManager.queryLearner(email);
+                    userLoginInfo.put("userData",learner);
                     userLoginInfo.put("loginStatus","AUTHENTICATED");
+
                 }
                 else if(userLoginInfo.get("type").equals("Professor"))
                 {
-                    HashMap<String, String> professorInfo= DatabaseManager.queryProfessors("SELECT * FROM Professors WHERE Email='"+email+"'");
-                    userLoginInfo.put("firstName",professorInfo.get("firstName"));
-                    userLoginInfo.put("lastName",professorInfo.get("lastName"));
-                    userLoginInfo.put("rating",professorInfo.get("rating"));
-                    userLoginInfo.put("id",professorInfo.get("id"));
-                    userLoginInfo.put("numberOfRatings",professorInfo.get("numberOfRatings"));
+                    Professor professor= DatabaseManager.queryProfessor(email);
+                    userLoginInfo.put("userData",professor);
                     userLoginInfo.put("loginStatus","AUTHENTICATED");
                 }
                 else if(userLoginInfo.get("type").equals("Administrator"))
                 {
+                    Administrator admin=new Administrator();
+                    userLoginInfo.put("userData",admin);
                     userLoginInfo.put("loginStatus","AUTHENTICATED");
+
                 }
-                
-               return userLoginInfo;
+                return userLoginInfo;
             }
             userLoginInfo.put("loginStatus","PASSWORD_INVALID");
             return userLoginInfo;
@@ -81,7 +76,7 @@ public class UserController {
 
     }
 
-    public static String encryption(String input)
+    private static String encrypt(String password)
     {
         MessageDigest md = null;
         try {
@@ -89,8 +84,8 @@ public class UserController {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        byte[] hash = md.digest(input.getBytes(StandardCharsets.UTF_8));
-        md.digest(input.getBytes(StandardCharsets.UTF_8));
+        byte[] hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
+        md.digest(password.getBytes(StandardCharsets.UTF_8));
         BigInteger number = new BigInteger(1, hash);
         StringBuilder hexString = new StringBuilder(number.toString(16));
         while (hexString.length() < 32)

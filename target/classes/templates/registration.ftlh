@@ -31,7 +31,7 @@
 
 	<div class="container">
 
-	<form action= "registration" method ="post">
+	<form action= "/Registration" method ="post">
 
 
     <div class="form-group">
@@ -79,11 +79,7 @@
 			<label>Role</label>
 			<select class="form-control" name="type" id="type">
 				<option>Select Role</option>
-				<option>Student</option>
-
-				<option>Staff</option>
-				<option>Alumni</option>
-				<option>Faculty</option>
+				<option>Learner</option>
 				<option>Professor</option>
 			</select>
 		</div>

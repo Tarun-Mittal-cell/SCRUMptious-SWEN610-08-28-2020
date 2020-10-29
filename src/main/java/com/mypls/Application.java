@@ -23,6 +23,8 @@ public class Application {
 
     static final String AUTHENTICATED = "AUTHENTICATED";
     public static Professor professor;
+    public static Learner learner;
+    public static Administrator admin;
 
 
     public static void main(String[] args)
@@ -126,25 +128,29 @@ public class Application {
 
 
         post("/Registration", (req, res) -> {
-            System.out.println(req.queryParams("fname") + " " + req.queryParams("lname") + " " + req.queryParams("type") + " " + req.queryParams("email") + " " + req.queryParams("password_1") + " " + req.queryParams("password_2"));
-            boolean isEmailUnique = UserController.register(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("type"), req.queryParams("email"), UserController.encryption(req.queryParams("password_1")));
-            HashMap<String, String> info;
+            boolean isEmailUnique = UserController.register(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("type"), req.queryParams("email"), req.queryParams("password_1"));
+            HashMap<String, Object> userData;
+
             if (isEmailUnique)
             {
+                System.out.println("here2");
                 req.session(true);
                 req.session().attribute("currentUser", req.queryParams("email"));
-                if(!req.queryParams("type").equals("Professor")) {
-                    info= DatabaseManager.queryLearners("SELECT * FROM learners WHERE Email='"+req.queryParams("email")+"'");
-                    Learner learner = new Learner(Integer.parseInt(info.get("id")),req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"), req.queryParams("type"), Double.parseDouble(info.get("rating")),Integer.parseInt(info.get("numberOfRatings")));
+
+                userData= UserController.login(req.queryParams("email"),req.queryParams("password_1"));
+                if(!req.queryParams("type").equals("Professor"))
+                {
+                    learner = (Learner) userData.get("userData");
+                    System.out.println(learner);
                     template.setModel("userData", learner);
                     req.session().attribute("Type", "Learner");
                     return template.render(HOME);
                 }
                 else
                 {
-                    info= DatabaseManager.queryProfessors("SELECT * FROM professors WHERE Email='"+req.queryParams("email")+"'");
-                    System.out.println(info);
-                    professor = new Professor(Integer.parseInt(info.get("id")),req.queryParams("fname"), req.queryParams("lname"), req.queryParams("email"),Double.parseDouble(info.get("rating")),Integer.parseInt(info.get("numberOfRatings")));
+                    System.out.println("here3");
+                    professor = (Professor) userData.get("userData");
+                    System.out.println(professor);
                     template.setModel("userData", professor);
                     req.session().attribute("Type", "Professor");
                     return template.render(HOMEPROF);
@@ -159,7 +165,7 @@ public class Application {
 
 
         post("/Login", (req, res) ->{
-            HashMap<String, String> userData = UserController.login(req.queryParams("email"),req.queryParams("password")) ;
+            HashMap<String, Object> userData = UserController.login(req.queryParams("email"),req.queryParams("password")) ;
 
             if(userData.get("loginStatus").equals(AUTHENTICATED))
             {
@@ -167,23 +173,23 @@ public class Application {
                 req.session().attribute("currentUser", req.queryParams("email"));
                 template.setModel("isEmailUnique", true);
                 template.setModel("loginStatus",userData.get("loginStatus"));
-                if(userData.get("type").equals("Professor"))
+                if(userData.get("userData") instanceof Professor)
                 {
-                    Professor professor = new Professor(Integer.parseInt(userData.get("id")),userData.get("firstName"), userData.get("lastName"), userData.get("email"), Double.parseDouble(userData.get("rating")),Integer.parseInt(userData.get("numberOfRatings")));
+                    professor=(Professor) userData.get("userData");
                     template.setModel("userData",professor);
                     req.session().attribute("Type", "Professor");
                     res.redirect("/HomepageProf");
                 }
-                else if (userData.get("type").equals("Administrator"))
+                else if (userData.get("userData") instanceof Administrator)
                 {
-                    Administrator admin =new Administrator();
+                    admin=(Administrator) userData.get("userData");
                     template.setModel("userData",admin);
                     req.session().attribute("Type", "Admin");
                    res.redirect("/HomepageAdmin");
                 }
                 else
                 {
-                    Learner learner = new Learner(Integer.parseInt(userData.get("id")),userData.get("firstName"), userData.get("lastName"), userData.get("email"), userData.get("type"), Double.parseDouble(userData.get("rating")),Integer.parseInt(userData.get("numberOfRatings")));
+                    learner=(Learner) userData.get("userData");
                     template.setModel("userData",learner);
                     req.session().attribute("Type", "Learner");
                     res.redirect("/Homepage");
