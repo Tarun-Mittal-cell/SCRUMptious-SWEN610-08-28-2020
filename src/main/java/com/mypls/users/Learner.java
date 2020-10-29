@@ -17,11 +17,10 @@ public class Learner extends User {
 
     public Learner(int  learnerID,String firstName, String lastName, String email,String type, double rating, int numOfRatings) {
         super(firstName,lastName,email);
-
         this.learnerID=learnerID;
         this.type=type;
-        this.rating=0;
-        this.numOfRatings=0;
+        this.rating=rating;
+        this.numOfRatings=numOfRatings;
     }
 
     public String getType() {
