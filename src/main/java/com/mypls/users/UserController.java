@@ -1,4 +1,6 @@
-package com.mypls;
+package com.mypls.users;
+
+import com.mypls.DatabaseManager;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -6,24 +8,24 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
-public class LoginController {
+public class UserController {
 
     public static boolean register (String fName, String lName, String type, String email, String password)
     {
         boolean isUnique;
         if(!type.equals("Professor")) {
-            isUnique = DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, TypeUser) VALUES ('" + email + "', '" + password + "', 'Learner')");
+            isUnique = DatabaseManager.updateDatabase("INSERT INTO USERS (Email, Password, TypeUser) VALUES ('" + email + "', '" + password + "', 'Learner')");
             if (isUnique) {
-                DatabaseController.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Type) VALUES ('" + fName + "', '" + lName + "', '" + email + "', '"+type+"')");
+                DatabaseManager.updateDatabase("INSERT INTO LEARNERS (FirstName, LastName, Email, Type) VALUES ('" + fName + "', '" + lName + "', '" + email + "', '"+type+"')");
             }
             return isUnique;
         }
         else
         {
-            isUnique=DatabaseController.updateDatabase("INSERT INTO USERS (Email, Password, TypeUser) VALUES ('"+email+"', '"+password+"', 'Professor')");
+            isUnique= DatabaseManager.updateDatabase("INSERT INTO USERS (Email, Password, TypeUser) VALUES ('"+email+"', '"+password+"', 'Professor')");
             if(isUnique)
             {
-                DatabaseController.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+fName+"', '"+lName+"', '"+email+"')");
+                DatabaseManager.updateDatabase("INSERT INTO Professors (FirstName, LastName, Email) VALUES ('"+fName+"', '"+lName+"', '"+email+"')");
             }
             else
             {
@@ -39,14 +41,14 @@ public class LoginController {
         HashMap<String, String> userLoginInfo= new HashMap<String, String>();
         
 
-        userLoginInfo=DatabaseController.queryCredentials("SELECT * FROM users WHERE Email='"+email+"'");
+        userLoginInfo= DatabaseManager.queryCredentials("SELECT * FROM users WHERE Email='"+email+"'");
 
         if (userLoginInfo.size() != 0) {
-            if (userLoginInfo.get("email").equals(email) && userLoginInfo.get("password").equals(LoginController.encryption(password)))
+            if (userLoginInfo.get("email").equals(email) && userLoginInfo.get("password").equals(UserController.encryption(password)))
             {
                 if(userLoginInfo.get("type").equals("Learner"))
                 {
-                    HashMap<String, String> learnerInfo=DatabaseController.queryLearners("SELECT * FROM learners WHERE Email='"+email+"'");
+                    HashMap<String, String> learnerInfo= DatabaseManager.queryLearners("SELECT * FROM learners WHERE Email='"+email+"'");
                     userLoginInfo.put("firstName",learnerInfo.get("firstName"));
                     userLoginInfo.put("lastName",learnerInfo.get("lastName"));
                     userLoginInfo.put("rating",learnerInfo.get("rating"));
@@ -56,7 +58,7 @@ public class LoginController {
                 }
                 else if(userLoginInfo.get("type").equals("Professor"))
                 {
-                    HashMap<String, String> professorInfo=DatabaseController.queryProfessors("SELECT * FROM Professors WHERE Email='"+email+"'");
+                    HashMap<String, String> professorInfo= DatabaseManager.queryProfessors("SELECT * FROM Professors WHERE Email='"+email+"'");
                     userLoginInfo.put("firstName",professorInfo.get("firstName"));
                     userLoginInfo.put("lastName",professorInfo.get("lastName"));
                     userLoginInfo.put("rating",professorInfo.get("rating"));

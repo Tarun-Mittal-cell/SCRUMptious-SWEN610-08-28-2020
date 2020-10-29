@@ -16,7 +16,7 @@
           <li class="active"><a href="#">Home</a></li>
           <li><a href="#">Page 1</a></li>
           <li><a href="#">Page 2</a></li>
-          <li><a href="signout">Sign Out</a></li>
+          <li><a href="/Signout">Sign Out</a></li>
         </ul>
       </div>
     </nav>

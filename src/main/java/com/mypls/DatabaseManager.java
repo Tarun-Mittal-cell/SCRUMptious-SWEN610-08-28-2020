@@ -1,4 +1,5 @@
 package com.mypls;
+import com.mypls.course.Course;
 import com.mypls.users.Learner;
 import com.mypls.users.Professor;
 
@@ -6,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DatabaseController {
+public class DatabaseManager {
 
     //Database URL]
     static final String DB_URL = "jdbc:mysql://localhost/mypls";

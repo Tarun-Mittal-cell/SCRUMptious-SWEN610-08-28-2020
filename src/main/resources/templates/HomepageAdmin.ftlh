@@ -50,7 +50,7 @@
                <a class="navbar-brand" href="#">MyPLS</a>
             </div>
             <ul class="nav navbar-nav">
-               <li><a href="signout">Sign Out</a></li>
+               <li><a href="/Signout">Sign Out</a></li>
             </ul>
          </div>
       </nav>
@@ -61,8 +61,8 @@
       <div class="row">
          <div class="col-md-12" style="border: 5px solid; padding: 20px; margin: 5px 0px;" id="courseDiv">
 
-            <a class="btn btn-primary"  href="/homepageadmin/createCourse" role="button" >Create Course</a>
-            <a class="btn btn-primary" href="/homepageadmin/createDiscussionGroup" role="button">Create Discussion Group</a>
+            <a class="btn btn-primary"  href="/HomepageAdmin/CreateCourse" role="button" >Create Course</a>
+            <a class="btn btn-primary" href="/HomepageAdmin/CreateDiscussionGroup" role="button">Create Discussion Group</a>
             <a class="btn btn-primary" href="/DiscussionBoard" role="button">View Discussion Group</a>
             <#if (courseCount>0)>
             <div>
@@ -83,8 +83,8 @@
                      <td style="width:10%">${course.enrollment}</td>
                      <td style="width:10%">${course.rating}</td>
                      <td style="width:30%" >
-                        <a href='homepageadmin/updateCourse/${course.courseID?replace(",", "")}'>Update Course</a>
-                        <form action="/homepageadmin/deleteCourse" method="post">
+                        <a href='HomepageAdmin/UpdateCourse/${course.courseID?replace(",", "")}'>Update Course</a>
+                        <form action="/HomepageAdmin/DeleteCourse" method="post">
                            <input type="hidden" name="courseid" value="${course.courseID?replace(",", "")}">
                            <button id="delete" type="submit">Delete Course</button>
                         </form>

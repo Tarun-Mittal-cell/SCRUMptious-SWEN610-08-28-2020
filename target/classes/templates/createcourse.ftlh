@@ -14,8 +14,8 @@
           <a class="navbar-brand" href="#">MyPLS</a>
         </div>
         <ul class="nav navbar-nav">
-           <li  class="active"><a href="/homepageadmin">Home</a></li>
-           <li><a href="/signout">Sign Out</a></li>
+           <li  class="active"><a href="/HomepageAdmin">Home</a></li>
+           <li><a href="/Signout">Sign Out</a></li>
         </ul>
       </div>
     </nav>
@@ -31,7 +31,7 @@
 
 	<div class="container">
 
-	<form action= "createCourse" method ="post">
+	<form action= "/CreateCourse" method ="post">
 
 
     <div class="form-group">

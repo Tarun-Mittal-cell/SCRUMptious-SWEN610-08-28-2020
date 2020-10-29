@@ -1,6 +1,11 @@
-package com.mypls;
+package com.mypls.course;
 
-public class Course {
+import com.mypls.DatabaseManager;
+
+import java.util.ArrayList;
+
+public class Course
+{
     private String name;
     private int courseID;
     private int assignedProfessorId;
@@ -126,7 +131,91 @@ public class Course {
 
     public static Course getCourseByID(int id)
     {
-        return DatabaseController.queryByCourseID(id);
+        return DatabaseManager.queryByCourseID(id);
+    }
+
+    public static ArrayList<Course> allCourses() {
+        ArrayList<Course> courses = DatabaseManager.getAllCourses();
+        return courses;
+    }
+
+    public static void createNewCourse(String professorId, String name, String objectives, String outcomes, String prerequisite, String requirement) {
+        String[] temp;
+
+        if (prerequisite.equals("None")) {
+            prerequisite = "0";
+        }
+        else if (! prerequisite.equals("None"))
+        {
+            temp=prerequisite.split("Course ID:");
+            prerequisite=temp[1];
+        }
+
+        if (professorId.equals("None")) {
+            professorId = "0";
+        }
+        else if (! professorId.equals("None"))
+        {
+            temp=professorId.split("Professor ID:");
+            professorId=temp[1];
+        }
+
+        if (objectives == null) {
+            objectives = "";
+        }
+
+        if (outcomes == null) {
+            outcomes = "";
+        }
+        if (requirement == null) {
+            requirement = "";
+        }
+
+        DatabaseManager.updateDatabase("INSERT INTO Courses (Name,AssignedProfessorID,PrerequisiteCourseID,Requirements,Objectives,Outcomes) VALUES ('" + name + "', '" + professorId + "', '" + prerequisite + "', '" + requirement + "', \"" + objectives + "\", \"" + outcomes + "\")");
+
+
+
+    }
+
+    public static void updateCourse(String courseId,String professorId, String name, String objectives, String outcomes, String prerequisite, String requirement) {
+        String[] temp;
+
+        if (prerequisite.equals("None")) {
+            prerequisite = "0";
+        }
+        else if (! prerequisite.equals("None"))
+        {
+            temp=prerequisite.split("Course ID:");
+            prerequisite=temp[1];
+        }
+
+        if (professorId.equals("None")) {
+            professorId = "0";
+        }
+        else if (! professorId.equals("None"))
+        {
+            temp=professorId.split("Professor ID:");
+            professorId=temp[1];
+        }
+
+        if (objectives == null) {
+            objectives = "";
+        }
+
+        if (outcomes == null) {
+            outcomes = "";
+        }
+        if (requirement == null) {
+            requirement = "";
+        }
+
+        DatabaseManager.updateDatabase("UPDATE courses SET Name = \""+name+"\",AssignedProfessorID=\""+professorId+"\", PrerequisiteCourseID = \""+prerequisite+"\", Requirements = \""+requirement+"\",Objectives=\""+objectives+"\",Outcomes=\""+outcomes+"\" WHERE (CourseID = \""+courseId+"\")");
+
+
+    }
+    public static void deleteCourse(int id)
+    {
+        DatabaseManager.deleteByCourseID(id);
     }
 
     @Override

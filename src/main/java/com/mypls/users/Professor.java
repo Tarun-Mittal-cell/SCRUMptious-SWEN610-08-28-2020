@@ -1,11 +1,12 @@
 package com.mypls.users;
 
-public class Professor {
+import com.mypls.DatabaseManager;
+
+import java.util.ArrayList;
+
+public class Professor extends User {
 
     private int professorID;
-    private String firstName;
-    private String LastName;
-    private String email;
     private double rating;
     private int numberOfRatings;
 
@@ -14,10 +15,8 @@ public class Professor {
 
     public Professor(int professorID,String firstName, String lastName, String email,double rating,int numberOfRatings)
     {
-       this.professorID=professorID;
-        this.firstName = firstName;
-        this.LastName = lastName;
-        this.email = email;
+        super(firstName,lastName,email);
+        this.professorID=professorID;
         this.rating=rating;
         this.numberOfRatings=numberOfRatings;
     }
@@ -30,22 +29,6 @@ public class Professor {
         this.firstName = firstName;
     }
 
-    public String getLastName() {
-        return LastName;
-    }
-
-    public void setLastName(String lastName) {
-        LastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public int getProfessorID() {
         return professorID;
     }
@@ -54,15 +37,20 @@ public class Professor {
         return rating;
     }
 
-    public int getnumberOfRatings() {
+    public int getNumberOfRatings() {
         return numberOfRatings;
+    }
+
+    public static ArrayList<Professor> allProfessors() {
+        ArrayList<Professor> allProfessor = DatabaseManager.getAllProfessor();
+        return allProfessor;
     }
 
     @Override
     public String toString() {
         return "Professor{" +
                 "firstName='" + firstName + '\'' +
-                ", LastName='" + LastName + '\'' +
+                ", LastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }

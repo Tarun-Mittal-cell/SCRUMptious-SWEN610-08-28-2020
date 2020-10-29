@@ -16,7 +16,7 @@
 
 	</div>
 
-	<form action= "login" method ="post">
+	<form action= "/Login" method ="post">
 
     <div class="form-group">
 
@@ -51,7 +51,7 @@
 
 		<button class="btn btn-success" type = "submit" name ="login_user"> Log In </button>
 
-		<p>New User?<a href="registration"><b>Register</b></a></p>
+		<p>New User?<a href="/Registration"><b>Register</b></a></p>
 
 
 </form>
