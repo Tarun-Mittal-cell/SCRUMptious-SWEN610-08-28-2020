@@ -35,7 +35,31 @@
 	<div class="row">
 		<div class="col-md-12" style="border: 1px solid; padding: 20px; margin: 5px 0px;">
 			<div><input class="pull-right" type="form-control" placeholder="Search" name=""></div>
-			<div class="text-center"><button class="btn btn-primary"> Courses </button>
+			<div class="text-center">
+			<div>
+                <center><h2>Courses</h2></center>
+                <br>
+               <table style="width:100%"  class="table table-hover table-striped table-bordered" >
+                  <thead class="thead-dark">
+                  <tr>
+                     <th scope="col">Course Name</th>
+                     <th scope="col">Enrollment</th>
+                     <th scope="col">Rating</th>
+                     <th scope="col">Options</th>
+                  </tr>
+                  </thead>
+                  <#list courses as course>
+                  <tr>
+                     <td style="width:50%">${course.name}</td>
+                     <td style="width:10%">${course.enrollment}</td>
+                     <td style="width:10%">${course.rating}</td>
+                     <td style="width:30%" >
+                        <a href='HomepageProf/ViewCourse/${course.courseID?replace(",", "")}'>View Course</a> |
+                        <a href='HomepageProf/AddLesson/${course.courseID?replace(",", "")}'>Add Lesson</a>
+                     </td>
+                  </tr>
+                  </#list>
+               </table>
 		</div>
 	</div>
 

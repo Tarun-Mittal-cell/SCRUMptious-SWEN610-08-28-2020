@@ -18,6 +18,7 @@ public class Application {
     static final String UPDATECOURSE = "updateCourse.ftlh";
     static final String DISCUSSIONGROUP = "DiscussionBoard.ftlh";
     static final String CREATEDISCUSSIONGROUP = "CreateDiscussionGroup.ftlh";
+    static final String ADDLESSON = "AddLesson.ftlh";
 
 
 
@@ -78,8 +79,8 @@ public class Application {
 
         get("/HomepageProf", (req, res) -> {
             if (req.session().attribute("currentUser") != null) {
-                System.out.println("fsdfsdfsd:"+professor);
-                System.out.println("Map:"+template.getModel());
+
+                template.setModel("courses",Course.getAssignedCourses(professor.getProfessorID()));
                 return template.render(HOMEPROF);
             } else {
                 res.redirect("/");
@@ -88,9 +89,19 @@ public class Application {
 
         });
 
+        get("HomepageProf/AddLesson/:courseid", (request, response) -> {
+            template.setModel("course", Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
+            return template.render(ADDLESSON) ;
+        });
+
+        post("/AddLesson", (req, res) -> {
+
+            return req.queryParams("courseID")+" "+req.queryParams("courseID");
+
+                });
+
         get("/HomepageAdmin", (req, res) -> {
             if (req.session().attribute("currentUser") != null) {
-                Administrator admin= (Administrator) template.getModel().get("userData");
                 template.setModel("courseCount", Course.allCourses().size());
                 template.setModel("courses",Course.allCourses());
                 template.setModel("professors",Professor.allProfessors());
@@ -215,7 +226,6 @@ public class Application {
         post("/HomepageAdmin/DeleteCourse", (req, res) -> {
 
             System.out.println(req.queryParams("courseid"));
-            Administrator admin= (Administrator) template.getModel().get("userData");
             Course.deleteCourse(Integer.parseInt(req.queryParams("courseid")));
             res.redirect("/HomepageAdmin");
             return null;

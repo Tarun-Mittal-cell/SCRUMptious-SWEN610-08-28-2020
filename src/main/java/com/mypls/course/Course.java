@@ -3,6 +3,8 @@ package com.mypls.course;
 import com.mypls.DatabaseManager;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Course
 {
@@ -17,6 +19,7 @@ public class Course
     private int numOfRatings;
     private int enrollment;
     private double minScore;
+    private List<Lesson> lessons;
 
     public Course(String name, int courseID, int assignedProfessorId, int prerequisiteCourseId, String requirements, String objectives, String outcomes, double rating, int numOfRatings, int enrollment, double minScore) {
         this.name = name;
@@ -30,6 +33,7 @@ public class Course
         this.numOfRatings = numOfRatings;
         this.enrollment = enrollment;
         this.minScore=minScore;
+        lessons=new LinkedList<>();
     }
 
 
@@ -129,6 +133,21 @@ public class Course
         this.minScore = minScore;
     }
 
+    public void addLesson(Lesson lesson)
+    {
+        lessons.add(lesson);
+    }
+
+    public void addLesson(int index,Lesson lesson)
+    {
+        lessons.add(index,lesson);
+    }
+
+    public List<Lesson> getLessons()
+    {
+        return lessons;
+    }
+
     public static Course getCourseByID(int id)
     {
         return DatabaseManager.queryByCourseID(id);
@@ -171,9 +190,7 @@ public class Course
             requirement = "";
         }
 
-        DatabaseManager.updateDatabase("INSERT INTO Courses (Name,AssignedProfessorID,PrerequisiteCourseID,Requirements,Objectives,Outcomes) VALUES ('" + name + "', '" + professorId + "', '" + prerequisite + "', '" + requirement + "', \"" + objectives + "\", \"" + outcomes + "\")");
-
-
+        DatabaseManager.createNewCourse(name ,Integer.parseInt(professorId),Integer.parseInt(prerequisite) ,requirement, objectives , outcomes);
 
     }
 
@@ -209,7 +226,7 @@ public class Course
             requirement = "";
         }
 
-        DatabaseManager.updateDatabase("UPDATE courses SET Name = \""+name+"\",AssignedProfessorID=\""+professorId+"\", PrerequisiteCourseID = \""+prerequisite+"\", Requirements = \""+requirement+"\",Objectives=\""+objectives+"\",Outcomes=\""+outcomes+"\" WHERE (CourseID = \""+courseId+"\")");
+        DatabaseManager.updateCourse(Integer.parseInt(courseId) , name , Integer.parseInt(professorId) , Integer.parseInt(prerequisite) ,requirement, objectives , outcomes);
 
 
     }
@@ -217,6 +234,12 @@ public class Course
     {
         DatabaseManager.deleteByCourseID(id);
     }
+
+    public static ArrayList<Course> getAssignedCourses(int professorId)
+    {
+        return DatabaseManager.queryCourseByProfessor(professorId);
+    }
+
 
     @Override
     public String toString() {
