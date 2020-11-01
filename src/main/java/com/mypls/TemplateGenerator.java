@@ -64,19 +64,21 @@ public class TemplateGenerator {
     }
 
     public void setModel(String key,Object data) {
-        System.out.println(key);
-        System.out.println(data);
+
         this.model.put(key, data);
     }
 
 
-    public Map<String, Object> getModel() {
-        return model;
+    public  Object getModel(String key) {
+        return model.get(key);
     }
 
     public void removeModel(String tag) {
         this.model.remove(tag);
     }
 
+    public void removeAll() {
+        this.model.clear();
+    }
 
 }

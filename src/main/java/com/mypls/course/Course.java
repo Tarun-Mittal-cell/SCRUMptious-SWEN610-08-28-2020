@@ -133,6 +133,10 @@ public class Course
         this.minScore = minScore;
     }
 
+    public void addAllLesson(List<Lesson>  lessons)
+    {
+        this.lessons.addAll(lessons);
+    }
     public void addLesson(Lesson lesson)
     {
         lessons.add(lesson);
@@ -150,7 +154,10 @@ public class Course
 
     public static Course getCourseByID(int id)
     {
-        return DatabaseManager.queryByCourseID(id);
+        Course course =DatabaseManager.queryByCourseID(id);
+        List<Lesson> lessons=DatabaseManager.getLessonsByCourse(id);
+        course.addAllLesson(lessons);
+        return course;
     }
 
     public static ArrayList<Course> allCourses() {

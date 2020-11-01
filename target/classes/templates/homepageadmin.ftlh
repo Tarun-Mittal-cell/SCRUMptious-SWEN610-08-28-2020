@@ -34,9 +34,7 @@
            background: none!important;
            border: none;
            padding: 0!important;
-           /*optional*/
            font-family: arial, sans-serif;
-           /*input has OS specific font-family*/
            color: #069;
            cursor: pointer;
          }

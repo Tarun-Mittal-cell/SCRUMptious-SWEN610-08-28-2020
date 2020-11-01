@@ -34,7 +34,7 @@
 	<form action= "/AddLesson" method ="Post" enctype='multipart/form-data' >
 
         <label>Course Names :${course.name}         Course ID:${course.courseID?replace(",", "")}  </label>
-        <input type ="hidden" name="courseID" value="${course.courseID}">
+        <input type ="hidden" name="courseID" value="${course.courseID?replace(",", "")}">
     <div class="form-group">
         <label for="title">Lesson Title : </label>
 		<input type ="text" name="title" class="form-control" required>
@@ -47,12 +47,12 @@
 
     <div class="form-group">
                 <label for="document"> Add Lesson Slides : </label>
-        		<input type ="file" name="document" class="form-control" >
+        		<input type ="file" name="uploaded_pdf" class="form-control" accept='.pdf'>
         	</div>
 
      <div class="form-group">
                  <label for="media"> Add Lesson Video: </label>
-         		<input type ="file" name="medi" class="form-control" >
+         		<input type ="file" name="uploaded_media" class="form-control" accept='.mp4'>
          	</div>
 
 		<button class="btn btn-success" type = "submit" name ="reg_user"> Submit </button>

@@ -1,8 +1,16 @@
 package com.mypls;
 import com.mypls.course.Course;
+import com.mypls.course.Lesson;
 import com.mypls.users.*;
 
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.Part;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
+import java.util.List;
 
 
 import static spark.Spark.*;
@@ -19,6 +27,10 @@ public class Application {
     static final String DISCUSSIONGROUP = "DiscussionBoard.ftlh";
     static final String CREATEDISCUSSIONGROUP = "CreateDiscussionGroup.ftlh";
     static final String ADDLESSON = "AddLesson.ftlh";
+    static final String PROFVIEWCOURSE = "ProfViewCourse.ftlh";
+    static final String PROFVIEWLESSON = "ProfViewLesson.ftlh";
+    static final String PROFUPDATELESSON = "ProfUpdatelesson.ftlh";
+
 
 
 
@@ -30,7 +42,9 @@ public class Application {
 
     public static void main(String[] args)
     {
-       staticFileLocation("/public");
+      // staticFileLocation("/public");
+       //staticFiles.location("/public");
+       staticFiles.externalLocation("src/main/resources/public/");
        TemplateGenerator template = new TemplateGenerator();
        template.setUpConfig();
 
@@ -59,7 +73,7 @@ public class Application {
 
         get("/Signout", (req, res) -> {
             req.session().removeAttribute("currentUser");
-            template.removeModel("userData");
+            template.removeAll();
             res.redirect("/");
             return template.render(LOGIN);
         });
@@ -94,11 +108,184 @@ public class Application {
             return template.render(ADDLESSON) ;
         });
 
+        get("/HomepageProf/ViewCourse/UpdateLesson/:courseid/:lessonid", (request, response) -> {
+            Course course= (Course)template.getModel("course");
+            int lessonID=Integer.parseInt(request.params(":lessonid"));
+            System.out.print("Checking the Lesson ID: "+lessonID);
+            List<Lesson>  lessons=course.getLessons();
+            System.out.print("Checking the Lesson ID List: "+lessons.get(0).getLessonID());
+            Lesson lesson=null;
+            for (int i=0; i< lessons.size();i++)
+            {
+                if(lessons.get(i).getLessonID()==lessonID)
+                {
+                    lesson= lessons.get(i);
+                    System.out.print("Checking the Lesson ID List22: "+lessons.get(0).getLessonID());
+                    break;
+                }
+            }
+            template.setModel("lesson", lesson);
+            return template.render(PROFUPDATELESSON) ;
+        });
+
+        get("/HomepageProf/ViewCourse/:courseid", (request, response) -> {
+            Course course=Course.getCourseByID( Integer.parseInt(request.params(":courseid")));
+
+            template.setModel("course",course );
+
+
+            return template.render(PROFVIEWCOURSE) ;
+        });
+
+        get("/HomepageProf/ViewCourse/ViewLesson/:courseid/:lessonid", (request, response) -> {
+            Course course= (Course)template.getModel("course");
+            int lessonID=Integer.parseInt(request.params(":lessonid"));
+            System.out.print("Checking the Lesson ID: "+lessonID);
+            List<Lesson>  lessons=course.getLessons();
+            System.out.print("Checking the Lesson ID List: "+lessons.get(0).getLessonID());
+            Lesson lesson=null;
+            for (int i=0; i< lessons.size();i++)
+            {
+                if(lessons.get(i).getLessonID()==lessonID)
+                {
+                    lesson= lessons.get(i);
+                    System.out.print("Checking the Lesson ID List22: "+lessons.get(0).getLessonID());
+                    break;
+                }
+            }
+            System.out.print("Checking the Lesson ID List33: "+lessons.get(0).getLessonID());
+            template.setModel("lesson", lesson);
+            return template.render(PROFVIEWLESSON) ;
+        });
+
         post("/AddLesson", (req, res) -> {
 
-            return req.queryParams("courseID")+" "+req.queryParams("courseID");
+            Part uploadfile=null;
+            req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+            String mediaPath=" ";
+            String documentPath=" ";
+            try {
+                uploadfile = req.raw().getPart("uploaded_pdf");
+                if (uploadfile.getSize()!=0) {
+                    String fileName = getFileName(req.raw().getPart("uploaded_pdf"));
+                    documentPath="documents/"+fileName;
+                    File uploadDir = new File("src/main/resources/public/documents/" + fileName);
+                    System.out.println(uploadfile.getSize() + "document:" + uploadfile.getName() + " " + uploadfile.getHeader("Content-Disposition"));
+                    InputStream input = uploadfile.getInputStream();// getPart needs to use same "name" as input field in form
+                    Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                }
+                uploadfile = req.raw().getPart("uploaded_media");
+                if (uploadfile.getSize()!=0) {
+                    String fileName = getFileName(req.raw().getPart("uploaded_media"));
+                    mediaPath="media/"+fileName;
+                    File uploadDir = new File("src/main/resources/public/media/" + fileName);
+                    System.out.println(uploadfile.getSize() + "media" + uploadfile.getName() + " " + uploadfile.getHeader("Content-Disposition"));
+                    InputStream input = uploadfile.getInputStream();
+                    Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            Lesson.createLesson(req.queryParams("title"),Integer.parseInt(req.queryParams("courseID")),req.queryParams("requirement"),mediaPath,documentPath);
+            res.redirect("/HomepageProf");
+
+            return null;
 
                 });
+
+        post("/HomepageProf/ViewCourse/UpdateLesson", (req, res) -> {
+            Lesson lesson= (Lesson) template.getModel("lesson");
+            Part upLoadFile=null;
+            req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+            String mediaPath=" ";
+            String documentPath=" ";
+            File uploadDir;
+
+            try {
+                upLoadFile = req.raw().getPart("uploaded_pdf");
+                if (upLoadFile.getSize()!=0) {
+                    String fileName = getFileName(req.raw().getPart("uploaded_pdf"));
+                    documentPath="documents/"+fileName;
+                    uploadDir = new File("src/main/resources/public/documents/" + fileName);
+                    System.out.println(upLoadFile.getSize() + "document:" + upLoadFile.getName() + " " + upLoadFile.getHeader("Content-Disposition"));
+                    InputStream input = upLoadFile.getInputStream();// getPart needs to use same "name" as input field in form
+                    Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    if( !lesson.getDocumentPath().equals(" ")) {
+                        uploadDir = new File("src/main/resources/public/" + lesson.getDocumentPath());
+                        uploadDir.delete();
+                    }
+                }
+                else
+                {
+                   documentPath= lesson.getDocumentPath();
+                }
+                upLoadFile = req.raw().getPart("uploaded_media");
+                if (upLoadFile.getSize()!=0) {
+                    String fileName = getFileName(req.raw().getPart("uploaded_media"));
+                    mediaPath="media/"+fileName;
+                    uploadDir = new File("src/main/resources/public/media/" + fileName);
+                    System.out.println(upLoadFile.getSize() + "media" + upLoadFile.getName() + " " + upLoadFile.getHeader("Content-Disposition"));
+                    InputStream input = upLoadFile.getInputStream();
+                    Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    if( !lesson.getMediaPath().equals(" ")) {
+                        uploadDir = new File("src/main/resources/public/" + lesson.getMediaPath());
+                        uploadDir.delete();
+                    }
+                }
+                else
+                {
+                    mediaPath=lesson.getMediaPath();
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            System.out.println(" "+req.queryParams("delete_media")+"  "+req.queryParams("delete_document"));
+            Lesson.updateLesson(lesson.getLessonID(),req.queryParams("title"),Integer.parseInt(req.queryParams("courseID")),req.queryParams("requirement"),mediaPath,documentPath);
+            res.redirect("/HomepageProf");
+            return null;
+        });
+
+        post("/HomepageProf/ViewCourse/DeleteLesson", (req, res) -> {
+
+            Lesson.deleteLesson(Integer.parseInt(req.queryParams("lessonID")));
+            res.redirect("/HomepageProf");
+
+            return null;
+
+                });
+
+        post("/HomepageProf/ViewCourse/UpdateLesson/DeleteMedia", (req, res) -> {
+            File uploadDir;
+
+            Lesson lesson= (Lesson) template.getModel("lesson");
+            String mediaPath=lesson.getMediaPath();
+            String documentPath=lesson.getDocumentPath();
+
+            if(req.queryParams("delete_media") != null)
+            {
+                uploadDir = new File("src/main/resources/public/" +req.queryParams("delete_media") );
+                uploadDir.delete();
+                mediaPath=" ";
+                //Lesson.updateLesson(lesson.getLessonID(), lesson.getTitle(), lesson.getCoursedID(), lesson.getRequirements(),mediaPath,documentPath);
+            }
+            if(req.queryParams("delete_document") != null)
+            {
+                uploadDir = new File("src/main/resources/public/" +req.queryParams("delete_document") );
+                uploadDir.delete();
+                documentPath=" ";
+
+            }
+            Lesson.updateLesson(lesson.getLessonID(), lesson.getTitle(), lesson.getCoursedID(), lesson.getRequirements(),mediaPath,documentPath);
+
+            res.redirect("/HomepageProf");
+            return null;
+        });
+
 
         get("/HomepageAdmin", (req, res) -> {
             if (req.session().attribute("currentUser") != null) {
@@ -116,13 +303,11 @@ public class Application {
 
         get("/HomepageAdmin/CreateCourse", (req, res) -> {
 
-            Administrator admin= (Administrator) template.getModel().get("userData");
             template.setModel("professors",Professor.allProfessors());
             return template.render(CREATECOURSE);
         });
 
         get("/HomepageAdmin/UpdateCourse/:courseid", (request, response) -> {
-            Administrator admin= (Administrator) template.getModel().get("userData");
             template.setModel("course", Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
             System.out.println(Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
             return template.render(UPDATECOURSE) ;
@@ -235,7 +420,7 @@ public class Application {
         post("/HomepageAdmin/UpdateCourse", (req, res) -> {
 
             System.out.println(req.queryParams("courseName") + " " + req.queryParams("requirement") + " " + req.queryParams("objectives") + " " + req.queryParams("outcomes") + " " + req.queryParams("prerequisite") + " " + req.queryParams("professor"));
-            Course course=(Course) template.getModel().get("course");
+            Course course=(Course) template.getModel("course");
             Course.updateCourse((String.valueOf(course.getCourseID())),req.queryParams("professor"),req.queryParams("courseName"),req.queryParams("objectives"),req.queryParams("outcomes"),req.queryParams("prerequisite"),req.queryParams("requirement"));
             res.redirect("/HomepageAdmin");
             return null;
@@ -249,7 +434,7 @@ public class Application {
             String user = "<b> Username </b>";
             String message = user + " : " + req.queryParams("textFromUser") ;
 
-            if(template.getModel().get("textFromUser")==null)
+            if(template.getModel("textFromUser")==null)
             {
                 System.out.println("1" );
                 template.setModel("textFromUser", message);
@@ -257,7 +442,7 @@ public class Application {
             else
             {
                 System.out.println("2" );
-                template.setModel("textFromUser", template.getModel().get("textFromUser")+" <hr> "+message);
+                template.setModel("textFromUser", template.getModel("textFromUser")+" <hr> "+message);
             }
 
 
@@ -268,12 +453,20 @@ public class Application {
         post("/HomepageAdmin/CreateDiscussionGroup", (req, res) -> {
 
             System.out.println(req.queryParams("topic") + " " + req.queryParams("type") + " " + req.queryParams("relatedCourse") );
-            Administrator admin= (Administrator) template.getModel().get("userData");
+            Administrator admin= (Administrator) template.getModel("userData");
             admin.createDiscussionGroup(req.queryParams("topic"),req.queryParams("relatedCourse"),req.queryParams("type"));
             res.redirect("/HomepageAdmin");
             return null;
 
         });
 
+    }
+    private static String getFileName(Part part) {
+        for (String cd : part.getHeader("content-disposition").split(";")) {
+            if (cd.trim().startsWith("filename")) {
+                return cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
+            }
+        }
+        return null;
     }
 }

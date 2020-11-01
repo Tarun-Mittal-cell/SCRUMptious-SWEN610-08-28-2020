@@ -35,10 +35,10 @@ public class DatabaseManager {
     public static final String RETRIEVE_COURSE_BY_COURSEID = "SELECT * FROM COURSES WHERE CourseID=?";
     public static final String RETRIEVE_ALL_COURSES = "SELECT * FROM COURSES";
 
-    public static final String ADD_NEW_LESSON     = "INSERT INTO LESSONS (LessonID,Title,CourseID,Requirements,MediaPath,DocumentPath) VALUES(?,?,?)";
+    public static final String ADD_NEW_LESSON     = "INSERT INTO LESSONS (Title,CourseID,Requirements,MediaPath,DocumentPath) VALUES(?,?,?,?,?)";
     public static final String UPDATE_LESSON     = "UPDATE LESSONS SET Title=?,CourseID=?,Requirements=?,MediaPath=?,DocumentPath=? WHERE (LessonID =?)";
     public static final String DELETE_LESSON     = "DELETE FROM LESSONS WHERE (LessonID =?)";
-    public static final String RETRIEVE_LESSONS_BY_COURSE= "SELECT * FROM COURSES WHERE CourseID=?";
+    public static final String RETRIEVE_LESSONS_BY_COURSE= "SELECT * FROM LESSONS WHERE CourseID=?";
 
     public static boolean registerUser(String email, String password,String type )
     {
@@ -978,7 +978,7 @@ public class DatabaseManager {
             statement.setString(3,requirements);
             statement.setString(4,mediaPath);
             statement.setString(5,documentPath);
-            statement.setInt(5,lessonID);
+            statement.setInt(6,lessonID);
             statement.executeUpdate();
             isUpdated=true;
         }
@@ -1035,7 +1035,7 @@ public class DatabaseManager {
             //Execute a query to MyPLS database
             System.out.println("Inserting records into the table...");
             statement = connection.prepareStatement(DELETE_LESSON);
-            statement.setInt(5,lessonID);
+            statement.setInt(1,lessonID);
             statement.executeUpdate();
             isDeleted=true;
         }
@@ -1093,7 +1093,15 @@ public class DatabaseManager {
             System.out.println("Inserting records into the table...");
             statement = connection.prepareStatement(RETRIEVE_LESSONS_BY_COURSE);
             statement.setInt(1,courseID);
-            statement.executeQuery();
+            ResultSet resultSet=statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                //Retrieve by column name
+                Lesson lesson=new Lesson(resultSet.getInt("lessonID"),resultSet.getString("Title"),resultSet.getInt("CourseID"),resultSet.getString("Requirements"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"),resultSet.getString("MediaPath"),resultSet.getString("DocumentPath"));
+                lessons.add(lesson);
+
+            }
 
         }
         catch (SQLIntegrityConstraintViolationException e)
@@ -1131,6 +1139,7 @@ public class DatabaseManager {
                 se.printStackTrace();
             }
         }
+
         return lessons;
     }
 
