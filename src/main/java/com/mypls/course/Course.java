@@ -3,6 +3,7 @@ package com.mypls.course;
 import com.mypls.DatabaseManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -156,6 +157,16 @@ public class Course
     {
         Course course =DatabaseManager.queryByCourseID(id);
         List<Lesson> lessons=DatabaseManager.getLessonsByCourse(id);
+        for(int i=0;i<lessons.size();i++)
+        {
+            ArrayList<String>[] quizData=DatabaseManager.retrieveQuiz(lessons.get(i).getLessonID());
+            System.out.println("Array :"+Arrays.toString(quizData));
+            if(quizData[0]!=null && quizData[1]!=null )
+            {
+                System.out.println("Array :"+Arrays.toString(quizData));
+                lessons.get(i).setQuiz(new Quiz(quizData[0], quizData[1]));
+            }
+        }
         course.addAllLesson(lessons);
         return course;
     }

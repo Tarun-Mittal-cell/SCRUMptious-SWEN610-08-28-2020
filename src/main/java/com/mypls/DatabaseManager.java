@@ -41,6 +41,11 @@ public class DatabaseManager {
     public static final String RETRIEVE_LESSONS_BY_COURSE= "SELECT * FROM LESSONS WHERE CourseID=?";
 
     public static final String ADD_NEW_QUIZ    = "INSERT INTO QUIZZES (LessonID,Question,Answer) VALUES(?,?,?)";
+    public static final String RETRIEVEQUIZ = "SELECT * FROM QUIZZES WHERE LessonID=?";
+    public static final String UPDATEQUIZ = "UPDATE QUIZZES SET Question=?,Answer=?";
+    public static final String DELETEQUIZ = "DELETE FROM QUIZZES WHERE (LessonID =?)";
+
+
 
     public static boolean registerUser(String email, String password,String type )
     {
@@ -1204,6 +1209,128 @@ public class DatabaseManager {
         }
 
         return isAdded;
+    }
+
+    public static ArrayList<String>[] retrieveQuiz(int lessonID)
+    {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ArrayList<String>[] quizData= new ArrayList[2];
+        ArrayList<String> questions=new ArrayList<>();
+        ArrayList<String> answers=new ArrayList<>();
+        try
+        {
+            //Open a connection to MYPLS database
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a query to MyPLS database
+            System.out.println("Inserting records into the table...");
+            statement = connection.prepareStatement(RETRIEVEQUIZ);
+            statement.setInt(1,lessonID);
+            ResultSet resultSet=statement.executeQuery();
+
+            while(resultSet.next())
+            {
+
+                //Retrieve by column name
+                questions.add(resultSet.getString("Question"));
+                answers.add(resultSet.getString("Answer"));
+            }
+            if(!questions.isEmpty()) {
+                quizData[0] = questions;
+                quizData[1] = answers;
+            }
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+        return quizData;
+    }
+
+
+
+    public static boolean removeQuiz(int id)
+    {
+        boolean isDeleted=false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.prepareStatement(DELETEQUIZ);
+            statement.setInt(1,id);
+            statement.executeUpdate();
+            isDeleted=true;
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            isDeleted=false;
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+        return isDeleted;
     }
 
 

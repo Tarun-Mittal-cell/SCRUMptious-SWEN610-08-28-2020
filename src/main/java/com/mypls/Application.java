@@ -33,6 +33,7 @@ public class Application {
     static final String PROFVIEWLESSON = "ProfViewLesson.ftlh";
     static final String PROFUPDATELESSON = "ProfUpdatelesson.ftlh";
     static final String ADDQUIZ = "AddQuiz.ftlh";
+    static final String UPDATEQUIZ = "UpdateQuiz.ftlh";
 
 
 
@@ -114,9 +115,7 @@ public class Application {
         get("/HomepageProf/ViewCourse/UpdateLesson/:courseid/:lessonid", (request, response) -> {
             Course course= (Course)template.getModel("course");
             int lessonID=Integer.parseInt(request.params(":lessonid"));
-            System.out.print("Checking the Lesson ID: "+lessonID);
             List<Lesson>  lessons=course.getLessons();
-            System.out.print("Checking the Lesson ID List: "+lessons.get(0).getLessonID());
             Lesson lesson=null;
             for (int i=0; i< lessons.size();i++)
             {
@@ -133,7 +132,6 @@ public class Application {
 
         get("/HomepageProf/ViewCourse/:courseid", (request, response) -> {
             Course course=Course.getCourseByID( Integer.parseInt(request.params(":courseid")));
-
             template.setModel("course",course );
 
 
@@ -143,7 +141,7 @@ public class Application {
         get("/HomepageProf/ViewCourse/:courseid/:lessonid/AddQuiz", (request, response) -> {
             Course course= (Course)template.getModel("course");
             int lessonID=Integer.parseInt(request.params(":lessonid"));
-            List<Lesson>  lessons=course.getLessons();
+            List<Lesson> lessons = course.getLessons();
             Lesson lesson=null;
             for (int i=0; i< lessons.size();i++)
             {
@@ -154,13 +152,12 @@ public class Application {
                 }
             }
             template.setModel("lesson", lesson);
-                return template.render(ADDQUIZ);
-                });
-        post("/HomepageProf/ViewCourse/Lesson/AddQuiz", (request, response) -> {
+            return template.render(ADDQUIZ);
+        });
 
+        post("/HomepageProf/ViewCourse/Lesson/AddQuiz", (request, response) -> {
             ArrayList<String> questions=new ArrayList<>();
             ArrayList<String> answers=new ArrayList<>();
-
             for(int i=0; i<5;i++)
             {
                 if( request.queryParams("question"+(i+1))!=null)
@@ -175,6 +172,47 @@ public class Application {
             return template.render(ADDQUIZ);
         });
 
+        get("/HomepageProf/ViewCourse/:courseid/:lessonid/UpdateQuiz", (request, response) -> {
+            Course course= (Course)template.getModel("course");
+            int lessonID=Integer.parseInt(request.params(":lessonid"));
+            List<Lesson> lessons = course.getLessons();
+            Lesson lesson=null;
+            for (int i=0; i< lessons.size();i++)
+            {
+                if(lessons.get(i).getLessonID()==lessonID)
+                {
+                    lesson= lessons.get(i);
+                    break;
+                }
+            }
+            template.setModel("lesson", lesson);
+            return template.render(UPDATEQUIZ);
+        });
+
+        post("/HomepageProf/ViewCourse/UpdateQuiz", (request, res) -> {
+
+            ArrayList<String> questions=new ArrayList<>();
+            ArrayList<String> answers=new ArrayList<>();
+            for(int i=0; i<5;i++)
+            {
+                if( request.queryParams("question"+(i+1))!=null)
+                {
+                    questions.add(request.queryParams("question" + (i + 1)));
+                    answers.add(request.queryParams("answer" + (i + 1)));
+
+                }
+            }
+            System.out.println("ANSWERS!!"+answers.toString());
+            Lesson.updateQuiz(Integer.parseInt(request.queryParams("lessonID")),questions,answers);
+            res.redirect("/HomepageProf");
+               return null;
+                });
+
+        post("/HomepageProf/ViewCourse/DeleteQuiz", (request, res) -> {
+            Lesson.deleteQuiz(Integer.parseInt(request.queryParams("lessonid")));
+            res.redirect("/HomepageProf");
+            return null;
+        });
 
         get("/HomepageProf/ViewCourse/ViewLesson/:courseid/:lessonid", (request, response) -> {
             Course course= (Course)template.getModel("course");

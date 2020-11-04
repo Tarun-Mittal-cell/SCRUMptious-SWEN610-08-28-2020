@@ -123,6 +123,19 @@ public class Lesson {
         return DatabaseManager.updateLesson(lessonID,title,courseID,requirements,mediaPath,documentPath);
     }
 
+    public static boolean updateQuiz(int lessonID, ArrayList<String> questions, ArrayList<String>answers)
+    {
+        boolean delete= DatabaseManager.removeQuiz(lessonID);
+       boolean add= DatabaseManager.addNewQuiz(lessonID,questions,answers);
+
+        return delete&&add;
+    }
+
+    public static boolean deleteQuiz(int lessonID)
+    {
+        return DatabaseManager.removeQuiz(lessonID);
+    }
+
     public static boolean createQuiz(int lessonID, ArrayList<String> question, ArrayList<String>answer)
     {
         return DatabaseManager.addNewQuiz(lessonID,question,answer);
@@ -143,4 +156,6 @@ public class Lesson {
         }
         return DatabaseManager.deleteLesson(lessonID);
     }
+
+
 }
