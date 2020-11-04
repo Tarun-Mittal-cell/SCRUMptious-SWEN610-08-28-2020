@@ -40,6 +40,8 @@ public class DatabaseManager {
     public static final String DELETE_LESSON     = "DELETE FROM LESSONS WHERE (LessonID =?)";
     public static final String RETRIEVE_LESSONS_BY_COURSE= "SELECT * FROM LESSONS WHERE CourseID=?";
 
+    public static final String ADD_NEW_QUIZ    = "INSERT INTO QUIZZES (LessonID,Question,Answer) VALUES(?,?,?)";
+
     public static boolean registerUser(String email, String password,String type )
     {
         boolean isUnique=true;
@@ -1142,6 +1144,68 @@ public class DatabaseManager {
 
         return lessons;
     }
+
+    public static boolean addNewQuiz(int lessonID, ArrayList<String> questions,ArrayList<String> answers)
+    {
+        boolean isAdded=true;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+        {
+            //Open a connection to MYPLS database
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a query to MyPLS database
+            System.out.println("Inserting records into the table...");
+            statement = connection.prepareStatement(ADD_NEW_QUIZ);
+            for(int i=0;i<questions.size();i++)
+            {
+                statement.setInt(1, lessonID);
+                statement.setString(2, questions.get(i));
+                statement.setString(3, answers.get(i));
+                statement.addBatch();
+            }
+            statement.executeBatch();
+
+        }
+
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            isAdded=false;
+
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return isAdded;
+    }
+
 
 
 

@@ -1,0 +1,49 @@
+* {
+  margin: 0;
+}
+
+h1 {
+  display: flex;
+  justify-content: center;
+}
+.mcq {
+  min-width: 46rem;
+  height: 200px;
+  border: 2px solid #969696;
+  background: #d9dbda;
+  margin: 10px;
+  padding: 20px;
+}
+
+label input {
+  width: 600px;
+  line-height: 50px;
+}
+
+li {
+  margin: 5px 40px;
+}
+
+li input {
+  width: 400px;
+}
+.answer {
+  margin: 10px 20px;
+}
+
+footer {
+  display: flex;
+  justify-content: center;
+  min-width: 46rem;
+  height: 30px;
+  border: 2px solid #969696;
+  background: #d9dbda;
+  margin: 10px;
+  padding: 20px;
+}
+
+.button {
+  background-color: #4CAF50; /* Green */
+  width: 250px;
+  font-size: 24px;
+}

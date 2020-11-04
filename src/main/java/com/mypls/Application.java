@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class Application {
     static final String PROFVIEWCOURSE = "ProfViewCourse.ftlh";
     static final String PROFVIEWLESSON = "ProfViewLesson.ftlh";
     static final String PROFUPDATELESSON = "ProfUpdatelesson.ftlh";
+    static final String ADDQUIZ = "AddQuiz.ftlh";
 
 
 
@@ -137,12 +140,46 @@ public class Application {
             return template.render(PROFVIEWCOURSE) ;
         });
 
+        get("/HomepageProf/ViewCourse/:courseid/:lessonid/AddQuiz", (request, response) -> {
+            Course course= (Course)template.getModel("course");
+            int lessonID=Integer.parseInt(request.params(":lessonid"));
+            List<Lesson>  lessons=course.getLessons();
+            Lesson lesson=null;
+            for (int i=0; i< lessons.size();i++)
+            {
+                if(lessons.get(i).getLessonID()==lessonID)
+                {
+                    lesson= lessons.get(i);
+                    break;
+                }
+            }
+            template.setModel("lesson", lesson);
+                return template.render(ADDQUIZ);
+                });
+        post("/HomepageProf/ViewCourse/Lesson/AddQuiz", (request, response) -> {
+
+            ArrayList<String> questions=new ArrayList<>();
+            ArrayList<String> answers=new ArrayList<>();
+
+            for(int i=0; i<5;i++)
+            {
+                if( request.queryParams("question"+(i+1))!=null)
+                {
+                    questions.add(request.queryParams("question" + (i + 1)));
+                    answers.add(request.queryParams("answer" + (i + 1)));
+
+                }
+            }
+            System.out.println(answers.toString());
+             Lesson.createQuiz(Integer.parseInt(request.queryParams("lessonID")),questions,answers);
+            return template.render(ADDQUIZ);
+        });
+
+
         get("/HomepageProf/ViewCourse/ViewLesson/:courseid/:lessonid", (request, response) -> {
             Course course= (Course)template.getModel("course");
             int lessonID=Integer.parseInt(request.params(":lessonid"));
-            System.out.print("Checking the Lesson ID: "+lessonID);
             List<Lesson>  lessons=course.getLessons();
-            System.out.print("Checking the Lesson ID List: "+lessons.get(0).getLessonID());
             Lesson lesson=null;
             for (int i=0; i< lessons.size();i++)
             {
@@ -153,7 +190,6 @@ public class Application {
                     break;
                 }
             }
-            System.out.print("Checking the Lesson ID List33: "+lessons.get(0).getLessonID());
             template.setModel("lesson", lesson);
             return template.render(PROFVIEWLESSON) ;
         });
@@ -252,12 +288,11 @@ public class Application {
 
         post("/HomepageProf/ViewCourse/DeleteLesson", (req, res) -> {
 
-            Lesson.deleteLesson(Integer.parseInt(req.queryParams("lessonID")));
+            Lesson.deleteLesson(Integer.parseInt(req.queryParams("lessonID")),req.queryParams("mediaPath"),req.queryParams("documentPath"));
             res.redirect("/HomepageProf");
-
             return null;
 
-                });
+        });
 
         post("/HomepageProf/ViewCourse/UpdateLesson/DeleteMedia", (req, res) -> {
             File uploadDir;

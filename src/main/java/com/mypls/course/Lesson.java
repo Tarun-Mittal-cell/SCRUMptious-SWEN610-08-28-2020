@@ -2,6 +2,9 @@ package com.mypls.course;
 
 import com.mypls.DatabaseManager;
 
+import java.io.File;
+import java.util.ArrayList;
+
 public class Lesson {
     private int LessonID;
     private String title;
@@ -120,8 +123,24 @@ public class Lesson {
         return DatabaseManager.updateLesson(lessonID,title,courseID,requirements,mediaPath,documentPath);
     }
 
-    public static boolean deleteLesson(int lessonID)
+    public static boolean createQuiz(int lessonID, ArrayList<String> question, ArrayList<String>answer)
     {
+        return DatabaseManager.addNewQuiz(lessonID,question,answer);
+    }
+
+    public static boolean deleteLesson(int lessonID, String mediaPath,String documentPath)
+    {
+        File uploadDir;
+        try {
+            uploadDir = new File("src/main/resources/public/"+mediaPath );
+            uploadDir.delete();
+            uploadDir = new File("src/main/resources/public/"+documentPath );
+            uploadDir.delete();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();;
+        }
         return DatabaseManager.deleteLesson(lessonID);
     }
 }

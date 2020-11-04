@@ -64,8 +64,11 @@
                      <td style="width:30%" >
                         <a href='/HomepageProf/ViewCourse/ViewLesson/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}'>View Lesson</a> |
                         <a href='UpdateLesson/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}'>Update Lesson</a> |
+                        <a href='/HomepageProf/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/AddQuiz'>Add Quiz</a> |
                         <form action="/HomepageProf/ViewCourse/DeleteLesson" method="post">
                            <input type="hidden" name="lessonID" value="${lesson.lessonID?replace(",", "")}">
+                           <input type="hidden" name="mediaPath" value="${lesson.mediaPath?replace(",", "")}">
+                           <input type="hidden" name="documentPath" value="${lesson.documentPath?replace(",", "")}">
                            <button id="delete" type="submit">Delete Lesson</button>
                         </form>
                      </td>
