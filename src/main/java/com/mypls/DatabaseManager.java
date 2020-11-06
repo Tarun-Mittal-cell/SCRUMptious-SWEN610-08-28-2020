@@ -41,9 +41,8 @@ public class DatabaseManager {
     public static final String RETRIEVE_LESSONS_BY_COURSE= "SELECT * FROM LESSONS WHERE CourseID=?";
 
     public static final String ADD_NEW_QUIZ    = "INSERT INTO QUIZZES (LessonID,Question,Answer) VALUES(?,?,?)";
-    public static final String RETRIEVEQUIZ = "SELECT * FROM QUIZZES WHERE LessonID=?";
-    public static final String UPDATEQUIZ = "UPDATE QUIZZES SET Question=?,Answer=?";
-    public static final String DELETEQUIZ = "DELETE FROM QUIZZES WHERE (LessonID =?)";
+    public static final String RETRIEVE_QUIZ = "SELECT * FROM QUIZZES WHERE LessonID=?";
+    public static final String DELETE_QUIZ = "DELETE FROM QUIZZES WHERE (LessonID =?)";
 
 
 
@@ -1227,7 +1226,7 @@ public class DatabaseManager {
 
             //Execute a query to MyPLS database
             System.out.println("Inserting records into the table...");
-            statement = connection.prepareStatement(RETRIEVEQUIZ);
+            statement = connection.prepareStatement(RETRIEVE_QUIZ);
             statement.setInt(1,lessonID);
             ResultSet resultSet=statement.executeQuery();
 
@@ -1293,7 +1292,7 @@ public class DatabaseManager {
 
             //Execute a statement
             System.out.println("Reading records from table...");
-            statement = connection.prepareStatement(DELETEQUIZ);
+            statement = connection.prepareStatement(DELETE_QUIZ);
             statement.setInt(1,id);
             statement.executeUpdate();
             isDeleted=true;

@@ -18,7 +18,8 @@ import java.util.List;
 import static spark.Spark.*;
 
 public class Application {
-    //Templates
+
+    //Freemarker Templates
     static final String HOME = "Homepage.ftlh";
     static final String HOMEPROF = "HomepageProf.ftlh";
     static final String HOMEADMIN = "HomepageAdmin.ftlh";
@@ -35,10 +36,9 @@ public class Application {
     static final String ADDQUIZ = "AddQuiz.ftlh";
     static final String UPDATEQUIZ = "UpdateQuiz.ftlh";
 
-
-
-
     static final String AUTHENTICATED = "AUTHENTICATED";
+
+    //User Objects
     public static Professor professor;
     public static Learner learner;
     public static Administrator admin;
@@ -46,25 +46,24 @@ public class Application {
 
     public static void main(String[] args)
     {
-      // staticFileLocation("/public");
-       //staticFiles.location("/public");
-       staticFiles.externalLocation("src/main/resources/public/");
+
+       staticFiles.externalLocation("src/main/responseources/public/");
        TemplateGenerator template = new TemplateGenerator();
        template.setUpConfig();
 
-       get("/", (req, res) -> {
-       if( req.session().attribute("currentUser")!= null)
+       get("/", (request, response) -> {
+       if( request.session().attribute("currentUser")!= null)
        {
-           if(req.session().attribute("Type").equals("Learner")) {
-               res.redirect("/Homepage");
+           if(request.session().attribute("Type").equals("Learner")) {
+               response.redirect("/Homepage");
            }
-           else if(req.session().attribute("Type").equals("Professor"))
+           else if(request.session().attribute("Type").equals("Professor"))
            {
-               res.redirect("/HomepageProf");
+               response.redirect("/HomepageProf");
            }
            else
            {
-               res.redirect("/HomepageAdmin");
+               response.redirect("/HomepageAdmin");
            }
        }
             template.setModel("isEmailUnique", true);
@@ -73,35 +72,35 @@ public class Application {
            return template.render(LOGIN);
         });
 
-        get("/Registration", (req, res) ->  template.render(REGISTRATION));
+        get("/Registration", (request, response) ->  template.render(REGISTRATION));
 
-        get("/Signout", (req, res) -> {
+        get("/Signout", (req, response) -> {
             req.session().removeAttribute("currentUser");
             template.removeAll();
-            res.redirect("/");
+            response.redirect("/");
             return template.render(LOGIN);
         });
 
 
-        get("/Homepage", (req, res) -> {
-            if (req.session().attribute("currentUser") != null)
+        get("/Homepage", (request, response) -> {
+            if (request.session().attribute("currentUser") != null)
             {
                 return template.render(HOME);
             }
             else
             {
-                res.redirect("/");
+                response.redirect("/");
                 return "You are not logged in!";
             }
         });
 
-        get("/HomepageProf", (req, res) -> {
-            if (req.session().attribute("currentUser") != null) {
+        get("/HomepageProf", (request, response) -> {
+            if (request.session().attribute("currentUser") != null) {
 
                 template.setModel("courses",Course.getAssignedCourses(professor.getProfessorID()));
                 return template.render(HOMEPROF);
             } else {
-                res.redirect("/");
+                response.redirect("/");
                 return "You are not logged in!";
             }
 
@@ -122,7 +121,6 @@ public class Application {
                 if(lessons.get(i).getLessonID()==lessonID)
                 {
                     lesson= lessons.get(i);
-                    System.out.print("Checking the Lesson ID List22: "+lessons.get(0).getLessonID());
                     break;
                 }
             }
@@ -164,11 +162,10 @@ public class Application {
                 {
                     questions.add(request.queryParams("question" + (i + 1)));
                     answers.add(request.queryParams("answer" + (i + 1)));
-
                 }
             }
             System.out.println(answers.toString());
-             Lesson.createQuiz(Integer.parseInt(request.queryParams("lessonID")),questions,answers);
+            Lesson.createQuiz(Integer.parseInt(request.queryParams("lessonID")),questions,answers);
             return template.render(ADDQUIZ);
         });
 
@@ -189,7 +186,7 @@ public class Application {
             return template.render(UPDATEQUIZ);
         });
 
-        post("/HomepageProf/ViewCourse/UpdateQuiz", (request, res) -> {
+        post("/HomepageProf/ViewCourse/UpdateQuiz", (request, response) -> {
 
             ArrayList<String> questions=new ArrayList<>();
             ArrayList<String> answers=new ArrayList<>();
@@ -202,15 +199,14 @@ public class Application {
 
                 }
             }
-            System.out.println("ANSWERS!!"+answers.toString());
             Lesson.updateQuiz(Integer.parseInt(request.queryParams("lessonID")),questions,answers);
-            res.redirect("/HomepageProf");
+            response.redirect("/HomepageProf");
                return null;
                 });
 
-        post("/HomepageProf/ViewCourse/DeleteQuiz", (request, res) -> {
+        post("/HomepageProf/ViewCourse/DeleteQuiz", (request, response) -> {
             Lesson.deleteQuiz(Integer.parseInt(request.queryParams("lessonid")));
-            res.redirect("/HomepageProf");
+            response.redirect("/HomepageProf");
             return null;
         });
 
@@ -232,28 +228,28 @@ public class Application {
             return template.render(PROFVIEWLESSON) ;
         });
 
-        post("/AddLesson", (req, res) -> {
+        post("/AddLesson", (request, response) -> {
 
             Part uploadfile=null;
-            req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+            request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
             String mediaPath=" ";
             String documentPath=" ";
             try {
-                uploadfile = req.raw().getPart("uploaded_pdf");
+                uploadfile = request.raw().getPart("uploaded_pdf");
                 if (uploadfile.getSize()!=0) {
-                    String fileName = getFileName(req.raw().getPart("uploaded_pdf"));
+                    String fileName = getFileName(request.raw().getPart("uploaded_pdf"));
                     documentPath="documents/"+fileName;
-                    File uploadDir = new File("src/main/resources/public/documents/" + fileName);
+                    File uploadDir = new File("src/main/responseources/public/documents/" + fileName);
                     System.out.println(uploadfile.getSize() + "document:" + uploadfile.getName() + " " + uploadfile.getHeader("Content-Disposition"));
                     InputStream input = uploadfile.getInputStream();// getPart needs to use same "name" as input field in form
                     Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
                 }
-                uploadfile = req.raw().getPart("uploaded_media");
+                uploadfile = request.raw().getPart("uploaded_media");
                 if (uploadfile.getSize()!=0) {
-                    String fileName = getFileName(req.raw().getPart("uploaded_media"));
+                    String fileName = getFileName(request.raw().getPart("uploaded_media"));
                     mediaPath="media/"+fileName;
-                    File uploadDir = new File("src/main/resources/public/media/" + fileName);
+                    File uploadDir = new File("src/main/responseources/public/media/" + fileName);
                     System.out.println(uploadfile.getSize() + "media" + uploadfile.getName() + " " + uploadfile.getHeader("Content-Disposition"));
                     InputStream input = uploadfile.getInputStream();
                     Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -263,32 +259,32 @@ public class Application {
             {
                 e.printStackTrace();
             }
-            Lesson.createLesson(req.queryParams("title"),Integer.parseInt(req.queryParams("courseID")),req.queryParams("requirement"),mediaPath,documentPath);
-            res.redirect("/HomepageProf");
+            Lesson.createLesson(request.queryParams("title"),Integer.parseInt(request.queryParams("courseID")),request.queryParams("requirement"),mediaPath,documentPath);
+            response.redirect("/HomepageProf");
 
             return null;
 
                 });
 
-        post("/HomepageProf/ViewCourse/UpdateLesson", (req, res) -> {
+        post("/HomepageProf/ViewCourse/UpdateLesson", (request, response) -> {
             Lesson lesson= (Lesson) template.getModel("lesson");
             Part upLoadFile=null;
-            req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+            request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
             String mediaPath=" ";
             String documentPath=" ";
             File uploadDir;
 
             try {
-                upLoadFile = req.raw().getPart("uploaded_pdf");
+                upLoadFile = request.raw().getPart("uploaded_pdf");
                 if (upLoadFile.getSize()!=0) {
-                    String fileName = getFileName(req.raw().getPart("uploaded_pdf"));
+                    String fileName = getFileName(request.raw().getPart("uploaded_pdf"));
                     documentPath="documents/"+fileName;
-                    uploadDir = new File("src/main/resources/public/documents/" + fileName);
+                    uploadDir = new File("src/main/responseources/public/documents/" + fileName);
                     System.out.println(upLoadFile.getSize() + "document:" + upLoadFile.getName() + " " + upLoadFile.getHeader("Content-Disposition"));
                     InputStream input = upLoadFile.getInputStream();// getPart needs to use same "name" as input field in form
                     Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     if( !lesson.getDocumentPath().equals(" ")) {
-                        uploadDir = new File("src/main/resources/public/" + lesson.getDocumentPath());
+                        uploadDir = new File("src/main/responseources/public/" + lesson.getDocumentPath());
                         uploadDir.delete();
                     }
                 }
@@ -296,16 +292,16 @@ public class Application {
                 {
                    documentPath= lesson.getDocumentPath();
                 }
-                upLoadFile = req.raw().getPart("uploaded_media");
+                upLoadFile = request.raw().getPart("uploaded_media");
                 if (upLoadFile.getSize()!=0) {
-                    String fileName = getFileName(req.raw().getPart("uploaded_media"));
+                    String fileName = getFileName(request.raw().getPart("uploaded_media"));
                     mediaPath="media/"+fileName;
-                    uploadDir = new File("src/main/resources/public/media/" + fileName);
+                    uploadDir = new File("src/main/responseources/public/media/" + fileName);
                     System.out.println(upLoadFile.getSize() + "media" + upLoadFile.getName() + " " + upLoadFile.getHeader("Content-Disposition"));
                     InputStream input = upLoadFile.getInputStream();
                     Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     if( !lesson.getMediaPath().equals(" ")) {
-                        uploadDir = new File("src/main/resources/public/" + lesson.getMediaPath());
+                        uploadDir = new File("src/main/responseources/public/" + lesson.getMediaPath());
                         uploadDir.delete();
                     }
                 }
@@ -318,63 +314,62 @@ public class Application {
             {
                 e.printStackTrace();
             }
-            System.out.println(" "+req.queryParams("delete_media")+"  "+req.queryParams("delete_document"));
-            Lesson.updateLesson(lesson.getLessonID(),req.queryParams("title"),Integer.parseInt(req.queryParams("courseID")),req.queryParams("requirement"),mediaPath,documentPath);
-            res.redirect("/HomepageProf");
+            System.out.println(" "+request.queryParams("delete_media")+"  "+request.queryParams("delete_document"));
+            Lesson.updateLesson(lesson.getLessonID(),request.queryParams("title"),Integer.parseInt(request.queryParams("courseID")),request.queryParams("requirement"),mediaPath,documentPath);
+            response.redirect("/HomepageProf");
             return null;
         });
 
-        post("/HomepageProf/ViewCourse/DeleteLesson", (req, res) -> {
+        post("/HomepageProf/ViewCourse/DeleteLesson", (request, response) -> {
 
-            Lesson.deleteLesson(Integer.parseInt(req.queryParams("lessonID")),req.queryParams("mediaPath"),req.queryParams("documentPath"));
-            res.redirect("/HomepageProf");
+            Lesson.deleteLesson(Integer.parseInt(request.queryParams("lessonID")),request.queryParams("mediaPath"),request.queryParams("documentPath"));
+            response.redirect("/HomepageProf");
             return null;
 
         });
 
-        post("/HomepageProf/ViewCourse/UpdateLesson/DeleteMedia", (req, res) -> {
+        post("/HomepageProf/ViewCourse/UpdateLesson/DeleteMedia", (request, response) -> {
             File uploadDir;
 
             Lesson lesson= (Lesson) template.getModel("lesson");
             String mediaPath=lesson.getMediaPath();
             String documentPath=lesson.getDocumentPath();
 
-            if(req.queryParams("delete_media") != null)
+            if(request.queryParams("delete_media") != null)
             {
-                uploadDir = new File("src/main/resources/public/" +req.queryParams("delete_media") );
+                uploadDir = new File("src/main/responseources/public/" +request.queryParams("delete_media") );
                 uploadDir.delete();
                 mediaPath=" ";
-                //Lesson.updateLesson(lesson.getLessonID(), lesson.getTitle(), lesson.getCoursedID(), lesson.getRequirements(),mediaPath,documentPath);
             }
-            if(req.queryParams("delete_document") != null)
+            if(request.queryParams("delete_document") != null)
             {
-                uploadDir = new File("src/main/resources/public/" +req.queryParams("delete_document") );
+                uploadDir = new File("src/main/responseources/public/" +request.queryParams("delete_document") );
                 uploadDir.delete();
                 documentPath=" ";
 
             }
             Lesson.updateLesson(lesson.getLessonID(), lesson.getTitle(), lesson.getCoursedID(), lesson.getRequirements(),mediaPath,documentPath);
 
-            res.redirect("/HomepageProf");
+            response.redirect("/HomepageProf");
             return null;
         });
 
 
-        get("/HomepageAdmin", (req, res) -> {
-            if (req.session().attribute("currentUser") != null) {
+        get("/HomepageAdmin", (request, response) -> {
+            if (request.session().attribute("currentUser") != null) {
                 template.setModel("courseCount", Course.allCourses().size());
                 template.setModel("courses",Course.allCourses());
                 template.setModel("professors",Professor.allProfessors());
                 template.setModel("learners",Learner.allLearners());
                  return template.render(HOMEADMIN);
             } else {
-                res.redirect("/");
+                response.redirect("/");
                 return "You are not logged in!";
             }
 
         });
 
-        get("/HomepageAdmin/CreateCourse", (req, res) -> {
+        get("/HomepageAdmin/CreateCourse", (request, response) -> {
 
             template.setModel("professors",Professor.allProfessors());
             return template.render(CREATECOURSE);
@@ -396,32 +391,30 @@ public class Application {
         });
 
 
-        post("/Registration", (req, res) -> {
-            boolean isEmailUnique = UserController.register(req.queryParams("fname"), req.queryParams("lname"), req.queryParams("type"), req.queryParams("email"), req.queryParams("password_1"));
+        post("/Registration", (request, response) -> {
+            boolean isEmailUnique = UserController.register(request.queryParams("fname"), request.queryParams("lname"), request.queryParams("type"), request.queryParams("email"), request.queryParams("password_1"));
             HashMap<String, Object> userData;
 
             if (isEmailUnique)
             {
-                System.out.println("here2");
-                req.session(true);
-                req.session().attribute("currentUser", req.queryParams("email"));
+                request.session(true);
+                request.session().attribute("currentUser", request.queryParams("email"));
 
-                userData= UserController.login(req.queryParams("email"),req.queryParams("password_1"));
-                if(!req.queryParams("type").equals("Professor"))
+                userData= UserController.login(request.queryParams("email"),request.queryParams("password_1"));
+                if(!request.queryParams("type").equals("Professor"))
                 {
                     learner = (Learner) userData.get("userData");
                     System.out.println(learner);
                     template.setModel("userData", learner);
-                    req.session().attribute("Type", "Learner");
+                    request.session().attribute("Type", "Learner");
                     return template.render(HOME);
                 }
                 else
                 {
-                    System.out.println("here3");
                     professor = (Professor) userData.get("userData");
                     System.out.println(professor);
                     template.setModel("userData", professor);
-                    req.session().attribute("Type", "Professor");
+                    request.session().attribute("Type", "Professor");
                     return template.render(HOMEPROF);
                 }
             }
@@ -433,35 +426,35 @@ public class Application {
         });
 
 
-        post("/Login", (req, res) ->{
-            HashMap<String, Object> userData = UserController.login(req.queryParams("email"),req.queryParams("password")) ;
+        post("/Login", (request, response) ->{
+            HashMap<String, Object> userData = UserController.login(request.queryParams("email"),request.queryParams("password")) ;
 
             if(userData.get("loginStatus").equals(AUTHENTICATED))
             {
-                req.session(true);
-                req.session().attribute("currentUser", req.queryParams("email"));
+                request.session(true);
+                request.session().attribute("currentUser", request.queryParams("email"));
                 template.setModel("isEmailUnique", true);
                 template.setModel("loginStatus",userData.get("loginStatus"));
                 if(userData.get("userData") instanceof Professor)
                 {
                     professor=(Professor) userData.get("userData");
                     template.setModel("userData",professor);
-                    req.session().attribute("Type", "Professor");
-                    res.redirect("/HomepageProf");
+                    request.session().attribute("Type", "Professor");
+                    response.redirect("/HomepageProf");
                 }
                 else if (userData.get("userData") instanceof Administrator)
                 {
                     admin=(Administrator) userData.get("userData");
                     template.setModel("userData",admin);
-                    req.session().attribute("Type", "Admin");
-                   res.redirect("/HomepageAdmin");
+                    request.session().attribute("Type", "Admin");
+                   response.redirect("/HomepageAdmin");
                 }
                 else
                 {
                     learner=(Learner) userData.get("userData");
                     template.setModel("userData",learner);
-                    req.session().attribute("Type", "Learner");
-                    res.redirect("/Homepage");
+                    request.session().attribute("Type", "Learner");
+                    response.redirect("/Homepage");
                 }
             }
             else
@@ -472,40 +465,40 @@ public class Application {
             return null;
         });
 
-        post("/HomepageAdmin/CreateCourse", (req, res) -> {
+        post("/HomepageAdmin/CreateCourse", (request, response) -> {
 
-            System.out.println(req.queryParams("courseName") + " " + req.queryParams("requirement") + " " + req.queryParams("objectives") + " " + req.queryParams("outcomes") + " " + req.queryParams("prerequisite") + " " + req.queryParams("professor"));
-            Course.createNewCourse(req.queryParams("professor"),req.queryParams("courseName"),req.queryParams("objectives"),req.queryParams("outcomes"),req.queryParams("prerequisite"),req.queryParams("requirement"));
-            res.redirect("/HomepageAdmin");
+            System.out.println(request.queryParams("courseName") + " " + request.queryParams("requirement") + " " + request.queryParams("objectives") + " " + request.queryParams("outcomes") + " " + request.queryParams("prerequisite") + " " + request.queryParams("professor"));
+            Course.createNewCourse(request.queryParams("professor"),request.queryParams("courseName"),request.queryParams("objectives"),request.queryParams("outcomes"),request.queryParams("prerequisite"),request.queryParams("requirement"));
+            response.redirect("/HomepageAdmin");
             return null;
 
         });
 
-        post("/HomepageAdmin/DeleteCourse", (req, res) -> {
+        post("/HomepageAdmin/DeleteCourse", (request, response) -> {
 
-            System.out.println(req.queryParams("courseid"));
-            Course.deleteCourse(Integer.parseInt(req.queryParams("courseid")));
-            res.redirect("/HomepageAdmin");
+            System.out.println(request.queryParams("courseid"));
+            Course.deleteCourse(Integer.parseInt(request.queryParams("courseid")));
+            response.redirect("/HomepageAdmin");
             return null;
 
         });
 
-        post("/HomepageAdmin/UpdateCourse", (req, res) -> {
+        post("/HomepageAdmin/UpdateCourse", (request, response) -> {
 
-            System.out.println(req.queryParams("courseName") + " " + req.queryParams("requirement") + " " + req.queryParams("objectives") + " " + req.queryParams("outcomes") + " " + req.queryParams("prerequisite") + " " + req.queryParams("professor"));
+            System.out.println(request.queryParams("courseName") + " " + request.queryParams("requirement") + " " + request.queryParams("objectives") + " " + request.queryParams("outcomes") + " " + request.queryParams("prerequisite") + " " + request.queryParams("professor"));
             Course course=(Course) template.getModel("course");
-            Course.updateCourse((String.valueOf(course.getCourseID())),req.queryParams("professor"),req.queryParams("courseName"),req.queryParams("objectives"),req.queryParams("outcomes"),req.queryParams("prerequisite"),req.queryParams("requirement"));
-            res.redirect("/HomepageAdmin");
+            Course.updateCourse((String.valueOf(course.getCourseID())),request.queryParams("professor"),request.queryParams("courseName"),request.queryParams("objectives"),request.queryParams("outcomes"),request.queryParams("prerequisite"),request.queryParams("requirement"));
+            response.redirect("/HomepageAdmin");
             return null;
 
         });
 
-        post("/DiscussionBoard", (req, res) -> {
+        post("/DiscussionBoard", (request, response) -> {
 
-            System.out.println(req.queryParams("textFromUser") );
+            System.out.println(request.queryParams("textFromUser") );
 
             String user = "<b> Username </b>";
-            String message = user + " : " + req.queryParams("textFromUser") ;
+            String message = user + " : " + request.queryParams("textFromUser") ;
 
             if(template.getModel("textFromUser")==null)
             {
@@ -523,12 +516,12 @@ public class Application {
 
         });
 
-        post("/HomepageAdmin/CreateDiscussionGroup", (req, res) -> {
+        post("/HomepageAdmin/CreateDiscussionGroup", (request, response) -> {
 
-            System.out.println(req.queryParams("topic") + " " + req.queryParams("type") + " " + req.queryParams("relatedCourse") );
+            System.out.println(request.queryParams("topic") + " " + request.queryParams("type") + " " + request.queryParams("relatedCourse") );
             Administrator admin= (Administrator) template.getModel("userData");
-            admin.createDiscussionGroup(req.queryParams("topic"),req.queryParams("relatedCourse"),req.queryParams("type"));
-            res.redirect("/HomepageAdmin");
+            admin.createDiscussionGroup(request.queryParams("topic"),request.queryParams("relatedCourse"),request.queryParams("type"));
+            response.redirect("/HomepageAdmin");
             return null;
 
         });
