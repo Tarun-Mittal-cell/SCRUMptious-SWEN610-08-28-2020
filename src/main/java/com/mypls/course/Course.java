@@ -208,7 +208,7 @@ public class Course
             requirement = "";
         }
 
-        DatabaseManager.createNewCourse(name ,Integer.parseInt(professorId),Integer.parseInt(prerequisite) ,requirement, objectives , outcomes);
+        DatabaseManager.createNewCourse(name ,Integer.parseInt(professorId.replace(" ","")),Integer.parseInt(prerequisite.replace(" ","")) ,requirement, objectives , outcomes);
 
     }
 
@@ -244,7 +244,7 @@ public class Course
             requirement = "";
         }
 
-        DatabaseManager.updateCourse(Integer.parseInt(courseId) , name , Integer.parseInt(professorId) , Integer.parseInt(prerequisite) ,requirement, objectives , outcomes);
+        DatabaseManager.updateCourse(Integer.parseInt(courseId.replace(" ","")) , name , Integer.parseInt(professorId.replace(" ","")) , Integer.parseInt(prerequisite.replace(" ","")) ,requirement, objectives , outcomes);
 
 
     }

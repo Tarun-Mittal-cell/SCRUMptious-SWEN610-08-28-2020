@@ -31,7 +31,7 @@
 
 	<div class="container">
 
-	<form action= "/homepageadmin/updateCourse" method ="post">
+	<form action= "/HomepageAdmin/UpdateCourse" method ="post">
 
 
     <div class="form-group">
@@ -40,7 +40,7 @@
 	</div>
 
 	 <div class="form-group">
-            <label for="requirement"> Requirments : </label>
+            <label for="requirement"> Requirements : </label>
     		<textarea name="requirement" class="form-control"  rows="10" cols="500"> ${course.requirements} </textarea>
     	</div>
 

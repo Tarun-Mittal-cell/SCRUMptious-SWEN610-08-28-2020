@@ -47,7 +47,7 @@ public class Application {
     public static void main(String[] args)
     {
 
-       staticFiles.externalLocation("src/main/responseources/public/");
+       staticFiles.externalLocation("src/main/resources/public/");
        TemplateGenerator template = new TemplateGenerator();
        template.setUpConfig();
 
@@ -239,7 +239,7 @@ public class Application {
                 if (uploadfile.getSize()!=0) {
                     String fileName = getFileName(request.raw().getPart("uploaded_pdf"));
                     documentPath="documents/"+fileName;
-                    File uploadDir = new File("src/main/responseources/public/documents/" + fileName);
+                    File uploadDir = new File("src/main/resources/public/documents/" + fileName);
                     System.out.println(uploadfile.getSize() + "document:" + uploadfile.getName() + " " + uploadfile.getHeader("Content-Disposition"));
                     InputStream input = uploadfile.getInputStream();// getPart needs to use same "name" as input field in form
                     Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -249,7 +249,7 @@ public class Application {
                 if (uploadfile.getSize()!=0) {
                     String fileName = getFileName(request.raw().getPart("uploaded_media"));
                     mediaPath="media/"+fileName;
-                    File uploadDir = new File("src/main/responseources/public/media/" + fileName);
+                    File uploadDir = new File("src/main/resources/public/media/" + fileName);
                     System.out.println(uploadfile.getSize() + "media" + uploadfile.getName() + " " + uploadfile.getHeader("Content-Disposition"));
                     InputStream input = uploadfile.getInputStream();
                     Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -279,12 +279,12 @@ public class Application {
                 if (upLoadFile.getSize()!=0) {
                     String fileName = getFileName(request.raw().getPart("uploaded_pdf"));
                     documentPath="documents/"+fileName;
-                    uploadDir = new File("src/main/responseources/public/documents/" + fileName);
+                    uploadDir = new File("src/main/resources/public/documents/" + fileName);
                     System.out.println(upLoadFile.getSize() + "document:" + upLoadFile.getName() + " " + upLoadFile.getHeader("Content-Disposition"));
                     InputStream input = upLoadFile.getInputStream();// getPart needs to use same "name" as input field in form
                     Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     if( !lesson.getDocumentPath().equals(" ")) {
-                        uploadDir = new File("src/main/responseources/public/" + lesson.getDocumentPath());
+                        uploadDir = new File("src/main/resources/public/" + lesson.getDocumentPath());
                         uploadDir.delete();
                     }
                 }
@@ -296,12 +296,12 @@ public class Application {
                 if (upLoadFile.getSize()!=0) {
                     String fileName = getFileName(request.raw().getPart("uploaded_media"));
                     mediaPath="media/"+fileName;
-                    uploadDir = new File("src/main/responseources/public/media/" + fileName);
+                    uploadDir = new File("src/main/resources/public/media/" + fileName);
                     System.out.println(upLoadFile.getSize() + "media" + upLoadFile.getName() + " " + upLoadFile.getHeader("Content-Disposition"));
                     InputStream input = upLoadFile.getInputStream();
                     Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     if( !lesson.getMediaPath().equals(" ")) {
-                        uploadDir = new File("src/main/responseources/public/" + lesson.getMediaPath());
+                        uploadDir = new File("src/main/resources/public/" + lesson.getMediaPath());
                         uploadDir.delete();
                     }
                 }
@@ -337,13 +337,13 @@ public class Application {
 
             if(request.queryParams("delete_media") != null)
             {
-                uploadDir = new File("src/main/responseources/public/" +request.queryParams("delete_media") );
+                uploadDir = new File("src/main/resources/public/" +request.queryParams("delete_media") );
                 uploadDir.delete();
                 mediaPath=" ";
             }
             if(request.queryParams("delete_document") != null)
             {
-                uploadDir = new File("src/main/responseources/public/" +request.queryParams("delete_document") );
+                uploadDir = new File("src/main/resources/public/" +request.queryParams("delete_document") );
                 uploadDir.delete();
                 documentPath=" ";
 
@@ -490,7 +490,6 @@ public class Application {
             Course.updateCourse((String.valueOf(course.getCourseID())),request.queryParams("professor"),request.queryParams("courseName"),request.queryParams("objectives"),request.queryParams("outcomes"),request.queryParams("prerequisite"),request.queryParams("requirement"));
             response.redirect("/HomepageAdmin");
             return null;
-
         });
 
         post("/DiscussionBoard", (request, response) -> {

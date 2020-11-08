@@ -31,7 +31,7 @@
 
 	<div class="container">
 
-	<form action= "/CreateCourse" method ="post">
+	<form action= "/HomepageAdmin/CreateCourse" method ="post">
 
 
     <div class="form-group">
