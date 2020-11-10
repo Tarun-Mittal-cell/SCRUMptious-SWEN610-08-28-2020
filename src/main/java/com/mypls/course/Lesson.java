@@ -154,6 +154,7 @@ public class Lesson {
         {
             e.printStackTrace();;
         }
+        DatabaseManager.removeQuiz(lessonID);
         return DatabaseManager.deleteLesson(lessonID);
     }
 

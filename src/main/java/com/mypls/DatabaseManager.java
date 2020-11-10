@@ -372,6 +372,8 @@ public class DatabaseManager {
         catch (SQLIntegrityConstraintViolationException e)
         {
             System.out.println("Email already assigned to an account");
+            e.printStackTrace();
+
             isUnique=false;
         }
         catch(Exception e)

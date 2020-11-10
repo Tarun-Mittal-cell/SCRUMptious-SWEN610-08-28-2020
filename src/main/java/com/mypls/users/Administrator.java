@@ -13,12 +13,19 @@ public class Administrator extends User{
         super(firstName, lastName, email);
     }
 
-    public void createDiscussionGroup(String topic, String course, String type)
+    public boolean createDiscussionGroup(String topic, String course, String type)
     {
-        String[] temp=course.split(":");
-        String courseID=temp[1];
+            String[] temp=course.split(":");
 
-        DatabaseManager.updateDatabase("INSERT INTO DiscussionGroups (Topic,RelatedCourseID,Type) VALUES ('" + topic + "', '" + courseID + "', '" + type +"')" );
+            if(temp.length>1) {
+                String courseID = temp[1];
+               return DatabaseManager.updateDatabase("INSERT INTO DiscussionGroups (Topic,RelatedCourseID,Type) VALUES ('" + topic + "', '" + courseID + "', '" + type + "')");
+            }
+            else
+            {
+                return  DatabaseManager.updateDatabase("INSERT INTO DiscussionGroups (Topic,Type) VALUES ('" + topic + "', '" + type + "')");
+
+            }
     }
 
 
