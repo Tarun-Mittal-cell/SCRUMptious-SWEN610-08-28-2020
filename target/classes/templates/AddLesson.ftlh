@@ -36,6 +36,9 @@
         <label>Course Names :${course.name}         Course ID:${course.courseID?replace(",", "")}  </label>
         <input type ="hidden" name="courseID" value="${course.courseID?replace(",", "")}">
     <div class="form-group">
+    <#if blankSpaces??>
+                <p style="color:red;">Invalid Input! Please re-enter values properly.</p>
+            </#if>
         <label for="title">Lesson Title : </label>
 		<input type ="text" name="title" class="form-control" required>
 	</div>
@@ -47,12 +50,12 @@
 
     <div class="form-group">
                 <label for="document"> Add Lesson Slides : </label>
-        		<input type ="file" name="uploaded_pdf" class="form-control" accept='.pdf'>
+        		<input type ="file" name="uploaded_pdf"  accept='.pdf'>
         	</div>
 
      <div class="form-group">
                  <label for="media"> Add Lesson Video: </label>
-         		<input type ="file" name="uploaded_media" class="form-control" accept='.mp4'>
+         		<input type ="file" name="uploaded_media"  accept='.mp4'>
          	</div>
 
 		<button class="btn btn-success" type = "submit" name ="reg_user"> Submit </button>

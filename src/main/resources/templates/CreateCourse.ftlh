@@ -33,7 +33,9 @@
 
 	<form action= "/HomepageAdmin/CreateCourse" method ="post">
 
-
+        <#if blankSpaces??>
+                        <p style="color:red;">Invalid Input! Please re-enter values properly.</p>
+                    </#if>
     <div class="form-group">
         <label for="courseName">Course Name : </label>
 		<input type ="text" name="courseName" class="form-control" required>

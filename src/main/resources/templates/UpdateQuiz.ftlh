@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Update Quiz</title>
   <link rel="stylesheet" href="/CSS/style.css">
+
 </head>
 <body>
 
@@ -18,6 +19,9 @@
   <section class="container">
    <form action="/HomepageProf/ViewCourse/UpdateQuiz" method="Post">
     <input type ="hidden" name="lessonID" value="${lesson.lessonID?replace(",", "")}">
+   <#if blankSpaces??>
+                        <p style="color:red;">Please fill out all 3 questions.</p>
+      </#if>
     <!-- Question 1 -->
     <#list lesson.quiz.questions as question>
     <div class="mcq">

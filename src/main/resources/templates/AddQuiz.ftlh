@@ -18,6 +18,9 @@
   <section class="container">
    <form action="/HomepageProf/ViewCourse/Lesson/AddQuiz" method="Post">
     <input type ="hidden" name="lessonID" value="${lesson.lessonID?replace(",", "")}">
+    <#if blankSpaces??>
+                    <p style="color:red;">Please fill out all 3 questions.</p>
+                </#if>
     <!-- Question 1 -->
     <div class="mcq">
       <label for="question" class="question">Question 1 :<textarea name="question1" rows="10" cols="65" ></textarea></label>
@@ -60,33 +63,7 @@
       </div>
     </div>
 
-    <!-- Question 4 -->
-    <div class="mcq">
-      <label for="question" class="question">Question 4 : <textarea name="question4" rows="10" cols="65" ></textarea></label>
-      <div class="block">
-        <label for="answer4">Answer: </label>
-        <select name="answer4" id="answer" class="answer">
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="D">D</option>
-        </select>
-      </div>
-    </div>
 
-    <!-- Question 5 -->
-    <div class="mcq">
-      <label for="question" class="question">Question 5 : <textarea name="question5" rows="10" cols="65" ></textarea></label>
-      <div class="block">
-        <label for="answer5">Answer: </label>
-        <select name="answer5" id="answer" class="answer">
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="D">D</option>
-        </select>
-      </div>
-    </div>
 
   </section>
 

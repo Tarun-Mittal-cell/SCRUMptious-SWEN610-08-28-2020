@@ -26,6 +26,9 @@
 <form action= "/HomepageProf/ViewCourse/UpdateLesson" method ="POST" enctype='multipart/form-data' >
                <label>Course Name :${course.name}         Course ID:${course.courseID?replace(",", "")}  </label>
                <input type ="hidden" name="courseID" value="${course.courseID?replace(",", "")}">
+               <#if blankSpaces??>
+                               <p style="color:red;">Invalid Input! Please re-enter values properly.</p>
+                           </#if>
                <div class="form-group">
                   <label for="title">Lesson Title : </label>
                   <input type ="text" name="title" class="form-control" value= "${lesson.title}" required>

@@ -35,7 +35,9 @@
 
 
     <div class="form-group">
-
+            <#if blankSpaces??>
+                <p style="color:red;">Invalid Input! Please re-enter values properly.</p>
+            </#if>
 			<label for="username">First Name : </label>
 			<input type ="text" name="fname" class="form-control" required>
 
@@ -78,7 +80,6 @@
 		<div class="form-group">
 			<label>Role</label>
 			<select class="form-control" name="type" id="type">
-				<option>Select Role</option>
 				<option>Learner</option>
 				<option>Professor</option>
 			</select>

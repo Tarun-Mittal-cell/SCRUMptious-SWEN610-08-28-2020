@@ -33,7 +33,9 @@
 
 	<form action= "/HomepageAdmin/CreateDiscussionGroup" method ="Post">
 
-
+<#if blankSpaces??>
+                <p style="color:red;">Invalid Input! Please re-enter values properly.</p>
+            </#if>
     <div class="form-group">
         <label for="topic">Topic : </label>
 		<input type ="text" name="topic" class="form-control" required>

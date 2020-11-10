@@ -70,6 +70,7 @@ public class Application {
        }
             template.setModel("isEmailUnique", true);
             template.setModel("loginStatus","None");
+           template.removeModel("blankSpaces");
 
            return template.render(LOGIN);
         });
@@ -167,6 +168,7 @@ public class Application {
             }
             else
             {
+                template.setModel("blankSpaces",true);
                 return template.render(REGISTRATION);
             }
         });
@@ -182,6 +184,7 @@ public class Application {
         get("/Homepage", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
+                template.removeModel("blankSpaces");
                 return template.render(HOME);
             }
             else
@@ -194,6 +197,7 @@ public class Application {
         get("/HomepageProf", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Professor"))
             {
+                template.removeModel("blankSpaces");
                 template.setModel("courses",Course.getAssignedCourses(professor.getProfessorID()));
                 return template.render(HOMEPROF);
             } else {
@@ -219,6 +223,7 @@ public class Application {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Professor"))
             {
                 Course course = Course.getCourseByID(Integer.parseInt(request.params(":courseid")));
+                template.removeModel("blankSpaces");
                 template.setModel("course", course);
                 return template.render(PROFVIEWCOURSE);
             }
@@ -236,6 +241,7 @@ public class Application {
             String mediaPath=" ";
             String documentPath=" ";
             int tLength=request.queryParams("title").trim().length() ;
+            Course course = (Course) template.getModel("course");
 
             if(tLength>0) {
                 try {
@@ -262,12 +268,13 @@ public class Application {
                     e.printStackTrace();
                 }
                 Lesson.createLesson(request.queryParams("title"), Integer.parseInt(request.queryParams("courseID")), request.queryParams("requirement"), mediaPath, documentPath);
-                response.redirect("/HomepageProf");
+                response.redirect("/HomepageProf/ViewCourse/"+course.getCourseID());
 
                 return null;
             }
             else
             {
+                template.setModel("blankSpaces",true);
                 return template.render(ADDLESSON) ;
             }
         });
@@ -297,6 +304,7 @@ public class Application {
 
         post("/HomepageProf/ViewCourse/UpdateLesson", (request, response) -> {
             Lesson lesson= (Lesson) template.getModel("lesson");
+            Course course = (Course) template.getModel("course");
             Part upLoadFile=null;
             request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
             String mediaPath=" ";
@@ -341,26 +349,26 @@ public class Application {
                 }
                 System.out.println(" " + request.queryParams("delete_media") + "  " + request.queryParams("delete_document"));
                 Lesson.updateLesson(lesson.getLessonID(), request.queryParams("title"), Integer.parseInt(request.queryParams("courseID")), request.queryParams("requirement"), mediaPath, documentPath);
-                response.redirect("/HomepageProf");
+                response.redirect("/HomepageProf/ViewCourse/"+course.getCourseID());
                 return null;
             }
             else
             {
+                template.setModel("blankSpaces",true);
                 return template.render(PROFUPDATELESSON);
             }
         });
 
         post("/HomepageProf/ViewCourse/DeleteLesson", (request, response) -> {
-
+            Course course = (Course) template.getModel("course");
             Lesson.deleteLesson(Integer.parseInt(request.queryParams("lessonID")),request.queryParams("mediaPath"),request.queryParams("documentPath"));
-            response.redirect("/HomepageProf");
+            response.redirect("/HomepageProf/ViewCourse/"+course.getCourseID());
             return null;
 
         });
 
         post("/HomepageProf/ViewCourse/UpdateLesson/DeleteMedia", (request, response) -> {
             File uploadDir;
-
             Lesson lesson= (Lesson) template.getModel("lesson");
             String mediaPath=lesson.getMediaPath();
             String documentPath=lesson.getDocumentPath();
@@ -380,7 +388,7 @@ public class Application {
             }
             Lesson.updateLesson(lesson.getLessonID(), lesson.getTitle(), lesson.getCoursedID(), lesson.getRequirements(),mediaPath,documentPath);
 
-            response.redirect("/HomepageProf");
+            response.redirect("/HomepageProf/ViewCourse/"+lesson.getCoursedID());
             return null;
         });
 
@@ -413,7 +421,7 @@ public class Application {
             ArrayList<String> questions=new ArrayList<>();
             ArrayList<String> answers=new ArrayList<>();
 
-            for(int i=0; i<5;i++)
+            for(int i=0; i<3;i++)
             {
                 String question=request.queryParams("question"+(i+1));
                 question=question.trim();
@@ -424,13 +432,14 @@ public class Application {
 
                 }
             }
-            if(questions.size()!=0) {
+            if(questions.size()==3) {
                 Lesson.createQuiz(Integer.parseInt(request.queryParams("lessonID")), questions, answers);
                 response.redirect("/HomepageProf/ViewCourse/"+course.getCourseID());
                 return null;
             }
             else
             {
+                template.setModel("blankSpaces",true);
                 return template.render(ADDQUIZ);
             }
         });
@@ -458,26 +467,36 @@ public class Application {
         });
 
         post("/HomepageProf/ViewCourse/UpdateQuiz", (request, response) -> {
-
+            Course course = (Course) template.getModel("course");
             ArrayList<String> questions=new ArrayList<>();
             ArrayList<String> answers=new ArrayList<>();
-            for(int i=0; i<5;i++)
+            for(int i=0; i<3;i++)
             {
-                if( request.queryParams("question"+(i+1))!=null)
+                String question=request.queryParams("question"+(i+1));
+                question=question.trim();
+                if( question.length()!=0)
                 {
-                    questions.add(request.queryParams("question" + (i + 1)));
+                    questions.add(question);
                     answers.add(request.queryParams("answer" + (i + 1)));
 
                 }
             }
-            Lesson.updateQuiz(Integer.parseInt(request.queryParams("lessonID")),questions,answers);
-            response.redirect("/HomepageProf");
-               return null;
+            if(questions.size()==3) {
+                Lesson.updateQuiz(Integer.parseInt(request.queryParams("lessonID")), questions, answers);
+                response.redirect("/HomepageProf/ViewCourse/" + course.getCourseID());
+                return null;
+            }
+            else
+            {
+                template.setModel("blankSpaces",true);
+                return template.render(UPDATEQUIZ);
+            }
                 });
 
         post("/HomepageProf/ViewCourse/DeleteQuiz", (request, response) -> {
+            Course course = (Course) template.getModel("course");
             Lesson.deleteQuiz(Integer.parseInt(request.queryParams("lessonid")));
-            response.redirect("/HomepageProf");
+            response.redirect("/HomepageProf/ViewCourse/"+course.getCourseID());
             return null;
         });
 
@@ -513,6 +532,7 @@ public class Application {
                 template.setModel("courses",Course.allCourses());
                 template.setModel("professors",Professor.allProfessors());
                 template.setModel("learners",Learner.allLearners());
+                template.removeModel("blankSpaces");
                  return template.render(HOMEADMIN);
             } else {
                 response.redirect("/");
@@ -543,6 +563,7 @@ public class Application {
             }
             else
             {
+                template.setModel("blankSpaces",true);
                 return template.render(CREATECOURSE);
             }
         });
@@ -571,6 +592,7 @@ public class Application {
             }
             else
             {
+                template.setModel("blankSpaces",true);
                 return template.render(UPDATECOURSE);
             }
 
@@ -629,6 +651,7 @@ public class Application {
             }
             else
             {
+                template.setModel("blankSpaces",true);
                 return template.render(CREATEDISCUSSIONGROUP);
             }
         });
