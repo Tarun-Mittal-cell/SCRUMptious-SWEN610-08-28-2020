@@ -646,6 +646,7 @@ public class Application {
                 }
                 else
                 {
+                    template.setModel("topicUnique",true);
                     return template.render(CREATEDISCUSSIONGROUP);
                 }
             }

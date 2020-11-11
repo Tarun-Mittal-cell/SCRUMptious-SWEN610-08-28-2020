@@ -23,12 +23,12 @@
             <h2>Add Lesson</h2>
          </div>
          <div class="container">
-<form action= "/HomepageProf/ViewCourse/UpdateLesson" method ="POST" enctype='multipart/form-data' >
+            <form action= "/HomepageProf/ViewCourse/UpdateLesson" method ="POST" enctype='multipart/form-data' >
                <label>Course Name :${course.name}         Course ID:${course.courseID?replace(",", "")}  </label>
                <input type ="hidden" name="courseID" value="${course.courseID?replace(",", "")}">
                <#if blankSpaces??>
-                               <p style="color:red;">Invalid Input! Please re-enter values properly.</p>
-                           </#if>
+               <p style="color:red;">Invalid Input! Please re-enter values properly.</p>
+               </#if>
                <div class="form-group">
                   <label for="title">Lesson Title : </label>
                   <input type ="text" name="title" class="form-control" value= "${lesson.title}" required>
@@ -45,17 +45,16 @@
                   <label for="uploaded_media">  Update Lesson Video: </label>
                   <input type ="file" name="uploaded_media"  accept='.mp4'>
                </div>
-
                <button class="btn btn-success" type = "submit" name ="reg_user"> Submit </button>
             </form>
             <Br>
             <Br>
             <form action= "/HomepageProf/ViewCourse/UpdateLesson/DeleteMedia" method ="POST"  >
-            <div class="form-group">
-            <div class="form-group">
-                  <label for="delete_document"> Delete Lesson PDF : </label>
-                  <input type ="checkbox" name="delete_document"  value="${lesson.documentPath}">
-                    </div>
+               <div class="form-group">
+                  <div class="form-group">
+                     <label for="delete_document"> Delete Lesson PDF : </label>
+                     <input type ="checkbox" name="delete_document"  value="${lesson.documentPath}">
+                  </div>
                   <label for="delete_media"> Delete Lesson Video : </label>
                   <input type ="checkbox" name="delete_media"  value="${lesson.mediaPath}">
                </div>
