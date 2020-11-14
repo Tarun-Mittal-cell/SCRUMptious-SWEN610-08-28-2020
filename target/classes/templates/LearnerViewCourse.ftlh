@@ -55,9 +55,13 @@
                      <td style="width:10%">${lesson.rating}</td>
                      <td style="width:30%" >
                         <a href='/HomepageLearner/ViewCourse/ViewLesson/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}'>View Lesson</a>
-                        <#if lesson.quiz ??>
-                           | <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz'>Take Quiz</a>
-                        </#if>
+                         <#if lesson.quiz ?? && (lesson.quiz.grade> -1) >
+                      <#if lesson.quiz.grade < course.minScore>
+                        | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Retake Quiz</a>
+                    </#if>
+                    <#elseif lesson.quiz ?? >
+                        | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Take QuiZ</a>
+                    </#if>
                      </td>
                   </tr>
                   </#list>

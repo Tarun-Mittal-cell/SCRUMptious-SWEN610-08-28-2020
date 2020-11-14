@@ -177,7 +177,9 @@ public class Course
             {
                 System.out.println("Array :"+Arrays.toString(quizData));
                 lessons.get(i).setQuiz(new Quiz(quizData[0], quizData[1]));
+
             }
+
         }
         course.addAllLesson(lessons);
         return course;

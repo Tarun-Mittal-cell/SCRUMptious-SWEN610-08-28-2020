@@ -26,6 +26,7 @@ public class Application {
     static final String HOMEPROF = "HomepageProf.ftlh";
     static final String COURSEOUTLINE = "CourseOutline.ftlh";
     static final String LEARNERVIEWCOURSE = "LearnerViewCourse.ftlh";
+    static final String LEARNERVIEWLESSON = "LearnerViewLesson.ftlh";
     static final String TAKEQUIZ = "TakeQuiz.ftlh";
 
 
@@ -214,7 +215,18 @@ public class Application {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
                 Course course = Course.getCourseByID(Integer.parseInt(request.params(":courseid")));
+                for (Lesson lesson:course.getLessons())
+                {
+                    double grade=DatabaseManager.retrieveGrade(learner.getLearnerID(), lesson.getLessonID());
+                    System.out.println("First score:"+grade);
+                    lesson.getQuiz().setGrade(grade);
+
+                    System.out.println("Grade :"+lesson.getQuiz().getGrade());
+                }
+
+                System.out.println("First score:"+course.getLessons().get(0).getQuiz().getGrade());
                 template.removeModel("blankSpaces");
+                course.setMinScore(75);
                 template.setModel("course", course);
                 return template.render(LEARNERVIEWCOURSE);
             }
@@ -239,9 +251,13 @@ public class Application {
                         break;
                     }
                 }
-                //CHeck for quiz done?
+               /* double grade=DatabaseManager.retrieveGrade(learner.getLearnerID(), lesson.getLessonID());
+                System.out.println("First score:"+grade);
+                lesson.getQuiz().setGrade(grade);
+
+                System.out.println("Grade :"+lesson.getQuiz().getGrade());*/
                 template.setModel("lesson", lesson);
-                return template.render(PROFVIEWLESSON);
+                return template.render(LEARNERVIEWLESSON);
             }
             else
             {
