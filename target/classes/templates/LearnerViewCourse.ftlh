@@ -54,7 +54,7 @@
                      <td style="width:50%">${lesson.title}</td>
                      <td style="width:10%">${lesson.rating}</td>
                      <td style="width:30%" >
-                        <a href='/HomepageLearner/ViewCourse/ViewLesson/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}'>View Lesson</a> 
+                        <a href='/HomepageLearner/ViewCourse/ViewLesson/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}'>View Lesson</a>
                         <#if lesson.quiz ??>
                            | <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz'>Take Quiz</a>
                         </#if>

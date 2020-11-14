@@ -25,6 +25,9 @@ public class DatabaseManager {
     public static final String RETRIEVE_LEARNER = "SELECT * FROM LEARNERS WHERE Email=?";
     public static final String REGISTER_COURSE = "INSERT INTO LEARNERCOURSE (LearnerID,CourseID,Status) VALUES(?,?,?)";
     public static final String RETRIEVE_LEARNER_COURSES = "SELECT * FROM COURSES  INNER JOIN LEARNERCOURSE ON LEARNERCOURSE.COURSEID=COURSES.COURSEID WHERE LEARNERID=?;";
+    public static final String ADD_GRADE = "INSERT INTO GRADES(LearnerID,CourseID,LessonID,Grade) VALUES(?,?,?,?);";
+
+
 
     public static final String RETRIEVE_PROFESSOR = "SELECT * FROM PROFESSORS WHERE Email=?";
     public static final String RETRIEVE_PROFESSOR_BY_ID = "SELECT * FROM PROFESSORS WHERE ProfessorID=?";
@@ -909,6 +912,65 @@ public class DatabaseManager {
         return learners;
 
     }
+
+    public static void addGrade(int learnerID,int courseID, int lessonID, double grade)
+    {
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+        {
+            //Open a connection to MYPLS database
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a query to MyPLS database
+            System.out.println("Inserting records into the table...");
+            statement = connection.prepareStatement(ADD_GRADE);
+            statement.setInt(1,learnerID);
+            statement.setInt(2,courseID);
+            statement.setInt(3,lessonID);
+            statement.setDouble(4,grade);
+            statement.executeUpdate();
+        }
+        catch (SQLIntegrityConstraintViolationException e)
+        {
+            System.out.println("Email already assigned to an account");
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+    }
+
 
 
 

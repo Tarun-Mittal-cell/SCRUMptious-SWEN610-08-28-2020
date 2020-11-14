@@ -1,6 +1,7 @@
 package com.mypls;
 import com.mypls.course.Course;
 import com.mypls.course.Lesson;
+import com.mypls.course.Quiz;
 import com.mypls.users.*;
 
 import javax.servlet.MultipartConfigElement;
@@ -238,6 +239,7 @@ public class Application {
                         break;
                     }
                 }
+                //CHeck for quiz done?
                 template.setModel("lesson", lesson);
                 return template.render(PROFVIEWLESSON);
             }
@@ -261,6 +263,7 @@ public class Application {
                     }
                 }
                 template.setModel("lesson", lesson);
+
                 return template.render(TAKEQUIZ);
             }
             else
@@ -268,6 +271,24 @@ public class Application {
                 response.redirect("/");
                 return "You are not logged in!";
             }
+        });
+
+        post("/HomepageProf/ViewCourse/TakeQuiz", (request, response) -> {
+
+            Course course = (Course) template.getModel("course");
+            Lesson lesson=(Lesson) template.getModel("lesson");
+            ArrayList<String> choices=new ArrayList<>();
+            Quiz quiz=lesson.getQuiz();
+
+            for(int i=0; i<3;i++)
+            {
+                String choice=request.queryParams("answer"+(i+1));
+                choices.add(request.queryParams("answer" + (i + 1)));
+
+            }
+            double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers());
+            template.setModel("score",score);
+            return template.render(TAKEQUIZ);
         });
 
 

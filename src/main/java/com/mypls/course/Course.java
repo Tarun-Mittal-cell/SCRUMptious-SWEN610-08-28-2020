@@ -136,6 +136,8 @@ public class Course
         this.minScore = minScore;
     }
 
+
+
     public String getStatus() {
         return Status;
     }
