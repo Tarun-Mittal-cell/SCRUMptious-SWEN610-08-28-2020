@@ -2,17 +2,15 @@ package com.mypls;
 import com.mypls.course.Course;
 import com.mypls.course.Lesson;
 import com.mypls.users.*;
-import spark.Response;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.Part;
-import javax.swing.*;
+import javax.swing.plaf.IconUIResource;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,8 +20,14 @@ import static spark.Spark.*;
 public class Application {
 
     //Freemarker Templates
-    static final String HOME = "Homepage.ftlh";
+    static final String HOME = "HomepageLearner.ftlh";
+    static final String SEARCH = "Search.ftlh";
     static final String HOMEPROF = "HomepageProf.ftlh";
+    static final String COURSEOUTLINE = "CourseOutline.ftlh";
+    static final String LEARNERVIEWCOURSE = "LearnerViewCourse.ftlh";
+    static final String TAKEQUIZ = "TakeQuiz.ftlh";
+
+
     static final String HOMEADMIN = "HomepageAdmin.ftlh";
     static final String REGISTRATION = "Registration.ftlh";
     static final String LOGIN = "Login.ftlh";
@@ -57,7 +61,7 @@ public class Application {
        if( request.session().attribute("currentUser")!= null)
        {
            if(request.session().attribute("Type").equals("Learner")) {
-               response.redirect("/Homepage");
+               response.redirect("/HomepageLearner");
            }
            else if(request.session().attribute("Type").equals("Professor"))
            {
@@ -103,7 +107,7 @@ public class Application {
                     learner=(Learner) userData.get("userData");
                     template.setModel("userData",learner);
                     request.session().attribute("Type", "Learner");
-                    response.redirect("/Homepage");
+                    response.redirect("/HomepageLearner");
                 }
             }
             else
@@ -118,7 +122,7 @@ public class Application {
             if( request.session().attribute("currentUser")!= null)
             {
                 if(request.session().attribute("Type").equals("Learner")) {
-                    response.redirect("/Homepage");
+                    response.redirect("/HomepageLearner");
                 }
                 else if(request.session().attribute("Type").equals("Professor"))
                 {
@@ -181,10 +185,20 @@ public class Application {
         });
 
 
-        get("/Homepage", (request, response) -> {
+        get("/HomepageLearner", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
                 template.removeModel("blankSpaces");
+                ArrayList<Professor> courseProfessors=new ArrayList<>();
+                ArrayList<Course> courseList =DatabaseManager.getAllRegisteredCourses(learner.getLearnerID());
+                for (Course course :courseList)
+                {
+                    Professor professor=Professor.getProfessor(course.getAssignedProfessorId());
+                    courseProfessors.add(professor);
+                }
+
+                template.setModel("registeredCourses",courseList);
+                template.setModel("courseProfessors",courseProfessors);
                 return template.render(HOME);
             }
             else
@@ -192,6 +206,119 @@ public class Application {
                 response.redirect("/");
                 return "You are not logged in!";
             }
+        });
+
+        get("/HomepageLearner/ViewCourse/:courseid", (request, response) -> {
+
+            if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
+            {
+                Course course = Course.getCourseByID(Integer.parseInt(request.params(":courseid")));
+                template.removeModel("blankSpaces");
+                template.setModel("course", course);
+                return template.render(LEARNERVIEWCOURSE);
+            }
+            else {
+                response.redirect("/");
+                return "You are not logged in!";
+            }
+
+        });
+
+        get("/HomepageLearner/ViewCourse/ViewLesson/:courseid/:lessonid", (request, response) -> {
+            if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner")) {
+
+                Course course = (Course) template.getModel("course");
+                int lessonID = Integer.parseInt(request.params(":lessonid"));
+                List<Lesson> lessons = course.getLessons();
+                Lesson lesson = null;
+                for (int i = 0; i < lessons.size(); i++) {
+                    if (lessons.get(i).getLessonID() == lessonID) {
+                        lesson = lessons.get(i);
+                        System.out.print("Checking the Lesson ID List22: " + lessons.get(0).getLessonID());
+                        break;
+                    }
+                }
+                template.setModel("lesson", lesson);
+                return template.render(PROFVIEWLESSON);
+            }
+            else
+            {
+                response.redirect("/");
+                return "You are not logged in!";
+            }
+        });
+
+        get("/HomepageLearner/ViewCourse/:courseid/:lessonid/TakeQuiz", (request, response) -> {
+            if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner")) {
+                Course course = (Course) template.getModel("course");
+                int lessonID = Integer.parseInt(request.params(":lessonid"));
+                List<Lesson> lessons = course.getLessons();
+                Lesson lesson = null;
+                for (int i = 0; i < lessons.size(); i++) {
+                    if (lessons.get(i).getLessonID() == lessonID) {
+                        lesson = lessons.get(i);
+                        break;
+                    }
+                }
+                template.setModel("lesson", lesson);
+                return template.render(TAKEQUIZ);
+            }
+            else
+            {
+                response.redirect("/");
+                return "You are not logged in!";
+            }
+        });
+
+
+        get("/HomepageLearner/Search", (request, response) -> {
+            if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
+            {
+
+                return template.render(SEARCH);
+            }
+            else
+            {
+
+                response.redirect("/");
+                return null;
+            }
+        });
+
+        post("/HomepageLearner/Search", (request, response) -> {
+
+            String search=request.queryParams("search").trim();
+            int courseID=Integer.parseInt(search);
+            Course course= Course.getCourseByID(courseID);
+            Professor professor=Professor.getProfessor(course.getAssignedProfessorId());
+            System.out.println("hello "+professor);
+            template.setModel("professor",professor);
+            template.setModel("course",course);
+            response.redirect("/HomepageLearner/Search");
+            return null;
+        });
+
+        get("/HomepageLearner/ViewCourseOutline/:courseid", (request, response) -> {
+
+            if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
+            {
+                return template.render(COURSEOUTLINE);
+            }
+            else {
+                response.redirect("/");
+                return "You are not logged in!";
+            }
+
+        });
+
+        post("/HomepageLearner/CourseRegister", (request, response) -> {
+
+
+            boolean isAdded=Course.registerCourse(learner.getLearnerID(),Integer.parseInt(request.queryParams("courseID")));
+            if(isAdded) {
+                response.redirect("/HomepageLearner");
+            }
+            return null;
         });
 
         get("/HomepageProf", (request, response) -> {

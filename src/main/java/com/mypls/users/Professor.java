@@ -1,8 +1,13 @@
 package com.mypls.users;
 
 import com.mypls.DatabaseManager;
+import com.mypls.course.Course;
+import com.mypls.course.Lesson;
+import com.mypls.course.Quiz;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Professor extends User {
 
@@ -44,6 +49,11 @@ public class Professor extends User {
     public static ArrayList<Professor> allProfessors() {
         ArrayList<Professor> allProfessor = DatabaseManager.getAllProfessor();
         return allProfessor;
+    }
+
+    public static Professor getProfessor(int id)
+    {
+        return DatabaseManager.queryProfessorByID(id);
     }
 
     @Override

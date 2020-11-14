@@ -1,6 +1,7 @@
 package com.mypls.course;
 
 import com.mypls.DatabaseManager;
+import freemarker.ext.jsp.TaglibFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ public class Course
     private int numOfRatings;
     private int enrollment;
     private double minScore;
+    private String Status;
     private List<Lesson> lessons;
 
     public Course(String name, int courseID, int assignedProfessorId, int prerequisiteCourseId, String requirements, String objectives, String outcomes, double rating, int numOfRatings, int enrollment, double minScore) {
@@ -132,6 +134,14 @@ public class Course
 
     public void setMinScore(double minScore) {
         this.minScore = minScore;
+    }
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String status) {
+        Status = status;
     }
 
     public void addAllLesson(List<Lesson>  lessons)
@@ -256,6 +266,11 @@ public class Course
     public static ArrayList<Course> getAssignedCourses(int professorId)
     {
         return DatabaseManager.queryCourseByProfessor(professorId);
+    }
+
+    public static boolean registerCourse(int learnerID, int courseID)
+    {
+        return DatabaseManager.AddLearnerCourse(learnerID,courseID);
     }
 
 

@@ -22,6 +22,7 @@
          <div class= "header">
             <h2>Create Discussion Group</h2>
          </div>
+
          <div class="container">
             <form action= "/HomepageAdmin/CreateDiscussionGroup" method ="Post">
                <#if blankSpaces??>

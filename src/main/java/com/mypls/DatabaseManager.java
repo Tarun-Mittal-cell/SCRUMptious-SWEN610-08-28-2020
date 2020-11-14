@@ -23,7 +23,11 @@ public class DatabaseManager {
     public static final String INSERT_LEARNER_QUERY = "INSERT INTO LEARNERS(FirstName,LastName,Email) VALUES(?,?,?)";
     public static final String VALIDATE_USER    = "SELECT * FROM USERS WHERE Email=?";
     public static final String RETRIEVE_LEARNER = "SELECT * FROM LEARNERS WHERE Email=?";
+    public static final String REGISTER_COURSE = "INSERT INTO LEARNERCOURSE (LearnerID,CourseID,Status) VALUES(?,?,?)";
+    public static final String RETRIEVE_LEARNER_COURSES = "SELECT * FROM COURSES  INNER JOIN LEARNERCOURSE ON LEARNERCOURSE.COURSEID=COURSES.COURSEID WHERE LEARNERID=?;";
+
     public static final String RETRIEVE_PROFESSOR = "SELECT * FROM PROFESSORS WHERE Email=?";
+    public static final String RETRIEVE_PROFESSOR_BY_ID = "SELECT * FROM PROFESSORS WHERE ProfessorID=?";
     public static final String RETRIEVE_ALL_LEARNERS = "SELECT * FROM LEARNERS";
     public static final String RETRIEVE_ALL_PROFESSORS = "SELECT * FROM PROFESSORS";
 
@@ -159,10 +163,65 @@ public class DatabaseManager {
                 se.printStackTrace();
             }
         }
-
-
-
     }
+
+
+
+    public static boolean AddLearnerCourse(int learnerID, int courseID)
+    {
+        boolean isAdded=true;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+        {
+            //Open a connection to MyPLS database
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a query to MyPLS database
+            System.out.println("Inserting records into the table...");
+            statement = connection.prepareStatement(REGISTER_COURSE);
+            statement.setInt(1,learnerID);
+            statement.setInt(2,courseID);
+            statement.setString(3,"Registered");
+            statement.executeUpdate();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            isAdded=false;
+        }
+        finally
+        {
+            try{
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+        return isAdded;
+    }
+
+
+
+
 
     public static HashMap<String, Object>  queryCredentials(String email)
     {
@@ -474,6 +533,68 @@ public class DatabaseManager {
 
     }
 
+    public static Professor queryProfessorByID(int id)
+    {
+        Professor professor = null;
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.prepareStatement(RETRIEVE_PROFESSOR_BY_ID);
+            statement.setInt(1,id);
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                //Retrieve by column name
+                professor = new Professor(resultSet.getInt("ProfessorID"),resultSet.getString("FirstName"), resultSet.getString("lastName"), resultSet.getString("Email"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"));
+
+
+            }
+            resultSet.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+        return professor;
+    }
+
     public static boolean createNewCourse(String name , int professorId ,int prerequisite ,String requirement,String objectives ,String outcomes)
     {
         boolean isCreated=false;
@@ -623,6 +744,70 @@ public class DatabaseManager {
             {
                 //Retrieve by column name
                 Course course=new Course(resultSet.getString("Name"),resultSet.getInt("CourseID"),resultSet.getInt("AssignedProfessorID"),resultSet.getInt("PrerequisiteCourseID"),resultSet.getString("Requirements"),resultSet.getString("Objectives"),resultSet.getString("Outcomes"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"),resultSet.getInt("Enrollment"),resultSet.getDouble("MinScore"));
+                courses.add(course);
+
+            }
+            resultSet.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    connection.close();
+                    System.out.println("closed!");
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(connection!=null)
+                {
+                    connection.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return courses;
+
+    }
+
+    public static ArrayList<Course> getAllRegisteredCourses(int learnerID)
+    {
+        ArrayList<Course> courses = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try
+        {
+            //Open a connection
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a statement
+            System.out.println("Reading records from table...");
+            statement = connection.prepareStatement(RETRIEVE_LEARNER_COURSES);
+            statement.setInt(1,learnerID);
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                //Retrieve by column name
+                Course course=new Course(resultSet.getString("Name"),resultSet.getInt("CourseID"),resultSet.getInt("AssignedProfessorID"),resultSet.getInt("PrerequisiteCourseID"),resultSet.getString("Requirements"),resultSet.getString("Objectives"),resultSet.getString("Outcomes"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"),resultSet.getInt("Enrollment"),resultSet.getDouble("MinScore"));
+                course.setStatus(resultSet.getString("Status"));
                 courses.add(course);
 
             }

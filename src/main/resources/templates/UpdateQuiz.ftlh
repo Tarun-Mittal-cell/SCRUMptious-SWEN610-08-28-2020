@@ -22,7 +22,7 @@
             <!-- Question 1 -->
             <#list lesson.quiz.questions as question>
             <div class="mcq">
-               <label for="question" class="question">Question 1 :<textarea name="question${question?counter}" rows="10" cols="65" >${question}</textarea></label>
+               <label for="question" class="question">Question ${question?counter} :<textarea name="question${question?counter}" rows="10" cols="65" >${question}</textarea></label>
                <div class="block">
                   <label for="answer${question?counter}">Answer: </label>
                   <select name="answer${question?counter}" id="answer" class="answer">

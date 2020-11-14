@@ -16,36 +16,17 @@
       <section class="container">
          <form action="/HomepageProf/ViewCourse/UpdateQuiz" method="Post">
             <input type ="hidden" name="lessonID" value="${lesson.lessonID?replace(",", "")}">
-            <#if blankSpaces??>
-            <p style="color:red;">Please fill out all 3 questions.</p>
-            </#if>
-            <!-- Question 1 -->
             <#list lesson.quiz.questions as question>
             <div class="mcq">
                <label for="question" class="question">Question ${question?counter} :<textarea name="question${question?counter}" rows="10" cols="65" >${question}</textarea></label>
                <div class="block">
                   <label for="answer${question?counter}">Answer: </label>
                   <select name="answer${question?counter}" id="answer" class="answer">
-                     <#if lesson.quiz.answers[question?counter-1]=="A">
-                     <option value="A" selected>A</option>
-                     <#else>
                      <option value="A" >A</option>
-                     </#if>
-                     <#if lesson.quiz.answers[question?counter-1]=="B">
-                     <option value="B" selected>B</option>
-                     <#else>
                      <option value="B" >B</option>
-                     </#if>
-                     <#if lesson.quiz.answers[question?counter-1]=="C">
                      <option value="C" selected>C</option>
-                     <#else>
                      <option value="C" >C</option>
-                     </#if>
-                     <#if lesson.quiz.answers[question?counter-1]=="D">
                      <option value="D" selected>D</option>
-                     <#else>
-                     <option value="D" >D</option>
-                     </#if>
                   </select>
                </div>
             </div>
