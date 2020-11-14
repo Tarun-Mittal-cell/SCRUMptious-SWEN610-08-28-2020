@@ -53,7 +53,7 @@
                           <td>${courseProfessors[course?index].firstName} ${courseProfessors[course?index].lastName}</td>
                           <td>${courseProfessors[course?index].rating}</td>
                           <td>
-                               <a href='HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}'>View Course</a>
+                               <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}'>View Course</a>
                           </td>
                        </tr>
                   </#list>

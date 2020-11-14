@@ -59,7 +59,9 @@
             </section>
             <!-- Footer Section -->
             <footer>
-               <h3>${score?string["0.##"]}%</h3>
+               <h3>${score?string["0.##"]}% <br>
+               <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}'>Back to course home</a>
+               </h3>
             </form >
             </footer>
       </#if>
