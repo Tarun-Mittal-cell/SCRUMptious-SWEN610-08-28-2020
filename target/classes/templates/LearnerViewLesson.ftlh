@@ -14,13 +14,6 @@
             </div>
             <ul class="nav navbar-nav">
                <li class="active"><a href="/HomepageLearner">Home</a></li>
-                <#if lesson.quiz ?? && (lesson.quiz.grade> -1) >
-                    <#if lesson.quiz.grade < course.minScore>
-                         <li><a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Retake Quiz</a></li>
-                    </#if>
-               <#elseif lesson.quiz ?? >
-                    <li><a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Take QuiZ</a></li>
-               </#if>
                <li><a href="/Signout">Sign Out</a></li>
             </ul>
          </div>

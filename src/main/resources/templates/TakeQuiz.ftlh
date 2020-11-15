@@ -15,7 +15,11 @@
       <!-- Main Section -->
       <section class="container">
       <#if !score??>
-            <form action="/HomepageProf/ViewCourse/TakeQuiz" method="Post">
+            <#if (lesson.quiz.grade > -1) >
+                <form action="/HomepageProf/ViewCourse/RetakeQuiz" method="Post">
+            <#else>
+                  <form action="/HomepageProf/ViewCourse/TakeQuiz" method="Post">
+            </#if>
                <input type ="hidden" name="lessonID" value="${lesson.lessonID?replace(",", "")}">
                <#list lesson.quiz.questions as question>
                <div class="mcq">
@@ -35,7 +39,10 @@
             </section>
             <!-- Footer Section -->
             <footer>
-            <button type="submit" class="button">Submit</button>
+
+                <button type="submit" class="button">Submit</button>
+
+
             </form >
             </footer>
       <#else>
@@ -59,9 +66,11 @@
             </section>
             <!-- Footer Section -->
             <footer>
-               <h3>${score?string["0.##"]}% <br>
-               <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}'>Back to course home</a>
-               </h3>
+
+                    <h3>${score?string["0.##"]}% <br>
+                        <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}'>Back to course home</a>
+                    </h3>
+
             </form >
             </footer>
       </#if>

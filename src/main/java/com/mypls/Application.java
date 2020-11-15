@@ -6,7 +6,6 @@ import com.mypls.users.*;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.Part;
-import javax.swing.plaf.IconUIResource;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -82,7 +81,7 @@ public class Application {
         });
 
         post("/Login", (request, response) ->{
-            HashMap<String, Object> userData = UserController.login(request.queryParams("email"),request.queryParams("password")) ;
+            HashMap<String, Object> userData = User.login(request.queryParams("email"),request.queryParams("password")) ;
 
             if(userData.get("loginStatus").equals(AUTHENTICATED))
             {
@@ -146,14 +145,14 @@ public class Application {
             int elength=request.queryParams("email").trim().length();
 
             if(fLength>0&&lLength>0&&elength>0) {
-                boolean isEmailUnique = UserController.register(request.queryParams("fname"), request.queryParams("lname"), request.queryParams("type"), request.queryParams("email"), request.queryParams("password_1"));
+                boolean isEmailUnique = User.register(request.queryParams("fname"), request.queryParams("lname"), request.queryParams("type"), request.queryParams("email"), request.queryParams("password_1"));
                 HashMap<String, Object> userData;
 
                 if (isEmailUnique) {
                     request.session(true);
                     request.session().attribute("currentUser", request.queryParams("email"));
 
-                    userData = UserController.login(request.queryParams("email"), request.queryParams("password_1"));
+                    userData = User.login(request.queryParams("email"), request.queryParams("password_1"));
                     if (!request.queryParams("type").equals("Professor")) {
                         learner = (Learner) userData.get("userData");
                         System.out.println(learner);
@@ -201,6 +200,7 @@ public class Application {
 
                 template.setModel("registeredCourses",courseList);
                 template.setModel("courseProfessors",courseProfessors);
+                template.removeModel("score");
                 return template.render(HOME);
             }
             else
@@ -226,6 +226,7 @@ public class Application {
 
                 System.out.println("First score:"+course.getLessons().get(0).getQuiz().getGrade());
                 template.removeModel("blankSpaces");
+                template.removeModel("score");
                 course.setMinScore(75);
                 template.setModel("course", course);
                 return template.render(LEARNERVIEWCOURSE);
@@ -289,6 +290,9 @@ public class Application {
             }
         });
 
+
+
+
         post("/HomepageProf/ViewCourse/TakeQuiz", (request, response) -> {
 
             Course course = (Course) template.getModel("course");
@@ -302,10 +306,30 @@ public class Application {
                 choices.add(request.queryParams("answer" + (i + 1)));
 
             }
-            double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers());
+            double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers(),false);
             template.setModel("score",score);
             return template.render(TAKEQUIZ);
         });
+
+        post("/HomepageProf/ViewCourse/RetakeQuiz", (request, response) -> {
+
+            System.out.println("retaking!!!!!!");
+            Course course = (Course) template.getModel("course");
+            Lesson lesson=(Lesson) template.getModel("lesson");
+            ArrayList<String> choices=new ArrayList<>();
+            Quiz quiz=lesson.getQuiz();
+
+            for(int i=0; i<3;i++)
+            {
+                String choice=request.queryParams("answer"+(i+1));
+                choices.add(request.queryParams("answer" + (i + 1)));
+
+            }
+            double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers(),true);
+            template.setModel("score",score);
+            return template.render(TAKEQUIZ);
+        });
+
 
 
         get("/HomepageLearner/Search", (request, response) -> {
