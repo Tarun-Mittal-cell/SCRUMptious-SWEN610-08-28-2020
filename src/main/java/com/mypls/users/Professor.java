@@ -18,6 +18,7 @@ public class Professor extends User {
 
 
 
+
     public Professor(int professorID,String firstName, String lastName, String email,double rating,int numberOfRatings)
     {
         super(firstName,lastName,email);

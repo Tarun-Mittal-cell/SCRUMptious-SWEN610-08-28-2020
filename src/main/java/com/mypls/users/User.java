@@ -1,14 +1,25 @@
 package com.mypls.users;
 
+import com.mypls.Rate;
+
 public class User {
     protected String firstName;
     protected String lastName;
     protected String email;
+    protected Rate rate;
 
     public User(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+
+    public Rate getRate() {
+        return rate;
+    }
+
+    public void setRate(Rate rate) {
+        this.rate = rate;
     }
 
     public String getFirstName() {

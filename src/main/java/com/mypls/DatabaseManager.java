@@ -28,6 +28,12 @@ public class DatabaseManager {
     public static final String ADD_GRADE = "INSERT INTO GRADES(LearnerID,CourseID,LessonID,Grade) VALUES(?,?,?,?);";
     public static final String RETRIEVE_GRADE = "SELECT * FROM GRADES WHERE  LEARNERID=? AND LessonID=?";
 
+    public static final String UPDATE_LEARNER_RATING      = "UPDATE LEARNERS SET RATING=?,NumberOfRatings=? WHERE (LearnerID =?)";
+    public static final String UPDATE_PROFESSOR_RATING = "UPDATE PROFESSOR SET RATING=?,NumberOfRatings=? WHERE (ProfessorID =?)";
+    public static final String UPDATE_LESSONS_RATING      = "UPDATE LESSONS SET RATING=?,NumberOfRatings=? (LessonID =?)";
+    public static final String UPDATE_COURSE_RATING      = "UPDATE COURSES SET RATING=?,NumberOfRatings=? WHERE (CourseID =?)";
+
+
 
 
     public static final String RETRIEVE_PROFESSOR = "SELECT * FROM PROFESSORS WHERE Email=?";
@@ -1654,6 +1660,249 @@ public class DatabaseManager {
         return isDeleted;
     }
 
+    public static boolean updateCourseRating(int courseID, double rating, int numberOfRating)
+    {
+        boolean isUpdated=false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+        {
+            //Open a connection to MYPLS database
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a query to MyPLS database
+            System.out.println("Inserting records into the table...");
+            statement = connection.prepareStatement(UPDATE_COURSE_RATING);
+            statement.setDouble(1,rating);
+            statement.setInt(2,numberOfRating);
+            statement.setInt(3,courseID);
+
+            statement.executeUpdate();
+            isUpdated=true;
+        }
+        catch (SQLIntegrityConstraintViolationException e)
+        {
+            System.out.println("Email already assigned to an account");
+            isUpdated=false;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return isUpdated;
+    }
+
+    public static boolean updateLearnerRating(int lessonID, double rating, int numberOfRating)
+    {
+        boolean isUpdated=false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+                {
+                //Open a connection to MYPLS database
+                System.out.println("Connecting to a selected database...");
+                connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                System.out.println("Connected database successfully...");
+
+                //Execute a query to MyPLS database
+                System.out.println("Inserting records into the table...");
+                statement = connection.prepareStatement(UPDATE_LEARNER_RATING);
+                statement.setDouble(1,rating);
+                statement.setInt(2,numberOfRating);
+                statement.setInt(3,lessonID);
+
+                statement.executeUpdate();
+                isUpdated=true;
+                }
+                catch (SQLIntegrityConstraintViolationException e)
+                {
+                System.out.println("Email already assigned to an account");
+                isUpdated=false;
+                }
+                catch(Exception e)
+                {
+                e.printStackTrace();
+
+                }
+                finally
+                {
+
+                try{
+                if(statement!=null)
+                {
+                statement.close();
+                }
+                }
+                catch(SQLException se)
+                {
+                se.printStackTrace();
+                }
+                try
+                {
+                if(statement!=null)
+                {
+                statement.close();
+                }
+                }
+                catch(SQLException se)
+                {
+                se.printStackTrace();
+                }
+                }
+
+                return isUpdated;
+                }
+
+public static boolean updateProfessorRating(int professorID, double rating, int numberOfRating)
+{
+        boolean isUpdated=false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+        {
+        //Open a connection to MYPLS database
+        System.out.println("Connecting to a selected database...");
+        connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+        System.out.println("Connected database successfully...");
+
+        //Execute a query to MyPLS database
+        System.out.println("Inserting records into the table...");
+        statement = connection.prepareStatement(UPDATE_PROFESSOR_RATING);
+        statement.setDouble(1,rating);
+        statement.setInt(2,numberOfRating);
+        statement.setInt(3,professorID);
+
+        statement.executeUpdate();
+        isUpdated=true;
+        }
+        catch (SQLIntegrityConstraintViolationException e)
+        {
+        System.out.println("Email already assigned to an account");
+        isUpdated=false;
+        }
+        catch(Exception e)
+        {
+        e.printStackTrace();
+
+        }
+        finally
+        {
+
+        try{
+        if(statement!=null)
+        {
+        statement.close();
+        }
+        }
+        catch(SQLException se)
+        {
+        se.printStackTrace();
+        }
+        try
+        {
+        if(statement!=null)
+        {
+        statement.close();
+        }
+        }
+        catch(SQLException se)
+        {
+        se.printStackTrace();
+        }
+        }
+
+        return isUpdated;
+        }
+
+public static boolean updateLessonRating(int lessonID, double rating, int numberOfRating)
+{
+        boolean isUpdated=false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+        {
+        //Open a connection to MYPLS database
+        System.out.println("Connecting to a selected database...");
+        connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+        System.out.println("Connected database successfully...");
+
+        //Execute a query to MyPLS database
+        System.out.println("Inserting records into the table...");
+        statement = connection.prepareStatement(UPDATE_LESSONS_RATING);
+        statement.setDouble(1,rating);
+        statement.setInt(2,numberOfRating);
+        statement.setInt(3,lessonID);
+
+        statement.executeUpdate();
+        isUpdated=true;
+        }
+        catch (SQLIntegrityConstraintViolationException e)
+        {
+        System.out.println("Email already assigned to an account");
+        isUpdated=false;
+        }
+        catch(Exception e)
+        {
+        e.printStackTrace();
+
+        }
+        finally
+        {
+
+        try{
+        if(statement!=null)
+        {
+        statement.close();
+        }
+        }
+        catch(SQLException se)
+        {
+        se.printStackTrace();
+        }
+        try
+        {
+        if(statement!=null)
+        {
+        statement.close();
+        }
+        }
+        catch(SQLException se)
+        {
+        se.printStackTrace();
+        }
+        }
+
+        return isUpdated;
+        }
 
 
 
