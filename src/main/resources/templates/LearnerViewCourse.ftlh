@@ -75,13 +75,24 @@
                      </td>
                      <td >
                         <a href='/HomepageLearner/ViewCourse/ViewLesson/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}'>View Lesson</a>
-                         <#if lesson.quiz ?? && (lesson.quiz.grade> -1) >
-                            <#if lesson.quiz.grade < course.minScore>
-                                | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Retake Quiz</a>
+                         <#if lesson?index == 0>
+                            <#if lesson.quiz ?? && (lesson.quiz.grade> -1) >
+                               <#if lesson.quiz.grade < course.minScore>
+                                   | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Retake Quiz</a>
+                               </#if>
+                            <#elseif lesson.quiz ?? >
+                               | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Take Quiz</a>
                             </#if>
-                         <#elseif lesson.quiz ?? >
-                            | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Take Quiz</a>
+                         <#elseif (course.lessons[lesson?index-1].quiz.grade > course.minScore)>
+                             <#if lesson.quiz ?? && (lesson.quiz.grade> -1) >
+                               <#if lesson.quiz.grade < course.minScore>
+                                   | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Retake Quiz</a>
+                               </#if>
+                            <#elseif lesson.quiz ?? >
+                               | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Take Quiz</a>
+                            </#if>
                          </#if>
+
                      </td>
                   </tr>
                   </#list>

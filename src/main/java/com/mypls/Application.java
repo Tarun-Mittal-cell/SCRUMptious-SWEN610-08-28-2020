@@ -219,9 +219,12 @@ public class Application {
                 {
                     double grade=DatabaseManager.retrieveGrade(learner.getLearnerID(), lesson.getLessonID());
                     System.out.println("First score:"+grade);
-                    lesson.getQuiz().setGrade(grade);
+                    if(lesson.getQuiz()!=null)
+                    {
+                        lesson.getQuiz().setGrade(grade);
+                        System.out.println("Grade :"+lesson.getQuiz().getGrade());
 
-                    System.out.println("Grade :"+lesson.getQuiz().getGrade());
+                    }
                 }
 
                 System.out.println("First score:"+course.getLessons().get(0).getQuiz().getGrade());
