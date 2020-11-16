@@ -188,7 +188,7 @@
                   </thead>
                   <#list courses as course>
                   <tr>
-                     <td id="td1">${course.courseID}</td>
+                     <td id="td1">${course.courseID?replace(",", "")}</td>
                      <td id="td1">${course.name}</td>
                      <td id="td1">${course.enrollment}</td>
                      <td id="td1">${course.rating}</td>
