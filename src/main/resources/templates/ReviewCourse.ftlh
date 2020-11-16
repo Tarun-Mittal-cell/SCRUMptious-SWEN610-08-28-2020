@@ -25,7 +25,7 @@
       <div class="row">
          <div class="col-md-12" style="border: 5px solid; padding: 20px; margin: 5px 0px;">
 
-                <form action="/HomepageLearner/ReviewCourse" method="post">
+                <form action="/HomepageLearner/ViewCourse/ReviewCourse" method="post">
                 <h4> Rate Professor</h4>
                  <label for="profRating">Prof. ${professor.firstName} ${professor.lastName}</label>
                             <select name="profRating" >
@@ -50,7 +50,7 @@
                        <tr>
                           <td>${lesson.title}</td>
                           <td>
-                            <select name="courseRating" >
+                            <select name="LessonRating${lesson?counter}" >
                                 <option disabled="disabled" selected="selected">Select rating</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -72,6 +72,11 @@
                  <option value="4">4</option>
                  <option value="5">5</option>
               </select>
+              <br>
+              <button buttontype = "submit" > Submit </button>
+              <#if blanks??>
+                <p style="color:red;"> Please fill out all review item.</p>
+              </#if>
              </form>
             </div>
          </div>

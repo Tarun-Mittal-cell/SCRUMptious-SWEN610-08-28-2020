@@ -56,8 +56,8 @@
                           <td>${courseProfessors[course?index].rating}</td>
                           <td>
                                <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}'>View Course</a>
-                               <#if course.status =="Completed">
-                                    | <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/Rate'>Rate Course</a>
+                               <#if course.status =="Completed" && course.reviewed ==false>
+                                    | <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/Review'>Review Course</a>
                                </#if>
                           </td>
                        </tr>

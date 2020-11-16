@@ -15,11 +15,11 @@ public class Professor extends User {
     private double rating;
     private int numberOfRatings;
 
+    public void setRating(int rating) {
+        this.rating = rate.computeRating(professorID,rating,this.rating,numberOfRatings);
+    }
 
-
-
-
-    public Professor(int professorID,String firstName, String lastName, String email,double rating,int numberOfRatings)
+    public Professor(int professorID, String firstName, String lastName, String email, double rating, int numberOfRatings)
     {
         super(firstName,lastName,email);
         this.professorID=professorID;
@@ -57,12 +57,27 @@ public class Professor extends User {
         return DatabaseManager.queryProfessorByID(id);
     }
 
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public  double updateProfessorRating(int newRating)
+    {
+        this.rating= rate.computeRating(professorID,newRating,rating,numberOfRatings);
+        this.numberOfRatings++;
+        return rating;
+    }
+
+
     @Override
     public String toString() {
         return "Professor{" +
-                "firstName='" + firstName + '\'' +
-                ", LastName='" + lastName + '\'' +
+                "professorID=" + professorID +
+                ", rating=" + rating +
+                ", numberOfRatings=" + numberOfRatings +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                '}';
+                "} " + super.toString();
     }
 }

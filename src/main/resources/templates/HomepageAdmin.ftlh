@@ -69,6 +69,7 @@
                <table style="width:100%"  class="table table-hover table-striped table-bordered" >
                   <thead class="thead-dark">
                      <tr>
+                        <th scope="col">Course ID</th>
                         <th scope="col">Course Name</th>
                         <th scope="col">Enrollment</th>
                         <th scope="col">Rating</th>
@@ -77,10 +78,11 @@
                   </thead>
                   <#list courses as course>
                   <tr>
-                     <td style="width:50%">${course.name}</td>
-                     <td style="width:10%">${course.enrollment}</td>
-                     <td style="width:10%">${course.rating}</td>
-                     <td style="width:30%" >
+                     <td >${course.courseID?replace(",", "")}</td>
+                     <td >${course.name}</td>
+                     <td >${course.enrollment}</td>
+                     <td >${course.rating}</td>
+                     <td  >
                         <a href='HomepageAdmin/UpdateCourse/${course.courseID?replace(",", "")}'>Update Course</a>
                         <form action="/HomepageAdmin/DeleteCourse" method="post">
                            <input type="hidden" name="courseid" value="${course.courseID?replace(",", "")}">

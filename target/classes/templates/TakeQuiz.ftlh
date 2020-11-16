@@ -51,16 +51,12 @@
             <#list lesson.quiz.questions as question>
             <div class="mcq">
                <label for="question" class="question">Question ${question?counter} :<textarea name="question${question?counter}" rows="10" cols="65" disabled>${question}</textarea></label>
-               <div class="block">
-                  <label for="answer${question?counter}">Answer: </label>
-                  <select name="answer${question?counter}" id="answer" class="answer">
-                     <option value="" hidden  disabled selected></option>
-                     <option value="A" >A</option>
-                     <option value="B" >B</option>
-                     <option value="C" >C</option>
-                     <option value="D" >D</option>
-                  </select>
-               </div>
+               <#if lesson.quiz.answers[question?index] == choices[question?index] >
+                   <p> Correct </p>
+               <#else>
+                    <p> Wrong </p>
+               </#if>
+
             </div>
             </#list>
             </section>

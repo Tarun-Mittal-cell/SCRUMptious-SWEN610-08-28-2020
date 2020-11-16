@@ -30,12 +30,12 @@ public class DatabaseManager {
     public static final String RETRIEVE_PREQ_COURSE = "SELECT * FROM LEARNERCOURSE WHERE  LEARNERID=? AND COURSEID=?";
 
     public static final String UPDATE_LEARNER_RATING      = "UPDATE LEARNERS SET RATING=?,NumberOfRatings=? WHERE (LearnerID =?)";
-    public static final String UPDATE_PROFESSOR_RATING = "UPDATE PROFESSOR SET RATING=?,NumberOfRatings=? WHERE (ProfessorID =?)";
+    public static final String UPDATE_PROFESSOR_RATING = "UPDATE PROFESSORS SET RATING=?,NumberOfRatings=? WHERE (ProfessorID =?)";
     public static final String UPDATE_LESSONS_RATING      = "UPDATE LESSONS SET RATING=?,NumberOfRatings=? WHERE (LessonID =?)";
     public static final String UPDATE_COURSE_RATING      = "UPDATE COURSES SET RATING=?,NumberOfRatings=? WHERE (CourseID =?)";
     public static final String UPDATE_GRADE    = "UPDATE GRADES SET Grade=? WHERE (LEARNERID=? AND LessonID=?)";
     public static final String UPDATE_LEARNER_COURSE   = "UPDATE LEARNERCOURSE SET STATUS=? WHERE (LEARNERID=? AND COURSEID=?)";
-
+    public static final String MARK_COURSE_REVIEWED   = "UPDATE LEARNERCOURSE SET REVIEWED=TRUE WHERE (LEARNERID=? AND COURSEID=?)";
 
 
 
@@ -822,6 +822,7 @@ public class DatabaseManager {
                 //Retrieve by column name
                 Course course=new Course(resultSet.getString("Name"),resultSet.getInt("CourseID"),resultSet.getInt("AssignedProfessorID"),resultSet.getInt("PrerequisiteCourseID"),resultSet.getString("Requirements"),resultSet.getString("Objectives"),resultSet.getString("Outcomes"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"),resultSet.getInt("Enrollment"),resultSet.getDouble("MinScore"));
                 course.setStatus(resultSet.getString("Status"));
+                course.setReviewed(resultSet.getBoolean("Reviewed"));
                 courses.add(course);
 
             }
@@ -1799,7 +1800,7 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         System.out.println("Connected database successfully...");
 
         //Execute a query to MyPLS database
-        System.out.println("Inserting records into the table...");
+        System.out.println("Inserting RATING FOR PROFESSSOR into the table...");
         statement = connection.prepareStatement(UPDATE_PROFESSOR_RATING);
         statement.setDouble(1,rating);
         statement.setInt(2,numberOfRating);
@@ -2098,6 +2099,66 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         }
 
         return passedPrereq;
+    }
+
+    public static boolean updateLearnerCourseReviewed(int learnerID,int courseID)
+    {
+        boolean isUpdated=false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+        {
+            //Open a connection to MYPLS database
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a query to MyPLS database
+            System.out.println("Inserting records into the table...");
+            statement = connection.prepareStatement(MARK_COURSE_REVIEWED);
+            statement.setInt(1,learnerID);
+            statement.setInt(2,courseID);
+
+            statement.executeUpdate();
+            isUpdated=true;
+        }
+        catch (SQLIntegrityConstraintViolationException e)
+        {
+            System.out.println("Email already assigned to an account");
+            isUpdated=false;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return isUpdated;
     }
 
 }

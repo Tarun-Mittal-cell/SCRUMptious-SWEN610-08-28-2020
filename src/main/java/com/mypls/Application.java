@@ -202,6 +202,7 @@ public class Application {
                 template.setModel("registeredCourses",courseList);
                 template.setModel("courseProfessors",courseProfessors);
                 template.removeModel("score");
+                template.removeModel("blanks");
                 return template.render(HOME);
             }
             else
@@ -231,6 +232,7 @@ public class Application {
                 System.out.println("First score:"+course.getLessons().get(0).getQuiz().getGrade());
                 template.removeModel("blankSpaces");
                 template.removeModel("score");
+                template.removeModel("blanks");
                 course.setMinScore(75);
                 template.setModel("course", course);
                 return template.render(LEARNERVIEWCOURSE);
@@ -320,6 +322,7 @@ public class Application {
                 DatabaseManager.updateLearnerCourseStatus(learner.getLearnerID(), course.getCourseID(), "Completed");
             }
             template.setModel("score",score);
+            template.setModel("choices",choices);
             return template.render(TAKEQUIZ);
         });
 
@@ -345,6 +348,7 @@ public class Application {
                 DatabaseManager.updateLearnerCourseStatus(learner.getLearnerID(), course.getCourseID(), "Completed");
             }
             template.setModel("score",score);
+            template.setModel("choices",choices);
             return template.render(TAKEQUIZ);
         });
 
@@ -392,7 +396,16 @@ public class Application {
 
         post("/HomepageLearner/CourseRegister", (request, response) -> {
             Course course=Course.getCourseByID(Integer.parseInt(request.queryParams("courseID")));
-            boolean prereqPassed=DatabaseManager.retrievePrereqStatus(learner.getLearnerID(),course.getPrerequisiteCourseId());
+            boolean prereqPassed;
+            if(course.getPrerequisiteCourseId()!=0)
+            {
+                prereqPassed=DatabaseManager.retrievePrereqStatus(learner.getLearnerID(),course.getPrerequisiteCourseId());
+            }
+            else
+            {
+                prereqPassed=true;
+            }
+
             if(prereqPassed)
             {
                 boolean isAdded=Course.registerCourse(learner.getLearnerID(),Integer.parseInt(request.queryParams("courseID")));
@@ -409,7 +422,7 @@ public class Application {
             return null;
         });
 
-        get("/HomepageLearner/ViewCourse/:courseid/Rate", (request, response) -> {
+        get("/HomepageLearner/ViewCourse/:courseid/Review", (request, response) -> {
 
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
@@ -428,13 +441,37 @@ public class Application {
 
         });
 
-        post("/HomepageLearner/CourseRegister", (request, response) -> {
 
+        post("/HomepageLearner/ViewCourse/ReviewCourse", (request, response) -> {
+            Course course= (Course) template.getModel("course");
+            boolean blanks=false;
 
-            boolean isAdded=Course.registerCourse(learner.getLearnerID(),Integer.parseInt(request.queryParams("courseID")));
-            if(isAdded) {
-                response.redirect("/HomepageLearner");
+            System.out.println("Rate Params: "+request.queryParams());
+            if( request.queryParams().size()!=4) {
+                blanks = true;
+                template.setModel("blanks", blanks);
+                return template.render(REVIEWCOURSE);
             }
+
+            int newProfessorRating = Integer.parseInt(request.queryParams("courseRating"));
+            int newCourseRating = Integer.parseInt(request.queryParams("profRating"));
+
+            int lessonRatings=0;
+            for (int i = 1; i <=course.getLessons().size(); i++)
+            {
+                lessonRatings=Integer.parseInt( request.queryParams("LessonRating"+i));
+                Lesson.updateLessonRating(course.getLessons().get(i-1),Integer.parseInt( request.queryParams("LessonRating"+i)));
+            }
+            Course.updateCourseRating(course,newCourseRating);
+            Professor professor1= DatabaseManager.queryProfessorByID(course.getAssignedProfessorId());
+            System.out.println("Prof."+professor1.toString());
+            professor1.setRate(new RateProfessor());
+            professor1.updateProfessorRating(newProfessorRating);
+            Course.markAsReviewed(learner.getLearnerID(),course.getCourseID());
+
+           // template.setModel("ratings added",true);
+            response.redirect("/HomepageLearner");
+
             return null;
         });
 

@@ -66,7 +66,7 @@
                          </form>
                           <a href='/HomepageLearner/ViewCourseOutline/${course.courseID?replace(",", "")}'>View Course Outline</a>
                            <#if prereqPassed??>
-                                    <p style="color:red;"> Prerequisite ID: ${course.prerequisiteCourseId?replace(",", "")} not Satisfied</p>
+                                    <p style="color:red;"> Prerequisite ID: ${course.prerequisiteCourseId?replace(",", "")} not Satisfied.</p>
                            </#if>
                      </td>
                   </tr>
