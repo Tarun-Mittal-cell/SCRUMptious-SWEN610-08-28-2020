@@ -24,6 +24,7 @@
       </div>
       <div class="row">
          <div class="col-md-12" style="border: 5px solid; padding: 20px; margin: 5px 0px;">
+
             <div>
                 <form action="/HomepageLearner/Search" method="post">
                     <input type ="number" name="search">
@@ -31,7 +32,7 @@
                 </form>
 
              </div>
-
+             <a href='/HomepageLearner/ViewAllCourses'>View All Course</a>
              <table style="width:100%"  class="table table-hover table-striped table-bordered" >
                <thead class="thead-dark">
                   <tr>

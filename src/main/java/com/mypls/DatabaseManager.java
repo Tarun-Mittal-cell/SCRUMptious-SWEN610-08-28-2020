@@ -48,6 +48,8 @@ public class DatabaseManager {
     public static final String ADD_NEW_COURSE= "INSERT INTO Courses (Name,AssignedProfessorID,PrerequisiteCourseID,Requirements,Objectives,Outcomes) VALUES (?,?,?,?,?,?)";
 
     public static final String UPDATE_COURSE    = "UPDATE COURSES SET Name=?,AssignedProfessorID=?,PrerequisiteCourseID=?,Requirements=?,Objectives=?, Outcomes=? WHERE (courseID =?)";
+    public static final String UPDATE_COURSE_ENROLLMENT    = "UPDATE COURSES SET  Enrollment=? WHERE (courseID =?)";
+
     public static final String DELETE_COURSE     = "DELETE FROM COURSES WHERE (CourseID =?)";
     public static final String RETRIEVE_ASSIGNED_COURSES = "SELECT * FROM COURSES WHERE AssignedProfessorID=?";
     public static final String RETRIEVE_COURSE_BY_COURSEID = "SELECT * FROM COURSES WHERE CourseID=?";
@@ -694,6 +696,67 @@ public class DatabaseManager {
             statement.setString(5,objectives);
             statement.setString(6,outcomes);
             statement.setInt(7,courseID);
+            statement.executeUpdate();
+            isUpdated=true;
+        }
+        catch (SQLIntegrityConstraintViolationException e)
+        {
+            System.out.println("Email already assigned to an account");
+            isUpdated=false;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return isUpdated;
+    }
+
+    public static boolean updateCourseEnrollment(int courseID,int enrollment)
+    {
+        boolean isUpdated=false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+        {
+            //Open a connection to MYPLS database
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a query to MyPLS database
+            System.out.println("Inserting records into the table...");
+            statement = connection.prepareStatement(UPDATE_COURSE_ENROLLMENT);
+            statement.setInt(1,enrollment);
+            statement.setInt(2,courseID);
+
+
             statement.executeUpdate();
             isUpdated=true;
         }

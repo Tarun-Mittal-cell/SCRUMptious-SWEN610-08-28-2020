@@ -43,6 +43,7 @@ public class Application {
     static final String ADDQUIZ = "AddQuiz.ftlh";
     static final String UPDATEQUIZ = "UpdateQuiz.ftlh";
     static final String REVIEWCOURSE = "ReviewCourse.ftlh";
+    static final String VIEWALLCOURSES = "LearnerViewAllCourses.ftlh";
 
     static final String AUTHENTICATED = "AUTHENTICATED";
 
@@ -233,9 +234,23 @@ public class Application {
                 template.removeModel("blankSpaces");
                 template.removeModel("score");
                 template.removeModel("blanks");
-                course.setMinScore(75);
+                course.setMinScore(50);
                 template.setModel("course", course);
                 return template.render(LEARNERVIEWCOURSE);
+            }
+            else {
+                response.redirect("/");
+                return "You are not logged in!";
+            }
+
+        });
+
+        get("/HomepageLearner/ViewAllCourses", (request, response) -> {
+
+            if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
+            {
+                template.setModel("courses",Course.allCourses());
+                return template.render(VIEWALLCOURSES);
             }
             else {
                 response.redirect("/");
@@ -258,11 +273,7 @@ public class Application {
                         break;
                     }
                 }
-               /* double grade=DatabaseManager.retrieveGrade(learner.getLearnerID(), lesson.getLessonID());
-                System.out.println("First score:"+grade);
-                lesson.getQuiz().setGrade(grade);
 
-                System.out.println("Grade :"+lesson.getQuiz().getGrade());*/
                 template.setModel("lesson", lesson);
                 return template.render(LEARNERVIEWLESSON);
             }
@@ -410,6 +421,7 @@ public class Application {
             {
                 boolean isAdded=Course.registerCourse(learner.getLearnerID(),Integer.parseInt(request.queryParams("courseID")));
                 if(isAdded) {
+                    DatabaseManager.updateCourseEnrollment(course.getCourseID(),course.getEnrollment()+1);
                     response.redirect("/HomepageLearner");
                 }
             }
