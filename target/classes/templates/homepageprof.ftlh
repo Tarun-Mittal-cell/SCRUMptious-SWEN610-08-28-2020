@@ -177,6 +177,7 @@
                <table id="table1">
                   <thead class="thead-dark">
                      <tr>
+                        <th id="th1">Course ID</th>
                         <th id="th1">Course Name</th>
                         <th id="th1">Enrollment</th>
                         <th id="th1">Rating</th>
@@ -186,6 +187,7 @@
 
                   <#list courses as course>
                   <tr>
+                     td id="td1">${course.courseID}</td>
                      <td id="td1">${course.name}</td>
                      <td id="td1">${course.enrollment}</td>
                      <td id="td1">${course.rating}</td>
