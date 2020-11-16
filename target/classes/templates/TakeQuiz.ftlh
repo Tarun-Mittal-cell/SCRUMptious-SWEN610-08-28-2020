@@ -15,7 +15,11 @@
       <!-- Main Section -->
       <section class="container">
       <#if !score??>
-            <form action="/HomepageProf/ViewCourse/TakeQuiz" method="Post">
+            <#if (lesson.quiz.grade > -1) >
+                <form action="/HomepageProf/ViewCourse/RetakeQuiz" method="Post">
+            <#else>
+                  <form action="/HomepageProf/ViewCourse/TakeQuiz" method="Post">
+            </#if>
                <input type ="hidden" name="lessonID" value="${lesson.lessonID?replace(",", "")}">
                <#list lesson.quiz.questions as question>
                <div class="mcq">
@@ -35,7 +39,10 @@
             </section>
             <!-- Footer Section -->
             <footer>
-            <button type="submit" class="button">Submit</button>
+                <input type ="hidden" name="lessonCount" value="${lessonIndex+1}">
+                <button type="submit" class="button">Submit</button>
+
+
             </form >
             </footer>
       <#else>
@@ -44,24 +51,22 @@
             <#list lesson.quiz.questions as question>
             <div class="mcq">
                <label for="question" class="question">Question ${question?counter} :<textarea name="question${question?counter}" rows="10" cols="65" disabled>${question}</textarea></label>
-               <div class="block">
-                  <label for="answer${question?counter}">Answer: </label>
-                  <select name="answer${question?counter}" id="answer" class="answer">
-                     <option value="" hidden  disabled selected></option>
-                     <option value="A" >A</option>
-                     <option value="B" >B</option>
-                     <option value="C" >C</option>
-                     <option value="D" >D</option>
-                  </select>
-               </div>
+               <#if lesson.quiz.answers[question?index] == choices[question?index] >
+                   <p> Correct </p>
+               <#else>
+                    <p> Wrong </p>
+               </#if>
+
             </div>
             </#list>
             </section>
             <!-- Footer Section -->
             <footer>
-               <h3>${score?string["0.##"]}% <br>
-               <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}'>Back to course home</a>
-               </h3>
+
+                    <h3>${score?string["0.##"]}% <br>
+                        <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}'>Back to course home</a>
+                    </h3>
+
             </form >
             </footer>
       </#if>

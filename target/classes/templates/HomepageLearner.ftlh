@@ -25,7 +25,7 @@
       <div class="row">
          <div class="col-md-12" style="border: 5px solid; padding: 20px; margin: 5px 0px;">
             <div>
-                <form action="/Homepage/Search" method="post">
+                <form action="/HomepageLearner/Search" method="post">
                     <input type ="number" name="search">
                     <button class="btn btn-success" type = "submit" > Search </button>
                 </form>
@@ -37,6 +37,7 @@
                   <tr>
                      <th>Course Name Title</th>
                      <th>Course ID</th>
+                     <th>Course Status</th>
                      <th>Course Rating</th>
                      <th>Professor Name</th>
                      <th>Professor Rating</th>
@@ -49,11 +50,15 @@
                        <tr>
                           <td>${course.name}</td>
                           <td>${course.courseID?replace(",", "")}</td>
+                          <td>${course.status}</td>
                           <td>${course.rating}</td>
-                          <td>${courseProfessors[course?index].firstName} ${courseProfessors[course?index].lastName}</td>
+                          <td>Prof. ${courseProfessors[course?index].firstName} ${courseProfessors[course?index].lastName}</td>
                           <td>${courseProfessors[course?index].rating}</td>
                           <td>
                                <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}'>View Course</a>
+                               <#if course.status =="Completed" && course.reviewed ==false>
+                                    | <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/Review'>Review Course</a>
+                               </#if>
                           </td>
                        </tr>
                   </#list>

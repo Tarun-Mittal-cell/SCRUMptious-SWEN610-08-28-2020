@@ -46,18 +46,53 @@
                      <tr>
                         <th scope="col">Lesson Title</th>
                         <th scope="col">Rating</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Quiz Grade</th>
                         <th scope="col">Options</th>
                      </tr>
                   </thead>
                   <#list course.lessons as lesson>
                   <tr>
-                     <td style="width:50%">${lesson.title}</td>
-                     <td style="width:10%">${lesson.rating}</td>
-                     <td style="width:30%" >
+                     <td >${lesson.title}</td>
+                     <td >${lesson.rating}</td>
+                     <td >
+                          <#if lesson.quiz ??  >
+                            <#if lesson.quiz.grade < course.minScore>
+                                   Ongoing
+                            <#else>
+                                   Passed
+                            </#if>
+                          </#if>
+                     </td>
+                     <td >
+                            <#if lesson.quiz ??  >
+                                <#if lesson.quiz.grade == -1 >
+                                    -%
+                                 <#else>
+                                   ${lesson.quiz.grade}%
+                                 </#if>
+                          </#if>
+                     </td>
+                     <td >
                         <a href='/HomepageLearner/ViewCourse/ViewLesson/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}'>View Lesson</a>
-                        <#if lesson.quiz ??>
-                           | <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz'>Take Quiz</a>
-                        </#if>
+                         <#if lesson?index == 0>
+                            <#if lesson.quiz ?? && (lesson.quiz.grade> -1) >
+                               <#if lesson.quiz.grade < course.minScore>
+                                   | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Retake Quiz</a>
+                               </#if>
+                            <#elseif lesson.quiz ?? >
+                               | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Take Quiz</a>
+                            </#if>
+                         <#elseif (course.lessons[lesson?index-1].quiz.grade > course.minScore)>
+                             <#if lesson.quiz ?? && (lesson.quiz.grade> -1) >
+                               <#if lesson.quiz.grade < course.minScore>
+                                   | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Retake Quiz</a>
+                               </#if>
+                            <#elseif lesson.quiz ?? >
+                               | <a href="/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/${lesson.lessonID?replace(",", "")}/TakeQuiz">Take Quiz</a>
+                            </#if>
+                         </#if>
+
                      </td>
                   </tr>
                   </#list>

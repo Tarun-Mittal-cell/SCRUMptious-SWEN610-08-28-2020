@@ -23,6 +23,7 @@ public class Course
     private double minScore;
     private String Status;
     private List<Lesson> lessons;
+    private boolean reviewed;
 
     public Course(String name, int courseID, int assignedProfessorId, int prerequisiteCourseId, String requirements, String objectives, String outcomes, double rating, int numOfRatings, int enrollment, double minScore) {
         this.name = name;
@@ -137,6 +138,13 @@ public class Course
     }
 
 
+    public boolean isReviewed() {
+        return reviewed;
+    }
+
+    public void setReviewed(boolean reviewed) {
+        this.reviewed = reviewed;
+    }
 
     public String getStatus() {
         return Status;
@@ -177,7 +185,9 @@ public class Course
             {
                 System.out.println("Array :"+Arrays.toString(quizData));
                 lessons.get(i).setQuiz(new Quiz(quizData[0], quizData[1]));
+
             }
+
         }
         course.addAllLesson(lessons);
         return course;
@@ -272,8 +282,20 @@ public class Course
 
     public static boolean registerCourse(int learnerID, int courseID)
     {
+
         return DatabaseManager.AddLearnerCourse(learnerID,courseID);
     }
+
+    public static boolean updateCourseRating(Course course, int newRating) {
+        double result=((course.getNumOfRatings()*course.getRating())+newRating)/(course.getNumOfRatings()+1);
+        return DatabaseManager.updateCourseRating(course.getCourseID(), result, course.getNumOfRatings()+1);
+    }
+
+    public static boolean markAsReviewed(int learnerID,int courseID) {
+
+        return DatabaseManager.updateLearnerCourseReviewed(learnerID, courseID);
+    }
+
 
 
     @Override

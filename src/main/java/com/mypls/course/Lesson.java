@@ -158,5 +158,11 @@ public class Lesson {
         return DatabaseManager.deleteLesson(lessonID);
     }
 
+    public static boolean updateLessonRating(Lesson lesson, int newRating)
+    {
+        double result=((lesson.getNumberOfRatings()*lesson.getRating())+newRating)/(lesson.getNumberOfRatings()+1);
+
+        return DatabaseManager.updateLessonRating(lesson.getLessonID(),result,(lesson.getNumberOfRatings())+1);
+    }
 
 }

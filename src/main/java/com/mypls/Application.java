@@ -6,7 +6,6 @@ import com.mypls.users.*;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.Part;
-import javax.swing.plaf.IconUIResource;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -26,6 +25,7 @@ public class Application {
     static final String HOMEPROF = "HomepageProf.ftlh";
     static final String COURSEOUTLINE = "CourseOutline.ftlh";
     static final String LEARNERVIEWCOURSE = "LearnerViewCourse.ftlh";
+    static final String LEARNERVIEWLESSON = "LearnerViewLesson.ftlh";
     static final String TAKEQUIZ = "TakeQuiz.ftlh";
 
 
@@ -42,6 +42,7 @@ public class Application {
     static final String PROFUPDATELESSON = "ProfUpdatelesson.ftlh";
     static final String ADDQUIZ = "AddQuiz.ftlh";
     static final String UPDATEQUIZ = "UpdateQuiz.ftlh";
+    static final String REVIEWCOURSE = "ReviewCourse.ftlh";
 
     static final String AUTHENTICATED = "AUTHENTICATED";
 
@@ -81,7 +82,7 @@ public class Application {
         });
 
         post("/Login", (request, response) ->{
-            HashMap<String, Object> userData = UserController.login(request.queryParams("email"),request.queryParams("password")) ;
+            HashMap<String, Object> userData = User.login(request.queryParams("email"),request.queryParams("password")) ;
 
             if(userData.get("loginStatus").equals(AUTHENTICATED))
             {
@@ -145,14 +146,14 @@ public class Application {
             int elength=request.queryParams("email").trim().length();
 
             if(fLength>0&&lLength>0&&elength>0) {
-                boolean isEmailUnique = UserController.register(request.queryParams("fname"), request.queryParams("lname"), request.queryParams("type"), request.queryParams("email"), request.queryParams("password_1"));
+                boolean isEmailUnique = User.register(request.queryParams("fname"), request.queryParams("lname"), request.queryParams("type"), request.queryParams("email"), request.queryParams("password_1"));
                 HashMap<String, Object> userData;
 
                 if (isEmailUnique) {
                     request.session(true);
                     request.session().attribute("currentUser", request.queryParams("email"));
 
-                    userData = UserController.login(request.queryParams("email"), request.queryParams("password_1"));
+                    userData = User.login(request.queryParams("email"), request.queryParams("password_1"));
                     if (!request.queryParams("type").equals("Professor")) {
                         learner = (Learner) userData.get("userData");
                         System.out.println(learner);
@@ -200,6 +201,8 @@ public class Application {
 
                 template.setModel("registeredCourses",courseList);
                 template.setModel("courseProfessors",courseProfessors);
+                template.removeModel("score");
+                template.removeModel("blanks");
                 return template.render(HOME);
             }
             else
@@ -214,7 +217,23 @@ public class Application {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
                 Course course = Course.getCourseByID(Integer.parseInt(request.params(":courseid")));
+                for (Lesson lesson:course.getLessons())
+                {
+                    double grade=DatabaseManager.retrieveGrade(learner.getLearnerID(), lesson.getLessonID());
+                    System.out.println("First score:"+grade);
+                    if(lesson.getQuiz()!=null)
+                    {
+                        lesson.getQuiz().setGrade(grade);
+                        System.out.println("Grade :"+lesson.getQuiz().getGrade());
+
+                    }
+                }
+
+                System.out.println("First score:"+course.getLessons().get(0).getQuiz().getGrade());
                 template.removeModel("blankSpaces");
+                template.removeModel("score");
+                template.removeModel("blanks");
+                course.setMinScore(75);
                 template.setModel("course", course);
                 return template.render(LEARNERVIEWCOURSE);
             }
@@ -239,9 +258,13 @@ public class Application {
                         break;
                     }
                 }
-                //CHeck for quiz done?
+               /* double grade=DatabaseManager.retrieveGrade(learner.getLearnerID(), lesson.getLessonID());
+                System.out.println("First score:"+grade);
+                lesson.getQuiz().setGrade(grade);
+
+                System.out.println("Grade :"+lesson.getQuiz().getGrade());*/
                 template.setModel("lesson", lesson);
-                return template.render(PROFVIEWLESSON);
+                return template.render(LEARNERVIEWLESSON);
             }
             else
             {
@@ -254,6 +277,7 @@ public class Application {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner")) {
                 Course course = (Course) template.getModel("course");
                 int lessonID = Integer.parseInt(request.params(":lessonid"));
+                int lessonIndex =0;
                 List<Lesson> lessons = course.getLessons();
                 Lesson lesson = null;
                 for (int i = 0; i < lessons.size(); i++) {
@@ -261,7 +285,9 @@ public class Application {
                         lesson = lessons.get(i);
                         break;
                     }
+                    lessonIndex++;
                 }
+                template.setModel("lessonIndex", lessonIndex);
                 template.setModel("lesson", lesson);
 
                 return template.render(TAKEQUIZ);
@@ -272,6 +298,9 @@ public class Application {
                 return "You are not logged in!";
             }
         });
+
+
+
 
         post("/HomepageProf/ViewCourse/TakeQuiz", (request, response) -> {
 
@@ -286,10 +315,43 @@ public class Application {
                 choices.add(request.queryParams("answer" + (i + 1)));
 
             }
-            double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers());
+            int lessonCount=Integer.parseInt(request.queryParams("lessonCount"));
+            double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers(),false);
+            if(score> course.getMinScore()&&course.getLessons().size()==lessonCount)
+            {
+                DatabaseManager.updateLearnerCourseStatus(learner.getLearnerID(), course.getCourseID(), "Completed");
+            }
             template.setModel("score",score);
+            template.setModel("choices",choices);
             return template.render(TAKEQUIZ);
         });
+
+        post("/HomepageProf/ViewCourse/RetakeQuiz", (request, response) -> {
+
+            System.out.println("retaking!!!!!!");
+            Course course = (Course) template.getModel("course");
+            Lesson lesson=(Lesson) template.getModel("lesson");
+            ArrayList<String> choices=new ArrayList<>();
+            Quiz quiz=lesson.getQuiz();
+
+            for(int i=0; i<3;i++)
+            {
+                String choice=request.queryParams("answer"+(i+1));
+                choices.add(request.queryParams("answer" + (i + 1)));
+
+            }
+            int lessonCount=Integer.parseInt(request.queryParams("lessonCount"));
+            double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers(),true);
+           System.out.println(" template.setModel(\"lessonIndex\", lessonIndex); :"+lessonCount);
+            if(score> course.getMinScore()&&course.getLessons().size()==lessonCount)
+            {
+                DatabaseManager.updateLearnerCourseStatus(learner.getLearnerID(), course.getCourseID(), "Completed");
+            }
+            template.setModel("score",score);
+            template.setModel("choices",choices);
+            return template.render(TAKEQUIZ);
+        });
+
 
 
         get("/HomepageLearner/Search", (request, response) -> {
@@ -333,12 +395,83 @@ public class Application {
         });
 
         post("/HomepageLearner/CourseRegister", (request, response) -> {
-
-
-            boolean isAdded=Course.registerCourse(learner.getLearnerID(),Integer.parseInt(request.queryParams("courseID")));
-            if(isAdded) {
-                response.redirect("/HomepageLearner");
+            Course course=Course.getCourseByID(Integer.parseInt(request.queryParams("courseID")));
+            boolean prereqPassed;
+            if(course.getPrerequisiteCourseId()!=0)
+            {
+                prereqPassed=DatabaseManager.retrievePrereqStatus(learner.getLearnerID(),course.getPrerequisiteCourseId());
             }
+            else
+            {
+                prereqPassed=true;
+            }
+
+            if(prereqPassed)
+            {
+                boolean isAdded=Course.registerCourse(learner.getLearnerID(),Integer.parseInt(request.queryParams("courseID")));
+                if(isAdded) {
+                    response.redirect("/HomepageLearner");
+                }
+            }
+            else
+            {
+                template.setModel("prereqPassed",false);
+                return template.render(SEARCH);
+            }
+
+            return null;
+        });
+
+        get("/HomepageLearner/ViewCourse/:courseid/Review", (request, response) -> {
+
+            if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
+            {
+                Course course = Course.getCourseByID(Integer.parseInt(request.params(":courseid")));
+                Professor professor=Professor.getProfessor(course.getAssignedProfessorId());
+
+                template.setModel("professor",professor);
+                template.setModel("course",course);
+
+                return template.render(REVIEWCOURSE);
+            }
+            else {
+                response.redirect("/");
+                return "You are not logged in!";
+            }
+
+        });
+
+
+        post("/HomepageLearner/ViewCourse/ReviewCourse", (request, response) -> {
+            Course course= (Course) template.getModel("course");
+            boolean blanks=false;
+
+            System.out.println("Rate Params: "+request.queryParams());
+            if( request.queryParams().size()!=4) {
+                blanks = true;
+                template.setModel("blanks", blanks);
+                return template.render(REVIEWCOURSE);
+            }
+
+            int newProfessorRating = Integer.parseInt(request.queryParams("courseRating"));
+            int newCourseRating = Integer.parseInt(request.queryParams("profRating"));
+
+            int lessonRatings=0;
+            for (int i = 1; i <=course.getLessons().size(); i++)
+            {
+                lessonRatings=Integer.parseInt( request.queryParams("LessonRating"+i));
+                Lesson.updateLessonRating(course.getLessons().get(i-1),Integer.parseInt( request.queryParams("LessonRating"+i)));
+            }
+            Course.updateCourseRating(course,newCourseRating);
+            Professor professor1= DatabaseManager.queryProfessorByID(course.getAssignedProfessorId());
+            System.out.println("Prof."+professor1.toString());
+            professor1.setRate(new RateProfessor());
+            professor1.updateProfessorRating(newProfessorRating);
+            Course.markAsReviewed(learner.getLearnerID(),course.getCourseID());
+
+           // template.setModel("ratings added",true);
+            response.redirect("/HomepageLearner");
+
             return null;
         });
 
