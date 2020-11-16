@@ -5,62 +5,148 @@
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+      <script>
+      function goBack() {
+        window.history.back();
+      }
+      </script>
+
+      <style>
+        body {
+            background-color: white;
+            font-family: 'Lucida Sans Unicode';
+            font-size: 18px;
+            margin-bottom: 70x;
+        }
+
+        #txtbox {
+            font-size: 14pt;
+            height: 42px;
+            width : 1145px;
+        }
+
+        #buttonx {
+            background-color: #5DADE2;
+            border: none;
+            color: white;
+            text-align: center;
+            display: inline-block;
+            font-size: 18px;
+            cursor: pointer;
+            height: 42px;
+            width : 300px;
+        }
+
+      #nav1 {
+        height: 70px;
+        width: 100%;
+        border-style: none;
+        background-color: #5DADE2;
+        padding: 9px 10px;
+      }
+
+        #a1 {
+            background-color: #5DADE2;
+            font-family: 'Lucida Sans Unicode';
+            color: black;
+        }
+
+        h2{
+            font-family: 'Courier New';
+            font-weight: bold;
+        }
+
+        #footerx {
+            position: fixed;
+            left: 0;
+            height: 40px;
+            bottom: 0;
+            width: 100%;
+            background-color: #5DADE2;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+        }
+
+      </style>
    </head>
    <body>
-      <nav class="navbar navbar-inverse">
-         <div class="container-fluid">
-            <div class="navbar-header">
-               <a class="navbar-brand" href="#">MyPLS</a>
+      <nav id="nav1" class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header w3-hover-green">
+                <a id="a1" class="navbar-brand" href="#">MyPLS</a>
             </div>
-            <ul class="nav navbar-nav">
-               <li  class="active"><a href="/HomepageProf">Home</a></li>
-               <li><a href="/Signout">Sign Out</a></li>
+            <ul id="a1" class="nav navbar-nav">
+                <li id="a1" class="active"><a href="/HomepageProf">Home</a></li>
             </ul>
-         </div>
+            <div class="navbar-header pull-right">
+                <label class="pull-right" for="goback" onclick="goBack()">Go Back</label>
+                <input id="goback" style="visibility:hidden;">
+            </div>
+        </div>
       </nav>
+
       <div class= "container">
          <div class= "header">
             <h2>Add Lesson</h2>
          </div>
+
          <div class="container">
             <form action= "/HomepageProf/ViewCourse/UpdateLesson" method ="POST" enctype='multipart/form-data' >
-               <label>Course Name :${course.name}         Course ID:${course.courseID?replace(",", "")}  </label>
+               <label>Course Name :${course.name} <br>
+               Course ID:${course.courseID?replace(",", "")}  </label>
                <input type ="hidden" name="courseID" value="${course.courseID?replace(",", "")}">
                <#if blankSpaces??>
                <p style="color:red;">Invalid Input! Please re-enter values properly.</p>
                </#if>
                <div class="form-group">
-                  <label for="title">Lesson Title : </label>
-                  <input type ="text" name="title" class="form-control" value= "${lesson.title}" required>
+                  <label for="title">Lesson Title</label>
+                  <input id="txtbox" type ="text" name="title" class="form-control" value= "${lesson.title}" required autofocus>
                </div>
+
                <div class="form-group">
-                  <label for="requirement"> Requirements : </label>
+                  <label for="requirement"> Requirements</label>
                   <textarea name="requirement" class="form-control"  rows="10" cols="500">${lesson.requirements} </textarea>
                </div>
+
                <div class="form-group">
-                  <label for="uploaded_pdf"> Update Lesson PDF : </label>
+                  <label for="uploaded_pdf"> Update Lesson Slides &emsp;</label>
                   <input type ="file" name="uploaded_pdf"  accept='.pdf'>
                </div>
+
                <div class="form-group">
-                  <label for="uploaded_media">  Update Lesson Video: </label>
+                  <label for="uploaded_media">  Update Lesson Video &emsp;</label>
                   <input type ="file" name="uploaded_media"  accept='.mp4'>
                </div>
-               <button class="btn btn-success" type = "submit" name ="reg_user"> Submit </button>
+
+               <button id="buttonx" class="btn btn-success" type = "submit" name ="reg_user"> Submit </button>
             </form>
-            <Br>
-            <Br>
+
+            <br>
+            <br>
+
             <form action= "/HomepageProf/ViewCourse/UpdateLesson/DeleteMedia" method ="POST"  >
                <div class="form-group">
                   <div class="form-group">
-                     <label for="delete_document"> Delete Lesson PDF : </label>
+                     <label for="delete_document"> Delete Lesson Slides &emsp;</label>
                      <input type ="checkbox" name="delete_document"  value="${lesson.documentPath}">
                   </div>
-                  <label for="delete_media"> Delete Lesson Video : </label>
+
+                  <label for="delete_media"> Delete Lesson Video &emsp;</label>
                   <input type ="checkbox" name="delete_media"  value="${lesson.mediaPath}">
                </div>
-               <button class="btn btn-success" type = "submit" name ="reg_user"> Delete </button>
+
+               <button id="buttonx" class="btn btn-success" type = "submit" name ="reg_user"> Delete </button>
+
             </form>
          </div>
       </div>
+
+      <div id="footerx">
+        <p>SWEN 610 Project by Kemar, Manikantan, Tarun and Sanjana<br>
+        Conducted in the Academic Year 2020</p>
+      </div>
+
    </body>
 </html>
