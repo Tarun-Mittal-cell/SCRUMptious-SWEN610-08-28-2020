@@ -37,6 +37,7 @@
                   <tr>
                      <th>Course Name Title</th>
                      <th>Course ID</th>
+                     <th>Course Status</th>
                      <th>Course Rating</th>
                      <th>Professor Name</th>
                      <th>Professor Rating</th>
@@ -49,11 +50,15 @@
                        <tr>
                           <td>${course.name}</td>
                           <td>${course.courseID?replace(",", "")}</td>
+                          <td>${course.status}</td>
                           <td>${course.rating}</td>
-                          <td>${courseProfessors[course?index].firstName} ${courseProfessors[course?index].lastName}</td>
+                          <td>Prof. ${courseProfessors[course?index].firstName} ${courseProfessors[course?index].lastName}</td>
                           <td>${courseProfessors[course?index].rating}</td>
                           <td>
                                <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}'>View Course</a>
+                               <#if course.status =="Completed">
+                                    | <a href='/HomepageLearner/ViewCourse/${course.courseID?replace(",", "")}/Rate'>Rate Course</a>
+                               </#if>
                           </td>
                        </tr>
                   </#list>

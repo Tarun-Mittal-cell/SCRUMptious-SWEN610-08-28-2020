@@ -42,6 +42,7 @@ public class Application {
     static final String PROFUPDATELESSON = "ProfUpdatelesson.ftlh";
     static final String ADDQUIZ = "AddQuiz.ftlh";
     static final String UPDATEQUIZ = "UpdateQuiz.ftlh";
+    static final String REVIEWCOURSE = "ReviewCourse.ftlh";
 
     static final String AUTHENTICATED = "AUTHENTICATED";
 
@@ -274,6 +275,7 @@ public class Application {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner")) {
                 Course course = (Course) template.getModel("course");
                 int lessonID = Integer.parseInt(request.params(":lessonid"));
+                int lessonIndex =0;
                 List<Lesson> lessons = course.getLessons();
                 Lesson lesson = null;
                 for (int i = 0; i < lessons.size(); i++) {
@@ -281,7 +283,9 @@ public class Application {
                         lesson = lessons.get(i);
                         break;
                     }
+                    lessonIndex++;
                 }
+                template.setModel("lessonIndex", lessonIndex);
                 template.setModel("lesson", lesson);
 
                 return template.render(TAKEQUIZ);
@@ -309,7 +313,12 @@ public class Application {
                 choices.add(request.queryParams("answer" + (i + 1)));
 
             }
+            int lessonCount=Integer.parseInt(request.queryParams("lessonCount"));
             double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers(),false);
+            if(score> course.getMinScore()&&course.getLessons().size()==lessonCount)
+            {
+                DatabaseManager.updateLearnerCourseStatus(learner.getLearnerID(), course.getCourseID(), "Completed");
+            }
             template.setModel("score",score);
             return template.render(TAKEQUIZ);
         });
@@ -328,7 +337,13 @@ public class Application {
                 choices.add(request.queryParams("answer" + (i + 1)));
 
             }
+            int lessonCount=Integer.parseInt(request.queryParams("lessonCount"));
             double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers(),true);
+           System.out.println(" template.setModel(\"lessonIndex\", lessonIndex); :"+lessonCount);
+            if(score> course.getMinScore()&&course.getLessons().size()==lessonCount)
+            {
+                DatabaseManager.updateLearnerCourseStatus(learner.getLearnerID(), course.getCourseID(), "Completed");
+            }
             template.setModel("score",score);
             return template.render(TAKEQUIZ);
         });
@@ -367,6 +382,44 @@ public class Application {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
                 return template.render(COURSEOUTLINE);
+            }
+            else {
+                response.redirect("/");
+                return "You are not logged in!";
+            }
+
+        });
+
+        post("/HomepageLearner/CourseRegister", (request, response) -> {
+            Course course=Course.getCourseByID(Integer.parseInt(request.queryParams("courseID")));
+            boolean prereqPassed=DatabaseManager.retrievePrereqStatus(learner.getLearnerID(),course.getPrerequisiteCourseId());
+            if(prereqPassed)
+            {
+                boolean isAdded=Course.registerCourse(learner.getLearnerID(),Integer.parseInt(request.queryParams("courseID")));
+                if(isAdded) {
+                    response.redirect("/HomepageLearner");
+                }
+            }
+            else
+            {
+                template.setModel("prereqPassed",false);
+                return template.render(SEARCH);
+            }
+
+            return null;
+        });
+
+        get("/HomepageLearner/ViewCourse/:courseid/Rate", (request, response) -> {
+
+            if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
+            {
+                Course course = Course.getCourseByID(Integer.parseInt(request.params(":courseid")));
+                Professor professor=Professor.getProfessor(course.getAssignedProfessorId());
+
+                template.setModel("professor",professor);
+                template.setModel("course",course);
+
+                return template.render(REVIEWCOURSE);
             }
             else {
                 response.redirect("/");

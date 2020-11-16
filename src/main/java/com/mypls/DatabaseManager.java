@@ -27,12 +27,15 @@ public class DatabaseManager {
     public static final String RETRIEVE_LEARNER_COURSES = "SELECT * FROM COURSES  INNER JOIN LEARNERCOURSE ON LEARNERCOURSE.COURSEID=COURSES.COURSEID WHERE LEARNERID=?;";
     public static final String ADD_GRADE = "INSERT INTO GRADES(LearnerID,CourseID,LessonID,Grade) VALUES(?,?,?,?);";
     public static final String RETRIEVE_GRADE = "SELECT * FROM GRADES WHERE  LEARNERID=? AND LessonID=?";
+    public static final String RETRIEVE_PREQ_COURSE = "SELECT * FROM LEARNERCOURSE WHERE  LEARNERID=? AND COURSEID=?";
 
     public static final String UPDATE_LEARNER_RATING      = "UPDATE LEARNERS SET RATING=?,NumberOfRatings=? WHERE (LearnerID =?)";
     public static final String UPDATE_PROFESSOR_RATING = "UPDATE PROFESSOR SET RATING=?,NumberOfRatings=? WHERE (ProfessorID =?)";
     public static final String UPDATE_LESSONS_RATING      = "UPDATE LESSONS SET RATING=?,NumberOfRatings=? WHERE (LessonID =?)";
     public static final String UPDATE_COURSE_RATING      = "UPDATE COURSES SET RATING=?,NumberOfRatings=? WHERE (CourseID =?)";
     public static final String UPDATE_GRADE    = "UPDATE GRADES SET Grade=? WHERE (LEARNERID=? AND LessonID=?)";
+    public static final String UPDATE_LEARNER_COURSE   = "UPDATE LEARNERCOURSE SET STATUS=? WHERE (LEARNERID=? AND COURSEID=?)";
+
 
 
 
@@ -195,7 +198,7 @@ public class DatabaseManager {
             statement = connection.prepareStatement(REGISTER_COURSE);
             statement.setInt(1,learnerID);
             statement.setInt(2,courseID);
-            statement.setString(3,"Registered");
+            statement.setString(3,"Ongoing");
             statement.executeUpdate();
         }
         catch(Exception e)
@@ -1966,6 +1969,135 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         }
 
         return isUpdated;
+    }
+
+    public static boolean updateLearnerCourseStatus(int learnerID, int courseID, String status)
+    {
+        boolean isUpdated=false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+        {
+            //Open a connection to MYPLS database
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a query to MyPLS database
+            System.out.println("Inserting records into the table...");
+            statement = connection.prepareStatement(UPDATE_LEARNER_COURSE);
+            statement.setString(1,status);
+            statement.setInt(2,learnerID);
+            statement.setInt(3,courseID);
+
+            statement.executeUpdate();
+            isUpdated=true;
+        }
+        catch (SQLIntegrityConstraintViolationException e)
+        {
+            System.out.println("Email already assigned to an account");
+            isUpdated=false;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return isUpdated;
+    }
+
+    public static boolean retrievePrereqStatus(int learnerID,int courseID)
+    {
+        boolean passedPrereq=false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try
+        {
+            //Open a connection to MYPLS database
+            System.out.println("Connecting to a selected database...");
+            connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Connected database successfully...");
+
+            //Execute a query to MyPLS database
+            System.out.println("Inserting records into the table...");
+            statement = connection.prepareStatement(RETRIEVE_PREQ_COURSE);
+            statement.setInt(1,learnerID);
+            statement.setInt(2,courseID);
+
+            ResultSet resultSet=statement.executeQuery();
+            if( resultSet.next())
+            {
+                if(resultSet.getString("Status").equals("Completed"))
+                {
+                    passedPrereq=true;
+                }
+
+            }
+
+        }
+        catch (SQLIntegrityConstraintViolationException e)
+        {
+            System.out.println("Email already assigned to an account");
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+
+        }
+        finally
+        {
+
+            try{
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+            try
+            {
+                if(statement!=null)
+                {
+                    statement.close();
+                }
+            }
+            catch(SQLException se)
+            {
+                se.printStackTrace();
+            }
+        }
+
+        return passedPrereq;
     }
 
 }

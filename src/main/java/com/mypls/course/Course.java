@@ -274,6 +274,7 @@ public class Course
 
     public static boolean registerCourse(int learnerID, int courseID)
     {
+
         return DatabaseManager.AddLearnerCourse(learnerID,courseID);
     }
 

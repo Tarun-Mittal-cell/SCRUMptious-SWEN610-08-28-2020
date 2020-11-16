@@ -39,7 +39,7 @@
             </section>
             <!-- Footer Section -->
             <footer>
-
+                <input type ="hidden" name="lessonCount" value="${lessonIndex+1}">
                 <button type="submit" class="button">Submit</button>
 
 

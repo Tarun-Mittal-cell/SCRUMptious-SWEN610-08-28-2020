@@ -65,7 +65,9 @@
                             <button class="btn btn-success" type = "submit" > Register </button>
                          </form>
                           <a href='/HomepageLearner/ViewCourseOutline/${course.courseID?replace(",", "")}'>View Course Outline</a>
-
+                           <#if prereqPassed??>
+                                    <p style="color:red;"> Prerequisite ID: ${course.prerequisiteCourseId?replace(",", "")} not Satisfied</p>
+                           </#if>
                      </td>
                   </tr>
               <#else>
