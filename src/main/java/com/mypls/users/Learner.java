@@ -55,7 +55,7 @@ public class Learner extends User {
         this.numOfRatings = numOfRatings;
     }
 
-    public static ArrayList<Learner> allLearners() {
+    public static ArrayList<Learner> getAllLearners() {
         ArrayList<Learner> learners = DatabaseManager.getAllLearners();
         return learners;
     }

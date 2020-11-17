@@ -47,7 +47,7 @@ public class Professor extends User {
         return numberOfRatings;
     }
 
-    public static ArrayList<Professor> allProfessors() {
+    public static ArrayList<Professor> getAllProfessors() {
         ArrayList<Professor> allProfessor = DatabaseManager.getAllProfessor();
         return allProfessor;
     }

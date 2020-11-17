@@ -2,6 +2,7 @@ package com.mypls;
 import com.mypls.course.Course;
 import com.mypls.course.Lesson;
 import com.mypls.course.Quiz;
+import com.mypls.discussionGroup.DiscussionGroup;
 import com.mypls.users.*;
 
 import javax.servlet.MultipartConfigElement;
@@ -587,7 +588,7 @@ public class Application {
                         Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
                     }
-                    //Retrieve pdf file that user uploaded.
+                    //Retrieve media file that user uploaded.
                     uploadfile = request.raw().getPart("uploaded_media");
                     //Check a file was uploaded.
                     if (uploadfile.getSize() != 0)
@@ -618,7 +619,7 @@ public class Application {
             }
         });
 
-        //Display lesson to
+        //Display update lesson page to professor
         get("/HomepageProf/ViewCourse/UpdateLesson/:courseid/:lessonid", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Professor"))
             {
@@ -641,7 +642,7 @@ public class Application {
             }
 
         });
-
+        //Post handler to update lesson
         post("/HomepageProf/ViewCourse/UpdateLesson", (request, response) -> {
             Lesson lesson= (Lesson) template.getModel("lesson");
             Course course = (Course) template.getModel("course");
@@ -654,30 +655,44 @@ public class Application {
 
             if(tLength>0) {
                 try {
+                    //Retrieve pdf file that user uploaded.
                     upLoadFile = request.raw().getPart("uploaded_pdf");
-                    if (upLoadFile.getSize() != 0) {
+                    //Check check if a file was uploaded.
+                    if (upLoadFile.getSize() != 0)
+                    {
                         String fileName = getFileName(request.raw().getPart("uploaded_pdf"));
+                        //store document path
                         documentPath = "documents/" + fileName;
+                        //create file
                         uploadDir = new File("src/main/resources/public/documents/" + fileName);
-                        System.out.println(upLoadFile.getSize() + "document:" + upLoadFile.getName() + " " + upLoadFile.getHeader("Content-Disposition"));
+                        //get input stream
                         InputStream input = upLoadFile.getInputStream();// getPart needs to use same "name" as input field in form
+                        //Copy stream to file created.
                         Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
                         if (!lesson.getDocumentPath().equals(" ")) {
                             uploadDir = new File("src/main/resources/public/" + lesson.getDocumentPath());
                             uploadDir.delete();
                         }
-                    } else {
+                    }
+                    else {
                         documentPath = lesson.getDocumentPath();
                     }
+                    //Retrieve pdf file that user uploaded.
                     upLoadFile = request.raw().getPart("uploaded_media");
-                    if (upLoadFile.getSize() != 0) {
+                    //Check check if a file was uploaded.
+                    if (upLoadFile.getSize() != 0)
+                    {
                         String fileName = getFileName(request.raw().getPart("uploaded_media"));
+                        //store media path
                         mediaPath = "media/" + fileName;
+                        //create file
                         uploadDir = new File("src/main/resources/public/media/" + fileName);
-                        System.out.println(upLoadFile.getSize() + "media" + upLoadFile.getName() + " " + upLoadFile.getHeader("Content-Disposition"));
+                        //get input stream
                         InputStream input = upLoadFile.getInputStream();
+                        //Copy stream to file created.
                         Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                        if (!lesson.getMediaPath().equals(" ")) {
+                        if (!lesson.getMediaPath().equals(" "))
+                        {
                             uploadDir = new File("src/main/resources/public/" + lesson.getMediaPath());
                             uploadDir.delete();
                         }
@@ -687,7 +702,7 @@ public class Application {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                System.out.println(" " + request.queryParams("delete_media") + "  " + request.queryParams("delete_document"));
+
                 Lesson.updateLesson(lesson.getLessonID(), request.queryParams("title"), Integer.parseInt(request.queryParams("courseID")), request.queryParams("requirement"), mediaPath, documentPath);
                 response.redirect("/HomepageProf/ViewCourse/"+course.getCourseID());
                 return null;
@@ -698,7 +713,7 @@ public class Application {
                 return template.render(PROFUPDATELESSON);
             }
         });
-
+        //Post handler to delete lesson
         post("/HomepageProf/ViewCourse/DeleteLesson", (request, response) -> {
             Course course = (Course) template.getModel("course");
             Lesson.deleteLesson(Integer.parseInt(request.queryParams("lessonID")),request.queryParams("mediaPath"),request.queryParams("documentPath"));
@@ -706,7 +721,7 @@ public class Application {
             return null;
 
         });
-
+        //Post handler to delete media.
         post("/HomepageProf/ViewCourse/UpdateLesson/DeleteMedia", (request, response) -> {
             File uploadDir;
             Lesson lesson= (Lesson) template.getModel("lesson");
@@ -715,12 +730,14 @@ public class Application {
 
             if(request.queryParams("delete_media") != null)
             {
+               //Delete pdf file
                 uploadDir = new File("src/main/resources/public/" +request.queryParams("delete_media") );
                 uploadDir.delete();
                 mediaPath=" ";
             }
             if(request.queryParams("delete_document") != null)
             {
+                //Delete media file
                 uploadDir = new File("src/main/resources/public/" +request.queryParams("delete_document") );
                 uploadDir.delete();
                 documentPath=" ";
@@ -732,7 +749,7 @@ public class Application {
             return null;
         });
 
-
+        // Display add quiz page to professor
         get("/HomepageProf/ViewCourse/:courseid/:lessonid/AddQuiz", (request, response) -> {
 
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Professor"))
@@ -755,12 +772,12 @@ public class Application {
                 return "You are not logged in!";
             }
         });
-
+        //Post to handle  professor submitting a new quiz to add.
         post("/HomepageProf/ViewCourse/Lesson/AddQuiz", (request, response) -> {
             Course course = (Course) template.getModel("course");
             ArrayList<String> questions=new ArrayList<>();
             ArrayList<String> answers=new ArrayList<>();
-
+            //retrieve questions and answers from user.
             for(int i=0; i<3;i++)
             {
                 String question=request.queryParams("question"+(i+1));
@@ -772,6 +789,7 @@ public class Application {
 
                 }
             }
+            //Check that all three questions were created.
             if(questions.size()==3) {
                 Lesson.createQuiz(Integer.parseInt(request.queryParams("lessonID")), questions, answers);
                 response.redirect("/HomepageProf/ViewCourse/"+course.getCourseID());
@@ -784,10 +802,12 @@ public class Application {
             }
         });
 
+        //Display update quiz page to professor.
         get("/HomepageProf/ViewCourse/:courseid/:lessonid/UpdateQuiz", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Professor")) {
                 Course course = (Course) template.getModel("course");
                 int lessonID = Integer.parseInt(request.params(":lessonid"));
+                //Retrieve specific lesson.
                 List<Lesson> lessons = course.getLessons();
                 Lesson lesson = null;
                 for (int i = 0; i < lessons.size(); i++) {
@@ -806,10 +826,12 @@ public class Application {
             }
         });
 
+        //Post Handler for for update quiz
         post("/HomepageProf/ViewCourse/UpdateQuiz", (request, response) -> {
             Course course = (Course) template.getModel("course");
             ArrayList<String> questions=new ArrayList<>();
             ArrayList<String> answers=new ArrayList<>();
+            //retrieve questions and answers from user.
             for(int i=0; i<3;i++)
             {
                 String question=request.queryParams("question"+(i+1));
@@ -821,6 +843,7 @@ public class Application {
 
                 }
             }
+            //Check that all three questions were created.
             if(questions.size()==3) {
                 Lesson.updateQuiz(Integer.parseInt(request.queryParams("lessonID")), questions, answers);
                 response.redirect("/HomepageProf/ViewCourse/" + course.getCourseID());
@@ -833,18 +856,20 @@ public class Application {
             }
                 });
 
+        //Post to delete Quiz
         post("/HomepageProf/ViewCourse/DeleteQuiz", (request, response) -> {
             Course course = (Course) template.getModel("course");
             Lesson.deleteQuiz(Integer.parseInt(request.queryParams("lessonid")));
             response.redirect("/HomepageProf/ViewCourse/"+course.getCourseID());
             return null;
         });
-
+        //Post to view lesson
         get("/HomepageProf/ViewCourse/ViewLesson/:courseid/:lessonid", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Professor")) {
 
                 Course course = (Course) template.getModel("course");
                 int lessonID = Integer.parseInt(request.params(":lessonid"));
+                //Retrieve specific lesson.
                 List<Lesson> lessons = course.getLessons();
                 Lesson lesson = null;
                 for (int i = 0; i < lessons.size(); i++) {
@@ -865,13 +890,13 @@ public class Application {
         });
 
 
-
+        //Display admin homepage.
         get("/HomepageAdmin", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Admin")) {
                 template.setModel("courseCount", Course.getAllCourses().size());
                 template.setModel("courses",Course.getAllCourses());
-                template.setModel("professors",Professor.allProfessors());
-                template.setModel("learners",Learner.allLearners());
+                template.setModel("professors",Professor.getAllProfessors());
+                template.setModel("learners",Learner.getAllLearners());
                 template.removeModel("blankSpaces");
                  return template.render(HOMEADMIN);
             } else {
@@ -880,10 +905,10 @@ public class Application {
             }
 
         });
-
+        //Display create course page
         get("/HomepageAdmin/CreateCourse", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Admin")) {
-                template.setModel("professors",Professor.allProfessors());
+                template.setModel("professors",Professor.getAllProfessors());
                 return template.render(CREATECOURSE);
             } else {
                 response.redirect("/");
@@ -891,12 +916,13 @@ public class Application {
             }
         });
 
+        //Post for creating a course
         post("/HomepageAdmin/CreateCourse", (request, response) -> {
 
             int cLength=request.queryParams("courseName").trim().length() ;
 
             if(cLength>0) {
-                System.out.println(request.queryParams("courseName") + " " + request.queryParams("requirement") + " " + request.queryParams("objectives") + " " + request.queryParams("outcomes") + " " + request.queryParams("prerequisite") + " " + request.queryParams("professor"));
+                //Create course
                 Course.createNewCourse(request.queryParams("professor"), request.queryParams("courseName"), request.queryParams("objectives"), request.queryParams("outcomes"), request.queryParams("prerequisite"), request.queryParams("requirement"));
                 response.redirect("/HomepageAdmin");
                 return null;
@@ -907,7 +933,7 @@ public class Application {
                 return template.render(CREATECOURSE);
             }
         });
-
+        //Display course update page to admin
         get("/HomepageAdmin/UpdateCourse/:courseid", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Admin")) {
                 template.setModel("course", Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
@@ -918,14 +944,14 @@ public class Application {
                     return "You are not logged in!";
                  }
         });
-
+        //Post to update course .
         post("/HomepageAdmin/UpdateCourse", (request, response) -> {
 
             int cLength=request.queryParams("courseName").trim().length() ;
 
             if(cLength>0) {
-                System.out.println(request.queryParams("courseName") + " " + request.queryParams("requirement") + " " + request.queryParams("objectives") + " " + request.queryParams("outcomes") + " " + request.queryParams("prerequisite") + " " + request.queryParams("professor"));
                 Course course = (Course) template.getModel("course");
+                //Update Course
                 Course.updateCourse((String.valueOf(course.getCourseID())), request.queryParams("professor"), request.queryParams("courseName"), request.queryParams("objectives"), request.queryParams("outcomes"), request.queryParams("prerequisite"), request.queryParams("requirement"));
                 response.redirect("/HomepageAdmin");
                 return null;
@@ -938,17 +964,15 @@ public class Application {
 
         });
 
+        //Post  to delete course
         post("/HomepageAdmin/DeleteCourse", (request, response) -> {
 
-            System.out.println(request.queryParams("courseid"));
             Course.deleteCourse(Integer.parseInt(request.queryParams("courseid")));
             response.redirect("/HomepageAdmin");
             return null;
 
         });
-
-
-
+        //Display discusson board.
         get("/DiscussionBoard", (request, response) -> {
             if (request.session().attribute("currentUser") != null) {
                 return template.render(DISCUSSIONGROUP);
@@ -960,7 +984,7 @@ public class Application {
 
             }
         });
-
+        //Display create discussion group page.
         get("/HomepageAdmin/CreateDiscussionGroup", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Admin")) {
 
@@ -972,14 +996,13 @@ public class Application {
                 return "You are not logged in!";
             }
         });
-
+        //Post to create a discussion group.
         post("/HomepageAdmin/CreateDiscussionGroup", (request, response) -> {
             int tLength=request.queryParams("topic").trim().length() ;
 
             if(tLength>0) {
-                System.out.println(request.queryParams("topic") + " " + request.queryParams("type") + " " + request.queryParams("relatedCourse"));
-                Administrator admin = (Administrator) template.getModel("userData");
-                boolean isCreated=admin.createDiscussionGroup(request.queryParams("topic"), request.queryParams("relatedCourse"), request.queryParams("type"));
+               //Create discussion group
+                boolean isCreated= DiscussionGroup.createDiscussionGroup(request.queryParams("topic"), request.queryParams("relatedCourse"), request.queryParams("type"));
                 if(isCreated) {
                     response.redirect("/HomepageAdmin");
                     return null;
@@ -996,11 +1019,8 @@ public class Application {
                 return template.render(CREATEDISCUSSIONGROUP);
             }
         });
-
-
+        //Post to display messages from users
         post("/DiscussionBoard", (request, response) -> {
-
-            System.out.println(request.queryParams("textFromUser") );
 
             String user = "<b> Username </b>";
             String message = user + " : " + request.queryParams("textFromUser") ;
@@ -1024,6 +1044,12 @@ public class Application {
 
 
     }
+
+    /**
+     * Get file name from Part object
+     * @param part Part object recieved fom submitted file
+     * @return
+     */
     private static String getFileName(Part part) {
         for (String cd : part.getHeader("content-disposition").split(";")) {
             if (cd.trim().startsWith("filename")) {
