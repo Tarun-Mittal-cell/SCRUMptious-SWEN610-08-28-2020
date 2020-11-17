@@ -21,7 +21,7 @@
         }
 
         #txtbox {
-            font-size: 14pt;
+            font-size: 16px;
             height: 42px;
             width : 100px;
         }

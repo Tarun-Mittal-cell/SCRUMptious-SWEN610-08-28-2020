@@ -204,6 +204,7 @@ public class Application {
                 template.setModel("courseProfessors",courseProfessors);
                 template.removeModel("score");
                 template.removeModel("blanks");
+                template.removeModel("courses");
                 return template.render(HOME);
             }
             else
@@ -230,7 +231,6 @@ public class Application {
                     }
                 }
 
-                System.out.println("First score:"+course.getLessons().get(0).getQuiz().getGrade());
                 template.removeModel("blankSpaces");
                 template.removeModel("score");
                 template.removeModel("blanks");
@@ -459,7 +459,8 @@ public class Application {
             boolean blanks=false;
 
             System.out.println("Rate Params: "+request.queryParams());
-            if( request.queryParams().size()!=4) {
+            System.out.println("Lessons Size: " + course.getLessons().size());
+            if( request.queryParams().size() != (course.getLessons().size() + 2)) {
                 blanks = true;
                 template.setModel("blanks", blanks);
                 return template.render(REVIEWCOURSE);

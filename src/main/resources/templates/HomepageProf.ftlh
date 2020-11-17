@@ -164,9 +164,6 @@
 
       <div class="row">
       <div id="div_align">
-         <div><input class="pull-right" type="form-control" placeholder="Search" name=""></div>
-         <div class="text-center">
-            <div>
                <#if courses??>
                <center>
                   <h2 class="text-center">Courses</h2>
@@ -205,28 +202,6 @@
          </div>
 
          <br>
-
-         <div class="row" id="div_align">
-            <div class="col-md-6">
-               <div class="row">
-                  <div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;">
-                     <button id="button1" class="btn btn-primary pull-left">
-                        Assessments</>
-                  </div>
-               </div>
-
-               <div class="row">
-               <div style="border: 1px solid; padding: 20px; height: 80px; margin: 5px 0px;">
-               <button id="button2" class="btn btn-primary pull-left">Feedback</button></div>
-               </div>
-            </div>
-
-            <div class="col-md-6">
-            <div style="border: 1px solid; padding: 60px; height: 160px; margin: 5px 0px;">
-            <button id="button3" class="btn btn-primary pull-right">Discussion Group</button></div>
-            </div>
-         </div>
-      </div>
 
       <div id="footerx">
         <p>SWEN 610 Project by Kemar, Manikantan, Tarun and Sanjana<br>
