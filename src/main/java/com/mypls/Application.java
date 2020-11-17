@@ -923,7 +923,7 @@ public class Application {
 
             if(cLength>0) {
                 //Create course
-                Course.createNewCourse(request.queryParams("professor"), request.queryParams("courseName"), request.queryParams("objectives"), request.queryParams("outcomes"), request.queryParams("prerequisite"), request.queryParams("requirement"));
+                Course.createCourse(request.queryParams("professor"), request.queryParams("courseName"), request.queryParams("objectives"), request.queryParams("outcomes"), request.queryParams("prerequisite"), request.queryParams("requirement"));
                 response.redirect("/HomepageAdmin");
                 return null;
             }

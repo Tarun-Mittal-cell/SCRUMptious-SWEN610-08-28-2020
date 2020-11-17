@@ -41,9 +41,7 @@ public class Course
     }
 
 
-    public Course(String name, int courseID, int assignedProfessorId) {
-        this(name,courseID,assignedProfessorId,0,"","","",0,0,0,0);
-    }
+
 
     public String getName() {
         return name;
@@ -168,11 +166,17 @@ public class Course
         lessons.add(index,lesson);
     }
 
+
+
     public List<Lesson> getLessons()
     {
         return lessons;
     }
 
+    /**
+     * Retrieve course by course id form database.
+     * @param id course id.
+     */
     public static Course getCourseByID(int id)
     {
         Course course =DatabaseManager.queryByCourseID(id);
@@ -193,12 +197,24 @@ public class Course
         return course;
     }
 
+    /**
+     * Get all courses from the database
+     */
     public static ArrayList<Course> getAllCourses() {
         ArrayList<Course> courses = DatabaseManager.getAllCourses();
         return courses;
     }
 
-    public static void createNewCourse(String professorId, String name, String objectives, String outcomes, String prerequisite, String requirement) {
+    /**
+     * Create new course and store to database
+     * @param professorId  professor id
+     * @param name name of course.
+     * @param objectives course objectes
+     * @param outcomes course outcomes
+     * @param prerequisite course prerequisite
+     * @param requirement course requirment
+     */
+    public static void createCourse(String professorId, String name, String objectives, String outcomes, String prerequisite, String requirement) {
         String[] temp;
 
         if (prerequisite.equals("None")) {
@@ -234,6 +250,15 @@ public class Course
 
     }
 
+    /**
+     * Update course and store to database
+     * @param professorId  professor id
+     * @param name name of course.
+     * @param objectives course objectes
+     * @param outcomes course outcomes
+     * @param prerequisite course prerequisite
+     * @param requirement course requirement
+     */
     public static void updateCourse(String courseId,String professorId, String name, String objectives, String outcomes, String prerequisite, String requirement) {
         String[] temp;
 
@@ -270,27 +295,54 @@ public class Course
 
 
     }
+
+    /**
+     * Delete course form database
+     * @param id course id
+     */
     public static void deleteCourse(int id)
     {
         DatabaseManager.deleteByCourseID(id);
     }
 
+    /**
+     * Get courses assigned to user.
+     * @param professorId
+     * @return
+     */
     public static ArrayList<Course> getAssignedCourses(int professorId)
     {
         return DatabaseManager.queryCourseByProfessor(professorId);
     }
 
+    /**
+     * Register learner for new course and add database.
+     * @param learnerID
+     * @param courseID
+     */
     public static boolean registerCourse(int learnerID, int courseID)
     {
 
         return DatabaseManager.AddLearnerCourse(learnerID,courseID);
     }
 
+    /**
+     * Update course rating
+     * @param course
+     * @param newRating
+     * @return
+     */
     public static boolean updateCourseRating(Course course, int newRating) {
         double result=((course.getNumOfRatings()*course.getRating())+newRating)/(course.getNumOfRatings()+1);
         return DatabaseManager.updateCourseRating(course.getCourseID(), result, course.getNumOfRatings()+1);
     }
 
+    /**
+     * Mark course cours completed.
+     * @param learnerID
+     * @param courseID
+     * @return
+     */
     public static boolean markAsReviewed(int learnerID,int courseID) {
 
         return DatabaseManager.updateLearnerCourseReviewed(learnerID, courseID);
