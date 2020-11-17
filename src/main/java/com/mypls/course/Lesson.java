@@ -28,6 +28,7 @@ public class Lesson {
         this.quiz=null;
     }
 
+
     public int getLessonID() {
         return LessonID;
     }
@@ -163,6 +164,44 @@ public class Lesson {
         double result=((lesson.getNumberOfRatings()*lesson.getRating())+newRating)/(lesson.getNumberOfRatings()+1);
 
         return DatabaseManager.updateLessonRating(lesson.getLessonID(),result,(lesson.getNumberOfRatings())+1);
+    }
+
+
+    public static double takeQuiz(int learnerID, int courseID, int lessonID, ArrayList<String> choices, ArrayList<String> answers, boolean retake)
+    {
+        ArrayList<Boolean> results =new ArrayList<>();
+        double correct =0;
+        double score =0;
+        if(retake)
+        {
+            for(int i=0; i<3;i++)
+            {
+                if(choices.get(i).equals(answers.get(i)))
+                {
+                    correct++;
+                }
+
+            }
+            score=(correct/3)*100;
+            DatabaseManager.updateGrade(learnerID,lessonID,score);
+        }
+        else
+        {
+
+
+            for(int i=0; i<3;i++)
+            {
+                if(choices.get(i).equals(answers.get(i)))
+                {
+                    correct++;
+                }
+
+            }
+            score=(correct/3)*100;
+            DatabaseManager.addGrade(learnerID,courseID,lessonID,score);
+        }
+        return score;
+
     }
 
 }

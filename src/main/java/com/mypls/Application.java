@@ -27,8 +27,6 @@ public class Application {
     static final String LEARNERVIEWCOURSE = "LearnerViewCourse.ftlh";
     static final String LEARNERVIEWLESSON = "LearnerViewLesson.ftlh";
     static final String TAKEQUIZ = "TakeQuiz.ftlh";
-
-
     static final String HOMEADMIN = "HomepageAdmin.ftlh";
     static final String REGISTRATION = "Registration.ftlh";
     static final String LOGIN = "Login.ftlh";
@@ -60,6 +58,7 @@ public class Application {
        TemplateGenerator template = new TemplateGenerator();
        template.setUpConfig();
 
+       // Login page of MyPLs System
        get("/", (request, response) -> {
        if( request.session().attribute("currentUser")!= null)
        {
@@ -82,15 +81,19 @@ public class Application {
            return template.render(LOGIN);
         });
 
+        // Login post request handler for a user signing in
         post("/Login", (request, response) ->{
+            //Method to login of user class to verify user credentials.
             HashMap<String, Object> userData = User.login(request.queryParams("email"),request.queryParams("password")) ;
 
+            //if verified check user type to direct to correct page.
             if(userData.get("loginStatus").equals(AUTHENTICATED))
             {
                 request.session(true);
                 request.session().attribute("currentUser", request.queryParams("email"));
                 template.setModel("isEmailUnique", true);
                 template.setModel("loginStatus",userData.get("loginStatus"));
+                // Based on user type direct to appropriate page
                 if(userData.get("userData") instanceof Professor)
                 {
                     professor=(Professor) userData.get("userData");
@@ -121,7 +124,9 @@ public class Application {
             return null;
         });
 
+        //Display registration page
         get("/Registration", (request, response) -> {
+            //Re-direct to correct page if already signed in
             if( request.session().attribute("currentUser")!= null)
             {
                 if(request.session().attribute("Type").equals("Learner")) {
@@ -140,6 +145,7 @@ public class Application {
             return template.render(REGISTRATION);
         });
 
+        //handler for post request from registration page
         post("/Registration", (request, response) -> {
 
             int fLength=request.queryParams("fname").trim().length() ;
@@ -147,9 +153,10 @@ public class Application {
             int elength=request.queryParams("email").trim().length();
 
             if(fLength>0&&lLength>0&&elength>0) {
+                //Call to register method. Returns true if email is unique.
                 boolean isEmailUnique = User.register(request.queryParams("fname"), request.queryParams("lname"), request.queryParams("type"), request.queryParams("email"), request.queryParams("password_1"));
                 HashMap<String, Object> userData;
-
+                //if email is unique, login the new user in and start session.
                 if (isEmailUnique) {
                     request.session(true);
                     request.session().attribute("currentUser", request.queryParams("email"));
@@ -180,6 +187,7 @@ public class Application {
             }
         });
 
+        //Sign out user
         get("/Signout", (req, response) -> {
             req.session().removeAttribute("currentUser");
             template.removeAll();
@@ -187,11 +195,12 @@ public class Application {
             return template.render(LOGIN);
         });
 
-
+        //Display learner homepage
         get("/HomepageLearner", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
                 template.removeModel("blankSpaces");
+                //Retrieve all registered Course  with professors.
                 ArrayList<Professor> courseProfessors=new ArrayList<>();
                 ArrayList<Course> courseList =DatabaseManager.getAllRegisteredCourses(learner.getLearnerID());
                 for (Course course :courseList)
@@ -205,6 +214,7 @@ public class Application {
                 template.removeModel("score");
                 template.removeModel("blanks");
                 template.removeModel("courses");
+                template.removeModel("prereqPassed");
                 return template.render(HOME);
             }
             else
@@ -214,11 +224,15 @@ public class Application {
             }
         });
 
+
+        //Display course to learner
         get("/HomepageLearner/ViewCourse/:courseid", (request, response) -> {
 
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
+                //retrieve course to be displayed.
                 Course course = Course.getCourseByID(Integer.parseInt(request.params(":courseid")));
+                //retrieve lessons and their associated quiz.
                 for (Lesson lesson:course.getLessons())
                 {
                     double grade=DatabaseManager.retrieveGrade(learner.getLearnerID(), lesson.getLessonID());
@@ -245,11 +259,13 @@ public class Application {
 
         });
 
+        //Display all courses to learner
         get("/HomepageLearner/ViewAllCourses", (request, response) -> {
 
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
-                template.setModel("courses",Course.allCourses());
+               //Retrieve all course and display to learner..
+                template.setModel("courses",Course.getAllCourses());
                 return template.render(VIEWALLCOURSES);
             }
             else {
@@ -259,17 +275,18 @@ public class Application {
 
         });
 
+        //Display lesson to learner.
         get("/HomepageLearner/ViewCourse/ViewLesson/:courseid/:lessonid", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner")) {
 
                 Course course = (Course) template.getModel("course");
                 int lessonID = Integer.parseInt(request.params(":lessonid"));
                 List<Lesson> lessons = course.getLessons();
+                //Find specific lesson from list of lessons.
                 Lesson lesson = null;
                 for (int i = 0; i < lessons.size(); i++) {
                     if (lessons.get(i).getLessonID() == lessonID) {
                         lesson = lessons.get(i);
-                        System.out.print("Checking the Lesson ID List22: " + lessons.get(0).getLessonID());
                         break;
                     }
                 }
@@ -284,12 +301,14 @@ public class Application {
             }
         });
 
+        //Display quiz to learner
         get("/HomepageLearner/ViewCourse/:courseid/:lessonid/TakeQuiz", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner")) {
                 Course course = (Course) template.getModel("course");
                 int lessonID = Integer.parseInt(request.params(":lessonid"));
                 int lessonIndex =0;
                 List<Lesson> lessons = course.getLessons();
+                //Find specific lesson from list of lessons.
                 Lesson lesson = null;
                 for (int i = 0; i < lessons.size(); i++) {
                     if (lessons.get(i).getLessonID() == lessonID) {
@@ -309,17 +328,15 @@ public class Application {
                 return "You are not logged in!";
             }
         });
-
-
-
-
+        // Post request when user submits the quiz
         post("/HomepageProf/ViewCourse/TakeQuiz", (request, response) -> {
 
             Course course = (Course) template.getModel("course");
             Lesson lesson=(Lesson) template.getModel("lesson");
             ArrayList<String> choices=new ArrayList<>();
+            //Get quiz from lesson
             Quiz quiz=lesson.getQuiz();
-
+            //Retrieve answers user submitted.
             for(int i=0; i<3;i++)
             {
                 String choice=request.queryParams("answer"+(i+1));
@@ -327,7 +344,9 @@ public class Application {
 
             }
             int lessonCount=Integer.parseInt(request.queryParams("lessonCount"));
-            double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers(),false);
+            //Compute learner quiz score
+            double score= Lesson.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers(),false);
+           // If score greater than passmark for course and it is the last quiz mark quiz as complete.
             if(score> course.getMinScore()&&course.getLessons().size()==lessonCount)
             {
                 DatabaseManager.updateLearnerCourseStatus(learner.getLearnerID(), course.getCourseID(), "Completed");
@@ -337,14 +356,15 @@ public class Application {
             return template.render(TAKEQUIZ);
         });
 
+        //Post handler for retaking a quiz
         post("/HomepageProf/ViewCourse/RetakeQuiz", (request, response) -> {
 
-            System.out.println("retaking!!!!!!");
             Course course = (Course) template.getModel("course");
             Lesson lesson=(Lesson) template.getModel("lesson");
             ArrayList<String> choices=new ArrayList<>();
+            //Get quiz from lesson
             Quiz quiz=lesson.getQuiz();
-
+            //Retrieve answers user submitted.
             for(int i=0; i<3;i++)
             {
                 String choice=request.queryParams("answer"+(i+1));
@@ -352,8 +372,9 @@ public class Application {
 
             }
             int lessonCount=Integer.parseInt(request.queryParams("lessonCount"));
-            double score=Quiz.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers(),true);
-           System.out.println(" template.setModel(\"lessonIndex\", lessonIndex); :"+lessonCount);
+            //Compute learner quiz score
+            double score= Lesson.takeQuiz(learner.getLearnerID(),lesson.getCoursedID(),lesson.getLessonID(),choices, quiz.getAnswers(),true);
+            // If score greater than passmark for course and it is the last quiz mark quiz as complete.
             if(score> course.getMinScore()&&course.getLessons().size()==lessonCount)
             {
                 DatabaseManager.updateLearnerCourseStatus(learner.getLearnerID(), course.getCourseID(), "Completed");
@@ -363,8 +384,7 @@ public class Application {
             return template.render(TAKEQUIZ);
         });
 
-
-
+        //Display learner search result for course.
         get("/HomepageLearner/Search", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
@@ -379,19 +399,22 @@ public class Application {
             }
         });
 
+        //Post to handle user search input
         post("/HomepageLearner/Search", (request, response) -> {
 
             String search=request.queryParams("search").trim();
             int courseID=Integer.parseInt(search);
+            //Retrieve course by ID
             Course course= Course.getCourseByID(courseID);
+            //Retrieve associated professor for course.
             Professor professor=Professor.getProfessor(course.getAssignedProfessorId());
-            System.out.println("hello "+professor);
             template.setModel("professor",professor);
             template.setModel("course",course);
             response.redirect("/HomepageLearner/Search");
             return null;
         });
 
+        //Display course outline.
         get("/HomepageLearner/ViewCourseOutline/:courseid", (request, response) -> {
 
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
@@ -404,10 +427,12 @@ public class Application {
             }
 
         });
-
+        //Register user for course
         post("/HomepageLearner/CourseRegister", (request, response) -> {
+            //retrieve course
             Course course=Course.getCourseByID(Integer.parseInt(request.queryParams("courseID")));
             boolean prereqPassed;
+            //Check if course has a prerequisite and determine if learner has already passed.
             if(course.getPrerequisiteCourseId()!=0)
             {
                 prereqPassed=DatabaseManager.retrievePrereqStatus(learner.getLearnerID(),course.getPrerequisiteCourseId());
@@ -416,7 +441,7 @@ public class Application {
             {
                 prereqPassed=true;
             }
-
+            // if user has has passed register the user.
             if(prereqPassed)
             {
                 boolean isAdded=Course.registerCourse(learner.getLearnerID(),Integer.parseInt(request.queryParams("courseID")));
@@ -434,10 +459,12 @@ public class Application {
             return null;
         });
 
+        //Display course review page to learner.
         get("/HomepageLearner/ViewCourse/:courseid/Review", (request, response) -> {
 
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Learner"))
             {
+                //retrieve course and professor information.
                 Course course = Course.getCourseByID(Integer.parseInt(request.params(":courseid")));
                 Professor professor=Professor.getProfessor(course.getAssignedProfessorId());
 
@@ -453,13 +480,11 @@ public class Application {
 
         });
 
-
+        //Post handler for ratings submitted by the user.
         post("/HomepageLearner/ViewCourse/ReviewCourse", (request, response) -> {
             Course course= (Course) template.getModel("course");
             boolean blanks=false;
-
-            System.out.println("Rate Params: "+request.queryParams());
-            System.out.println("Lessons Size: " + course.getLessons().size());
+            //Check for blank spaces
             if( request.queryParams().size() != (course.getLessons().size() + 2)) {
                 blanks = true;
                 template.setModel("blanks", blanks);
@@ -469,29 +494,31 @@ public class Application {
             int newProfessorRating = Integer.parseInt(request.queryParams("courseRating"));
             int newCourseRating = Integer.parseInt(request.queryParams("profRating"));
 
-            int lessonRatings=0;
+            //Update all lession ratings
             for (int i = 1; i <=course.getLessons().size(); i++)
             {
-                lessonRatings=Integer.parseInt( request.queryParams("LessonRating"+i));
                 Lesson.updateLessonRating(course.getLessons().get(i-1),Integer.parseInt( request.queryParams("LessonRating"+i)));
             }
+            //Update  course ratings
             Course.updateCourseRating(course,newCourseRating);
+            //Update professor rating.
             Professor professor1= DatabaseManager.queryProfessorByID(course.getAssignedProfessorId());
-            System.out.println("Prof."+professor1.toString());
             professor1.setRate(new RateProfessor());
             professor1.updateProfessorRating(newProfessorRating);
+            //Mark course as reviewed.
             Course.markAsReviewed(learner.getLearnerID(),course.getCourseID());
 
-           // template.setModel("ratings added",true);
             response.redirect("/HomepageLearner");
 
             return null;
         });
 
+        //Display professor homepage
         get("/HomepageProf", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Professor"))
             {
                 template.removeModel("blankSpaces");
+                //Retrieve assgined course
                 template.setModel("courses",Course.getAssignedCourses(professor.getProfessorID()));
                 return template.render(HOMEPROF);
             } else {
@@ -501,17 +528,20 @@ public class Application {
 
         });
 
+        //Display add lesson to course page for professor
         get("HomepageProf/AddLesson/:courseid", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Professor"))
             {
-            template.setModel("course", Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
-            return template.render(ADDLESSON) ;
+                //retrieve course
+                template.setModel("course", Course.getCourseByID( Integer.parseInt(request.params(":courseid"))));
+                return template.render(ADDLESSON) ;
             } else {
                 response.redirect("/");
                 return "You are not logged in!";
             }
         });
 
+        //Display view course page to professor
         get("/HomepageProf/ViewCourse/:courseid", (request, response) -> {
 
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Professor"))
@@ -528,6 +558,7 @@ public class Application {
 
         });
 
+        //Post handler for adding lesson to course.
         post("/AddLesson", (request, response) -> {
 
             Part uploadfile=null;
@@ -538,29 +569,43 @@ public class Application {
             Course course = (Course) template.getModel("course");
 
             if(tLength>0) {
-                try {
+                try
+                {
+                    //Retrieve pdf file that user uploaded.
                     uploadfile = request.raw().getPart("uploaded_pdf");
-                    if (uploadfile.getSize() != 0) {
+                    //Check check if a file was uploaded.
+                    if (uploadfile.getSize() != 0)
+                    {
                         String fileName = getFileName(request.raw().getPart("uploaded_pdf"));
+                        //store document path
                         documentPath = "documents/" + fileName;
+                        //create file
                         File uploadDir = new File("src/main/resources/public/documents/" + fileName);
-                        System.out.println(uploadfile.getSize() + "document:" + uploadfile.getName() + " " + uploadfile.getHeader("Content-Disposition"));
-                        InputStream input = uploadfile.getInputStream();// getPart needs to use same "name" as input field in form
+                        //get input stream
+                        InputStream input = uploadfile.getInputStream();
+                        //Copy stream to file created.
                         Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
                     }
+                    //Retrieve pdf file that user uploaded.
                     uploadfile = request.raw().getPart("uploaded_media");
-                    if (uploadfile.getSize() != 0) {
+                    //Check a file was uploaded.
+                    if (uploadfile.getSize() != 0)
+                    {
                         String fileName = getFileName(request.raw().getPart("uploaded_media"));
+                        //store media path
                         mediaPath = "media/" + fileName;
+                        //create file
                         File uploadDir = new File("src/main/resources/public/media/" + fileName);
-                        System.out.println(uploadfile.getSize() + "media" + uploadfile.getName() + " " + uploadfile.getHeader("Content-Disposition"));
+                        //get input stream
                         InputStream input = uploadfile.getInputStream();
+                        //Copy stream to file created.
                         Files.copy(input, uploadDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                //Create lesson
                 Lesson.createLesson(request.queryParams("title"), Integer.parseInt(request.queryParams("courseID")), request.queryParams("requirement"), mediaPath, documentPath);
                 response.redirect("/HomepageProf/ViewCourse/"+course.getCourseID());
 
@@ -573,6 +618,7 @@ public class Application {
             }
         });
 
+        //Display lesson to
         get("/HomepageProf/ViewCourse/UpdateLesson/:courseid/:lessonid", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Professor"))
             {
@@ -822,8 +868,8 @@ public class Application {
 
         get("/HomepageAdmin", (request, response) -> {
             if (request.session().attribute("currentUser") != null && request.session().attribute("Type").equals("Admin")) {
-                template.setModel("courseCount", Course.allCourses().size());
-                template.setModel("courses",Course.allCourses());
+                template.setModel("courseCount", Course.getAllCourses().size());
+                template.setModel("courses",Course.getAllCourses());
                 template.setModel("professors",Professor.allProfessors());
                 template.setModel("learners",Learner.allLearners());
                 template.removeModel("blankSpaces");

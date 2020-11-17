@@ -193,7 +193,7 @@ public class Course
         return course;
     }
 
-    public static ArrayList<Course> allCourses() {
+    public static ArrayList<Course> getAllCourses() {
         ArrayList<Course> courses = DatabaseManager.getAllCourses();
         return courses;
     }
