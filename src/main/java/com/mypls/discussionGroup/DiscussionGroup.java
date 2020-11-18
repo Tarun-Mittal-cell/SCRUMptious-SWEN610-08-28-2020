@@ -1,3 +1,6 @@
+/**
+ * Discussion Group class for MyPLS system.
+ */
 package com.mypls.discussionGroup;
 
 import com.mypls.DatabaseManager;

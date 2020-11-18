@@ -1,3 +1,6 @@
+/**
+ * Database manager class to connec to MySQL Databse.
+ */
 package com.mypls;
 import com.mypls.course.Course;
 import com.mypls.course.Lesson;

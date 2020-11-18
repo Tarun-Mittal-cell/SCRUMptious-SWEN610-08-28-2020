@@ -1,3 +1,6 @@
+/**
+ * Parent class of users in MyPLS system.
+ */
 package com.mypls.users;
 
 import com.mypls.DatabaseManager;

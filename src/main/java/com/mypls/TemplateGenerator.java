@@ -1,3 +1,6 @@
+/**
+ * Freemarker template class to handle the rendering of webpages.
+ */
 package com.mypls;
 
 import freemarker.cache.TemplateCache;
@@ -9,8 +12,8 @@ import java.util.Map;
 public class TemplateGenerator {
 
 
-    private Map <String, Object> model;
-    private Configuration config;
+    private Map <String, Object> model;//Data model for freemarker
+    private Configuration config;//Config for freemarker
 
     public TemplateGenerator()
     {
@@ -19,6 +22,9 @@ public class TemplateGenerator {
 
     }
 
+    /**
+     * Set up freemarker configuration
+     */
     public void setUpConfig()
     {
 
@@ -38,6 +44,10 @@ public class TemplateGenerator {
 
     }
 
+    /**
+     * Render webpage
+     * @param page name of template used to render pages.
+     */
     public Object render(String page)
     {
         Template  temp= null;

@@ -1,3 +1,6 @@
+/**
+ * Professor class representing a learner for MyPLS system.
+ */
 package com.mypls.users;
 
 import com.mypls.DatabaseManager;

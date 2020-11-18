@@ -1,3 +1,6 @@
+/**
+ * Main application of MyPLS system running Spark.
+ */
 package com.mypls;
 import com.mypls.course.Course;
 import com.mypls.course.Lesson;

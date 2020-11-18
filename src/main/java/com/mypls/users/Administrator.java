@@ -1,3 +1,6 @@
+/**
+ * Administrator User class for MyPLS system.
+ */
 package com.mypls.users;
 
 import com.mypls.DatabaseManager;

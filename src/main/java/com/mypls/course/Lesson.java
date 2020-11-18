@@ -1,3 +1,6 @@
+/**
+ * Course class for MyPLS system.
+ */
 package com.mypls.course;
 
 import com.mypls.DatabaseManager;

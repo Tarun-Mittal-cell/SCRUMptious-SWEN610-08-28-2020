@@ -1,5 +1,5 @@
 /**
- * Conrete implemenation of computerating for learner
+ * Concrete implementation of computeRating for learner
  */
 package com.mypls.users;
 
