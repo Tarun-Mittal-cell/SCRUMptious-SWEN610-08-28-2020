@@ -61,20 +61,6 @@ public class Lesson {
         this.requirements = requirements;
     }
 
-    @Override
-    public String toString() {
-        return "Lesson{" +
-                "LessonID=" + LessonID +
-                ", title='" + title + '\'' +
-                ", coursedID=" + coursedID +
-                ", requirements='" + requirements + '\'' +
-                ", rating=" + rating +
-                ", numberOfRatings=" + numberOfRatings +
-                ", mediaPath='" + mediaPath + '\'' +
-                ", documentPath='" + documentPath + '\'' +
-                '}';
-    }
-
     public double getRating() {
         return rating;
     }
@@ -115,15 +101,40 @@ public class Lesson {
         this.quiz = quiz;
     }
 
+    /**
+     * Create lessson in database
+     * @param title lesson title
+     * @param courseID associated course id
+     * @param requirements lesson requirements
+     * @param mediaPath path to media for lesson
+     * @param documentPath document path for lesson
+     * @return
+     */
     public static boolean createLesson(String title,int courseID,String requirements,String mediaPath,String documentPath)
     {
         return DatabaseManager.addNewLesson(title,courseID,requirements,mediaPath,documentPath);
     }
+
+    /**
+     * Update lessson in database
+     * @param title lesson title
+     * @param courseID associated course id
+     * @param requirements lesson requirements
+     * @param mediaPath path to media for lesson
+     * @param documentPath document path for lesson
+     * @return
+     */
     public static boolean updateLesson(int lessonID, String title,int courseID,String requirements,String mediaPath,String documentPath)
     {
         return DatabaseManager.updateLesson(lessonID,title,courseID,requirements,mediaPath,documentPath);
     }
 
+    /**
+     * Update Quiz in database.
+     * @param lessonID lesson id
+     * @param questions list of questions for quiz
+     * @param answers list of answers for quiz
+     */
     public static boolean updateQuiz(int lessonID, ArrayList<String> questions, ArrayList<String>answers)
     {
         boolean delete= DatabaseManager.removeQuiz(lessonID);
@@ -137,11 +148,24 @@ public class Lesson {
         return DatabaseManager.removeQuiz(lessonID);
     }
 
-    public static boolean createQuiz(int lessonID, ArrayList<String> question, ArrayList<String>answer)
+    /**
+     * Create Quiz in database.
+     * @param lessonID lesson id
+     * @param questions list of questions for quiz
+     * @param answers list of answers for quiz
+     */
+    public static boolean createQuiz(int lessonID, ArrayList<String> questions, ArrayList<String>answers)
     {
-        return DatabaseManager.addNewQuiz(lessonID,question,answer);
+        return DatabaseManager.addNewQuiz(lessonID,questions,answers);
     }
 
+    /**
+     * Delete lesson and associated material.
+     * @param lessonID lesson id
+     * @param mediaPath path where the media is stored
+     * @param documentPath path where the document is stored
+     * @return
+     */
     public static boolean deleteLesson(int lessonID, String mediaPath,String documentPath)
     {
         File uploadDir;
@@ -159,6 +183,11 @@ public class Lesson {
         return DatabaseManager.deleteLesson(lessonID);
     }
 
+    /**
+     * Update lesson rating.
+     * @param lesson lesson to be updated.
+     * @param newRating new rating from learner
+     */
     public static boolean updateLessonRating(Lesson lesson, int newRating)
     {
         double result=((lesson.getNumberOfRatings()*lesson.getRating())+newRating)/(lesson.getNumberOfRatings()+1);
@@ -166,7 +195,16 @@ public class Lesson {
         return DatabaseManager.updateLessonRating(lesson.getLessonID(),result,(lesson.getNumberOfRatings())+1);
     }
 
-
+    /**
+     * Compute results for learner taking quiz
+     * @param learnerID learner taking quiz
+     * @param courseID course for the quiz
+     * @param lessonID the particular lesson the quiz is for
+     * @param choices the answers provided by the learner
+     * @param answers the answer set by the professor
+     * @param retake whether or not this is a retaken quiz
+     * @return
+     */
     public static double takeQuiz(int learnerID, int courseID, int lessonID, ArrayList<String> choices, ArrayList<String> answers, boolean retake)
     {
         ArrayList<Boolean> results =new ArrayList<>();
@@ -202,6 +240,20 @@ public class Lesson {
         }
         return score;
 
+    }
+
+    @Override
+    public String toString() {
+        return "Lesson{" +
+                "LessonID=" + LessonID +
+                ", title='" + title + '\'' +
+                ", coursedID=" + coursedID +
+                ", requirements='" + requirements + '\'' +
+                ", rating=" + rating +
+                ", numberOfRatings=" + numberOfRatings +
+                ", mediaPath='" + mediaPath + '\'' +
+                ", documentPath='" + documentPath + '\'' +
+                '}';
     }
 
 }

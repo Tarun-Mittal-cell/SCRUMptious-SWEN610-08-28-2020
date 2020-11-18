@@ -19,6 +19,7 @@ public class DatabaseManager {
     static final String USERNAME = "mypls";
     static final String PASSWORD = "password";
 
+    //SQL to query database for MyPLS system.
     public static final String INSERT_USER_QUERY = "INSERT INTO USERS(Email,Password,UserType) VALUES(?,?,?)";
     public static final String INSERT_LEARNER_QUERY = "INSERT INTO LEARNERS(FirstName,LastName,Email) VALUES(?,?,?)";
     public static final String VALIDATE_USER    = "SELECT * FROM USERS WHERE Email=?";
@@ -65,7 +66,13 @@ public class DatabaseManager {
     public static final String DELETE_QUIZ = "DELETE FROM QUIZZES WHERE (LessonID =?)";
 
 
-
+    /**
+     * Inserting new user into Users table.
+     * @param email User email
+     * @param password User Pass
+     * @param type Type of user
+     * @return
+     */
     public static boolean registerUser(String email, String password,String type )
     {
         boolean isUnique=true;
@@ -124,6 +131,12 @@ public class DatabaseManager {
         return isUnique;
     }
 
+    /**
+     * Add new learner into learners table
+     * @param firstName first name of learner
+     * @param lastName last name of learner
+     * @param email email of learner
+     */
     public static void insertLearner(String firstName, String lastName, String email)
     {
 
@@ -143,11 +156,6 @@ public class DatabaseManager {
             statement.setString(2,lastName);
             statement.setString(3,email);
             statement.executeUpdate();
-        }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-            System.out.println("Email already assigned to an account");
-
         }
         catch(Exception e)
         {
@@ -181,8 +189,11 @@ public class DatabaseManager {
         }
     }
 
-
-
+    /**
+     * Add new learner and related course registered for to table.
+     * @param learnerID
+     * @param courseID
+     */
     public static boolean AddLearnerCourse(int learnerID, int courseID)
     {
         boolean isAdded=true;
@@ -235,10 +246,10 @@ public class DatabaseManager {
         return isAdded;
     }
 
-
-
-
-
+    /**
+     * Query login creditionals for user form database.
+     * @param email email entered by user.
+     */
     public static HashMap<String, Object>  queryCredentials(String email)
     {
         HashMap<String, Object> userData = new HashMap();
@@ -304,7 +315,10 @@ public class DatabaseManager {
         return userData;
     }
 
-
+    /**
+     * Find learner information after login
+     * @param email email entered by user.
+     */
     public static  Learner queryLearner(String email)
     {
         Connection connection = null;
@@ -364,7 +378,10 @@ public class DatabaseManager {
         return learner;
 
     }
-
+    /**
+     * Find professor information after login
+     * @param email email entered by user.
+     */
     public static  Professor queryProfessor(String email)
     {
         Connection connection = null;
@@ -425,7 +442,11 @@ public class DatabaseManager {
 
     }
 
-
+    /**
+     * Update database
+     * @param query SQL query for database.
+     * @return
+     */
     public static boolean updateDatabase(String query)
     {
         boolean isUnique=true;
@@ -486,6 +507,9 @@ public class DatabaseManager {
 
     }
 
+    /**
+     * Retrieve all professors from database.
+     */
     public static ArrayList<Professor> getAllProfessor()
     {
         ArrayList<Professor> professorList= new ArrayList<>();
@@ -509,8 +533,6 @@ public class DatabaseManager {
                 //Retrieve by column name
                 Professor professor = new Professor(resultSet.getInt("ProfessorID"),resultSet.getString("FirstName"), resultSet.getString("lastName"), resultSet.getString("Email"),resultSet.getDouble("Rating"),resultSet.getInt("NumberOfRatings"));
                 professorList.add(professor);
-
-
             }
             resultSet.close();
         }
@@ -549,6 +571,10 @@ public class DatabaseManager {
 
     }
 
+    /**
+     * Retrieve professor by user id
+     * @param id user id of professor.
+     */
     public static Professor queryProfessorByID(int id)
     {
         Professor professor = null;
@@ -611,6 +637,15 @@ public class DatabaseManager {
         return professor;
     }
 
+    /**
+     * Add new source to database.
+     * @param professorId  professor id
+     * @param name name of course.
+     * @param objectives course objectes
+     * @param outcomes course outcomes
+     * @param prerequisite course prerequisite
+     * @param requirement course requirment
+     */
     public static boolean createNewCourse(String name , int professorId ,int prerequisite ,String requirement,String objectives ,String outcomes)
     {
         boolean isCreated=false;
@@ -635,14 +670,10 @@ public class DatabaseManager {
             statement.executeUpdate();
             isCreated=true;
         }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-            System.out.println("Email already assigned to an account");
-            isCreated=false;
-        }
         catch(Exception e)
         {
             e.printStackTrace();
+            isCreated=false;
 
         }
         finally
@@ -674,6 +705,15 @@ public class DatabaseManager {
         return isCreated;
     }
 
+    /**
+     * update course in to database
+     * @param professorId  professor id
+     * @param name name of course.
+     * @param objectives course objectes
+     * @param outcomes course outcomes
+     * @param prerequisite course prerequisite
+     * @param requirement course requirment
+     */
     public static boolean updateCourse(int courseID,String name , int professorId ,int prerequisite ,String requirement,String objectives ,String outcomes)
     {
         boolean isUpdated=false;
@@ -687,7 +727,7 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table...");
             statement = connection.prepareStatement(UPDATE_COURSE);
             statement.setString(1,name);
             statement.setInt(2,professorId);
@@ -699,15 +739,11 @@ public class DatabaseManager {
             statement.executeUpdate();
             isUpdated=true;
         }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-            System.out.println("Email already assigned to an account");
-            isUpdated=false;
-        }
+
         catch(Exception e)
         {
             e.printStackTrace();
-
+            isUpdated=false;
         }
         finally
         {
@@ -738,6 +774,11 @@ public class DatabaseManager {
         return isUpdated;
     }
 
+    /**
+     * Update enrollment number for course
+     * @param courseID Course id
+     * @param enrollment new enrollment total.
+     */
     public static boolean updateCourseEnrollment(int courseID,int enrollment)
     {
         boolean isUpdated=false;
@@ -751,7 +792,7 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table...");
             statement = connection.prepareStatement(UPDATE_COURSE_ENROLLMENT);
             statement.setInt(1,enrollment);
             statement.setInt(2,courseID);
@@ -760,15 +801,11 @@ public class DatabaseManager {
             statement.executeUpdate();
             isUpdated=true;
         }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-            System.out.println("Email already assigned to an account");
-            isUpdated=false;
-        }
+
         catch(Exception e)
         {
             e.printStackTrace();
-
+            isUpdated=false;
         }
         finally
         {
@@ -799,6 +836,9 @@ public class DatabaseManager {
         return isUpdated;
     }
 
+    /**
+     * Return the list of courses fom the database.
+     */
     public static ArrayList<Course> getAllCourses()
     {
         ArrayList<Course> courses = new ArrayList<>();
@@ -861,6 +901,11 @@ public class DatabaseManager {
 
     }
 
+    /**
+     * Return all courses that a learner is registered for.
+     * @param learnerID learner id
+     * @return
+     */
     public static ArrayList<Course> getAllRegisteredCourses(int learnerID)
     {
         ArrayList<Course> courses = new ArrayList<>();
@@ -926,6 +971,9 @@ public class DatabaseManager {
 
     }
 
+    /**
+     * Returns list of all learners.
+     */
     public static ArrayList<Learner> getAllLearners()
     {
         ArrayList<Learner> learners = new ArrayList<>();
@@ -988,6 +1036,13 @@ public class DatabaseManager {
 
     }
 
+    /**
+     *Add new grade for the learner to the database.
+     * @param learnerID learner id
+     * @param courseID course associated with grade
+     * @param lessonID lesson associated with grade
+     * @param grade new grade
+     */
     public static void addGrade(int learnerID,int courseID, int lessonID, double grade)
     {
 
@@ -1001,18 +1056,13 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table...");
             statement = connection.prepareStatement(ADD_GRADE);
             statement.setInt(1,learnerID);
             statement.setInt(2,courseID);
             statement.setInt(3,lessonID);
             statement.setDouble(4,grade);
             statement.executeUpdate();
-        }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-            System.out.println("Email already assigned to an account");
-
         }
         catch(Exception e)
         {
@@ -1046,7 +1096,11 @@ public class DatabaseManager {
         }
     }
 
-
+    /**
+     * Retrieve grade from database for lesson
+     * @param learnerID learner id
+     * @param lessonID lesson id
+     */
     public static double retrieveGrade(int learnerID,int lessonID)
     {
         double grade=0;
@@ -1060,7 +1114,7 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Reading records from table...");
             statement = connection.prepareStatement(RETRIEVE_GRADE);
             statement.setInt(1,learnerID);
             statement.setInt(2,lessonID);
@@ -1076,11 +1130,6 @@ public class DatabaseManager {
                grade=-1;
                System.out.println("no grades");
            }
-
-        }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-            System.out.println("Email already assigned to an account");
 
         }
         catch(Exception e)
@@ -1117,10 +1166,10 @@ public class DatabaseManager {
         return grade;
     }
 
-
-
-
-
+    /**
+     * Query course by course id
+     * @param id course id
+     */
     public static Course queryByCourseID(int id)
     {
         Course course = null;
@@ -1183,6 +1232,10 @@ public class DatabaseManager {
         return course;
     }
 
+    /**
+     * Delete course by course id
+     * @param id course id
+     */
     public static boolean deleteByCourseID(int id)
     {
         boolean isDeleted=false;
@@ -1197,7 +1250,7 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a statement
-            System.out.println("Reading records from table...");
+            System.out.println("Deleting records from table...");
             statement = connection.prepareStatement(DELETE_COURSE);
             statement.setInt(1,id);
             statement.executeUpdate();
@@ -1237,6 +1290,10 @@ public class DatabaseManager {
         return isDeleted;
     }
 
+    /**
+     * Retrieve from database all course taught by a professor
+     * @param professorID professor id.
+     */
     public static ArrayList<Course> queryCourseByProfessor(int professorID)
     {
         Connection connection = null;
@@ -1299,6 +1356,15 @@ public class DatabaseManager {
 
     }
 
+    /**
+     * Add new lesson to database
+     * @param title Title of lesson
+     * @param courseID course id of lesson associated with
+     * @param requirements requirments of lesson
+     * @param mediaPath file path to media for lesson
+     * @param documentPath document path to media for lesson
+     * @return
+     */
     public static boolean addNewLesson(String title,int courseID,String requirements,String mediaPath,String documentPath )
     {
         boolean isAdded=false;
@@ -1312,7 +1378,7 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table...");
             statement = connection.prepareStatement(ADD_NEW_LESSON);
             statement.setString(1,title);
             statement.setInt(2,courseID);
@@ -1322,15 +1388,10 @@ public class DatabaseManager {
             statement.executeUpdate();
             isAdded=true;
         }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-            System.out.println("Email already assigned to an account");
-            isAdded=false;
-        }
         catch(Exception e)
         {
             e.printStackTrace();
-
+            isAdded=false;
         }
         finally
         {
@@ -1360,6 +1421,15 @@ public class DatabaseManager {
         return isAdded;
     }
 
+    /**
+     * Update lesson to database
+     * @param title Title of lesson
+     * @param courseID course id of lesson associated with
+     * @param requirements requirments of lesson
+     * @param mediaPath file path to media for lesson
+     * @param documentPath document path to media for lesson
+     * @return
+     */
     public static boolean updateLesson(int lessonID, String title,int courseID,String requirements,String mediaPath,String documentPath )
     {
         boolean isUpdated=false;
@@ -1373,7 +1443,7 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table...");
             statement = connection.prepareStatement(UPDATE_LESSON);
             statement.setString(1,title);
             statement.setInt(2,courseID);
@@ -1384,14 +1454,11 @@ public class DatabaseManager {
             statement.executeUpdate();
             isUpdated=true;
         }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-            System.out.println("Email already assigned to an account");
-            isUpdated=false;
-        }
+
         catch(Exception e)
         {
             e.printStackTrace();
+            isUpdated=false;
 
         }
         finally
@@ -1422,6 +1489,10 @@ public class DatabaseManager {
         return isUpdated;
     }
 
+    /**
+     * Delete lesson form database
+     * @param lessonID lesson id.
+     */
     public static boolean deleteLesson(int lessonID)
     {
         boolean isDeleted=false;
@@ -1435,21 +1506,16 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Deleting records from table....");
             statement = connection.prepareStatement(DELETE_LESSON);
             statement.setInt(1,lessonID);
             statement.executeUpdate();
             isDeleted=true;
         }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-            System.out.println("Email already assigned to an account");
-            isDeleted=false;
-        }
         catch(Exception e)
         {
             e.printStackTrace();
-
+            isDeleted=false;
         }
         finally
         {
@@ -1479,6 +1545,11 @@ public class DatabaseManager {
         return isDeleted;
     }
 
+    /**
+     * Get all lesson associated with a course
+     * @param courseID course id.
+     * @return
+     */
     public static List<Lesson> getLessonsByCourse(int courseID)
     {
         List<Lesson> lessons=new LinkedList<>();
@@ -1492,7 +1563,7 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table....");
             statement = connection.prepareStatement(RETRIEVE_LESSONS_BY_COURSE);
             statement.setInt(1,courseID);
             ResultSet resultSet=statement.executeQuery();
@@ -1506,11 +1577,7 @@ public class DatabaseManager {
             }
 
         }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-            System.out.println("Email already assigned to an account");
 
-        }
         catch(Exception e)
         {
             e.printStackTrace();
@@ -1545,6 +1612,13 @@ public class DatabaseManager {
         return lessons;
     }
 
+    /**
+     * Add new quiz to the database.
+     * @param lessonID lesson id associated with quiz
+     * @param questions questions for quiz
+     * @param answers answers for quiz.
+     * @return
+     */
     public static boolean addNewQuiz(int lessonID, ArrayList<String> questions,ArrayList<String> answers)
     {
         boolean isAdded=true;
@@ -1606,6 +1680,10 @@ public class DatabaseManager {
         return isAdded;
     }
 
+    /**
+     * Retrive quiz from the database.
+     * @param lessonID lesson id associated with quiz
+     */
     public static ArrayList<String>[] retrieveQuiz(int lessonID)
     {
         Connection connection = null;
@@ -1621,7 +1699,7 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Selecting records in table...");
             statement = connection.prepareStatement(RETRIEVE_QUIZ);
             statement.setInt(1,lessonID);
             ResultSet resultSet=statement.executeQuery();
@@ -1672,7 +1750,10 @@ public class DatabaseManager {
     }
 
 
-
+    /**
+     * Add new quiz to the database.
+     * @param id lesson id associated with quiz
+     */
     public static boolean removeQuiz(int id)
     {
         boolean isDeleted=false;
@@ -1687,7 +1768,7 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a statement
-            System.out.println("Reading records from table...");
+            System.out.println("removing records from table...");
             statement = connection.prepareStatement(DELETE_QUIZ);
             statement.setInt(1,id);
             statement.executeUpdate();
@@ -1728,6 +1809,12 @@ public class DatabaseManager {
         return isDeleted;
     }
 
+    /**
+     * Update course rating
+     * @param courseID course id
+     * @param rating new rating
+     * @param numberOfRating new number of ratings
+     */
     public static boolean updateCourseRating(int courseID, double rating, int numberOfRating)
     {
         boolean isUpdated=false;
@@ -1741,7 +1828,7 @@ public class DatabaseManager {
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table....");
             statement = connection.prepareStatement(UPDATE_COURSE_RATING);
             statement.setDouble(1,rating);
             statement.setInt(2,numberOfRating);
@@ -1752,7 +1839,6 @@ public class DatabaseManager {
         }
         catch (SQLIntegrityConstraintViolationException e)
         {
-            System.out.println("Email already assigned to an account");
             isUpdated=false;
         }
         catch(Exception e)
@@ -1789,7 +1875,13 @@ public class DatabaseManager {
         return isUpdated;
     }
 
-    public static boolean updateLearnerRating(int lessonID, double rating, int numberOfRating)
+    /**
+     * Update learner rating
+     * @param learnrid course id
+     * @param rating new rating
+     * @param numberOfRating new number of ratings
+     */
+    public static boolean updateLearnerRating(int learnrid, double rating, int numberOfRating)
     {
         boolean isUpdated=false;
         Connection connection = null;
@@ -1802,18 +1894,17 @@ public class DatabaseManager {
                 System.out.println("Connected database successfully...");
 
                 //Execute a query to MyPLS database
-                System.out.println("Inserting records into the table...");
+                System.out.println("Updating records in table....");
                 statement = connection.prepareStatement(UPDATE_LEARNER_RATING);
                 statement.setDouble(1,rating);
                 statement.setInt(2,numberOfRating);
-                statement.setInt(3,lessonID);
+                statement.setInt(3,learnrid);
 
                 statement.executeUpdate();
                 isUpdated=true;
                 }
                 catch (SQLIntegrityConstraintViolationException e)
                 {
-                System.out.println("Email already assigned to an account");
                 isUpdated=false;
                 }
                 catch(Exception e)
@@ -1850,69 +1941,78 @@ public class DatabaseManager {
                 return isUpdated;
                 }
 
-public static boolean updateProfessorRating(int professorID, double rating, int numberOfRating)
-{
-        boolean isUpdated=false;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try
-        {
-        //Open a connection to MYPLS database
-        System.out.println("Connecting to a selected database...");
-        connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-        System.out.println("Connected database successfully...");
+    /**
+     * Update professor rating
+     * @param professorID course id
+     * @param rating new rating
+     * @param numberOfRating new number of ratings
+     */
+    public static boolean updateProfessorRating(int professorID, double rating, int numberOfRating)
+    {
+         boolean isUpdated=false;
+         Connection connection = null;
+         PreparedStatement statement = null;
+         try
+         {
+         //Open a connection to MYPLS database
+         System.out.println("Connecting to a selected database...");
+         connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+         System.out.println("Connected database successfully...");
 
-        //Execute a query to MyPLS database
-        System.out.println("Inserting RATING FOR PROFESSSOR into the table...");
-        statement = connection.prepareStatement(UPDATE_PROFESSOR_RATING);
-        statement.setDouble(1,rating);
-        statement.setInt(2,numberOfRating);
-        statement.setInt(3,professorID);
+         //Execute a query to MyPLS database
+         System.out.println("Updating records in table....");
+         statement = connection.prepareStatement(UPDATE_PROFESSOR_RATING);
+         statement.setDouble(1,rating);
+         statement.setInt(2,numberOfRating);
+         statement.setInt(3,professorID);
 
-        statement.executeUpdate();
-        isUpdated=true;
-        }
-        catch (SQLIntegrityConstraintViolationException e)
-        {
-        System.out.println("Email already assigned to an account");
-        isUpdated=false;
-        }
-        catch(Exception e)
-        {
-        e.printStackTrace();
+         statement.executeUpdate();
+         isUpdated=true;
+         }
+         catch (SQLIntegrityConstraintViolationException e)
+         {
+         isUpdated=false;
+         }
+         catch(Exception e)
+         {
+         e.printStackTrace();
 
-        }
-        finally
-        {
+         }
+         finally
+         {
 
-        try{
-        if(statement!=null)
-        {
-        statement.close();
-        }
-        }
-        catch(SQLException se)
-        {
-        se.printStackTrace();
-        }
-        try
-        {
-        if(statement!=null)
-        {
-        statement.close();
-        }
-        }
-        catch(SQLException se)
-        {
-        se.printStackTrace();
-        }
-        }
+         try{
+         if(statement!=null)
+         {
+         statement.close();
+         }
+         }
+         catch(SQLException se)
+         {
+         se.printStackTrace();
+         }
+         try
+         {
+         if(statement!=null)
+         {
+         statement.close();
+         }
+         }
+         catch(SQLException se)
+         {
+         se.printStackTrace();
+         }
+         }
 
-        return isUpdated;
-        }
+         return isUpdated;
+    }
 
-
-
+    /**
+     * Update lesson rating
+     * @param lessonID course id
+     * @param rating new rating
+     * @param numberOfRating new number of ratings
+     */
     public static boolean updateLessonRating(int lessonID, double rating, int numberOfRating)
     {
         boolean isUpdated=false;
@@ -1926,7 +2026,7 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table....");
             statement = connection.prepareStatement(UPDATE_LESSONS_RATING);
             statement.setDouble(1,rating);
             statement.setInt(2,numberOfRating);
@@ -1937,7 +2037,6 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         }
         catch (SQLIntegrityConstraintViolationException e)
         {
-            System.out.println("Email already assigned to an account");
             isUpdated=false;
         }
         catch(Exception e)
@@ -1974,6 +2073,12 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         return isUpdated;
     }
 
+    /**
+     * Update grades for learner in database
+     * @param learnerID learner id
+     * @param lessonID associated course
+     * @param grade new grade.
+     */
     public static boolean updateGrade(int learnerID,int lessonID, double grade)
     {
         boolean isUpdated=false;
@@ -1987,7 +2092,7 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table....");
             statement = connection.prepareStatement(UPDATE_GRADE);
             statement.setDouble(1,grade);
             statement.setInt(2,learnerID);
@@ -1998,7 +2103,6 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         }
         catch (SQLIntegrityConstraintViolationException e)
         {
-            System.out.println("Email already assigned to an account");
             isUpdated=false;
         }
         catch(Exception e)
@@ -2035,6 +2139,13 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         return isUpdated;
     }
 
+    /**
+     * Update the status of a learner for a lesson if they have completed and passed quiz.
+     * @param learnerID learner id.
+     * @param courseID course id
+     * @param status completed status of lesson
+     * @return
+     */
     public static boolean updateLearnerCourseStatus(int learnerID, int courseID, String status)
     {
         boolean isUpdated=false;
@@ -2048,7 +2159,7 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table...");
             statement = connection.prepareStatement(UPDATE_LEARNER_COURSE);
             statement.setString(1,status);
             statement.setInt(2,learnerID);
@@ -2059,7 +2170,6 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         }
         catch (SQLIntegrityConstraintViolationException e)
         {
-            System.out.println("Email already assigned to an account");
             isUpdated=false;
         }
         catch(Exception e)
@@ -2096,6 +2206,11 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         return isUpdated;
     }
 
+    /**
+     * Determin from database if learner has passed prerequisite
+     * @param learnerID
+     * @param courseID
+     */
     public static boolean retrievePrereqStatus(int learnerID,int courseID)
     {
         boolean passedPrereq=false;
@@ -2109,7 +2224,7 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Selecting records in table...");
             statement = connection.prepareStatement(RETRIEVE_PREQ_COURSE);
             statement.setInt(1,learnerID);
             statement.setInt(2,courseID);
@@ -2127,7 +2242,6 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         }
         catch (SQLIntegrityConstraintViolationException e)
         {
-            System.out.println("Email already assigned to an account");
 
         }
         catch(Exception e)
@@ -2164,6 +2278,11 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         return passedPrereq;
     }
 
+    /**
+     * Update course status to reviewed after learner reviews course.
+     * @param learnerID learner id.
+     * @param courseID course id.
+    */
     public static boolean updateLearnerCourseReviewed(int learnerID,int courseID)
     {
         boolean isUpdated=false;
@@ -2177,7 +2296,7 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
             System.out.println("Connected database successfully...");
 
             //Execute a query to MyPLS database
-            System.out.println("Inserting records into the table...");
+            System.out.println("Updating records in table...");
             statement = connection.prepareStatement(MARK_COURSE_REVIEWED);
             statement.setInt(1,learnerID);
             statement.setInt(2,courseID);
@@ -2187,7 +2306,6 @@ public static boolean updateProfessorRating(int professorID, double rating, int 
         }
         catch (SQLIntegrityConstraintViolationException e)
         {
-            System.out.println("Email already assigned to an account");
             isUpdated=false;
         }
         catch(Exception e)

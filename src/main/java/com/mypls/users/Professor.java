@@ -61,6 +61,10 @@ public class Professor extends User {
         this.rating = rating;
     }
 
+    /**
+     * Update rating for professor and increment number of rating.
+     * @param newRating new rating form learner.
+     */
     public  double updateProfessorRating(int newRating)
     {
         this.rating= rate.computeRating(professorID,newRating,rating,numberOfRatings);

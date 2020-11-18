@@ -1,3 +1,6 @@
+/**
+ * Conrete implemenation of computerating for learner
+ */
 package com.mypls.users;
 
 import com.mypls.DatabaseManager;

@@ -55,10 +55,25 @@ public class Learner extends User {
         this.numOfRatings = numOfRatings;
     }
 
+    /**
+     * Returns list of learners from database
+     */
     public static ArrayList<Learner> getAllLearners() {
         ArrayList<Learner> learners = DatabaseManager.getAllLearners();
         return learners;
     }
+
+    /**
+     * Update rating for professor and increment number of rating.
+     * @param newRating new rating form professor.
+     */
+    public  double updateLearnerRating(int newRating)
+    {
+        this.rating= rate.computeRating(learnerID,newRating,rating,numOfRatings);
+        this.numOfRatings++;
+        return rating;
+    }
+
 
     @Override
     public String toString() {

@@ -20,6 +20,48 @@ public class User {
         this.email = email;
     }
 
+
+    public Rate getRate() {
+        return rate;
+    }
+
+    public void setRate(Rate rate) {
+        this.rate = rate;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * Register new user to the system
+     * @param firstName First name of user
+     * @param lastName Last Name of user
+     * @param type Type of user
+     * @param email Email of address of user
+     * @param password password of user
+     * @return
+     */
     public static boolean register (String firstName, String lastName, String type, String email, String password)
     {
         boolean isUnique;
@@ -46,6 +88,12 @@ public class User {
         return true;
     }
 
+    /**
+     * Login authentication of user to the system.
+     * @param email Email address of user.
+     * @param password Password for user.
+     * @return
+     */
     public static HashMap<String, Object> login (String email, String password)
     {
         HashMap<String, Object> userLoginInfo= new HashMap<String, Object>();
@@ -86,6 +134,10 @@ public class User {
 
     }
 
+    /**
+     * Encryption of passowrd
+     * @param password user entered password.
+     */
     private static String encrypt(String password)
     {
         MessageDigest md = null;
@@ -106,37 +158,6 @@ public class User {
         return hexString.toString();
     }
 
-    public Rate getRate() {
-        return rate;
-    }
-
-    public void setRate(Rate rate) {
-        this.rate = rate;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
 
 

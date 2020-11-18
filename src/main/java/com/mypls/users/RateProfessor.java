@@ -1,3 +1,6 @@
+/**
+ * Conrete implementation of computerating for professor
+ */
 package com.mypls.users;
 
 import com.mypls.DatabaseManager;
